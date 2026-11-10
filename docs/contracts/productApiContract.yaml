@@ -1,0 +1,419 @@
+openapi: 3.1.0
+info:
+  title: ForaDoPico API — endpoints consumed by the RPA robot
+  version: 0.1.0
+  description: |
+    Contract between the RPA robot (client) and the ForaDoPico product API (server).
+    The product API team implements these endpoints; the RPA repository ships a mock
+    implementing the same contract (mockApi/).
+    Conventions: paths and JSON fields in camelCase; dates in ISO 8601 (America/Sao_Paulo);
+    user-facing texts (e.g. alert messages) in Portuguese.
+servers:
+  - url: http://127.0.0.1:8000
+    description: Local mock (RPA repository)
+security:
+  - apiKey: []
+
+paths:
+  /health:
+    get:
+      summary: Liveness check used by the robot before each run
+      security: []
+      responses:
+        "200":
+          description: API is up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+
+  /scheduleImports:
+    post:
+      summary: Receives a validated weekly schedule request from HR (flow scheduleImportFlow)
+      description: |
+        Idempotent by the Idempotency-Key header (SHA-256 of the source file).
+        Replaying the same key must return the original import with 200, never create a duplicate.
+        After storing, the API runs the scheduling engine and leaves the suggestion pending HR approval.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ScheduleImport" }
+      responses:
+        "201":
+          description: Import created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScheduleImportResult" }
+        "200":
+          description: Same Idempotency-Key already received; original result returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScheduleImportResult" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /schedules:
+    get:
+      summary: Lists schedules by status (flow agendaDispatchFlow)
+      parameters:
+        - name: status
+          in: query
+          required: true
+          schema: { $ref: "#/components/schemas/ScheduleStatus" }
+        - name: dispatched
+          in: query
+          required: false
+          schema: { type: boolean }
+          description: false = at least one employee has not received the current version yet
+      responses:
+        "200":
+          description: Schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Schedule" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /assignments:
+    get:
+      summary: Approved on-site assignments for a date, optionally filtered by line (flow lineMonitorFlow)
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: lineNumber
+          in: query
+          required: false
+          schema: { type: integer, example: 3 }
+      responses:
+        "200":
+          description: Assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Assignment" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /lineStatus:
+    post:
+      summary: Current snapshot of every monitored line (feeds the Alertas screen and the free version)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LineStatusSnapshot" }
+      responses:
+        "204": { description: Stored }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+    get:
+      summary: Latest snapshot (read by the app)
+      security: []
+      responses:
+        "200":
+          description: Latest snapshot
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LineStatusSnapshot" }
+
+  /alerts:
+    post:
+      summary: Creates an alert when a line status changes
+      description: Idempotent by dedupeKey (line + status + date). A repeated key returns 200 with the existing alert.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AlertCreate" }
+      responses:
+        "201":
+          description: Alert created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Alert" }
+        "200":
+          description: Alert with this dedupeKey already exists
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Alert" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /contingencyPlans:
+    post:
+      summary: Proposes a plan B for one team (always created as pendingApproval)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContingencyPlanCreate" }
+      responses:
+        "201":
+          description: Plan created, waiting for HR approval
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContingencyPlan" }
+        "200":
+          description: A plan with the same alertId + teamName + action + newEntryWindow already exists (idempotent)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContingencyPlan" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    get:
+      summary: Lists plans by status (flow agendaDispatchFlow sends the approved ones)
+      parameters:
+        - name: status
+          in: query
+          required: true
+          schema: { $ref: "#/components/schemas/ContingencyPlanStatus" }
+        - name: dispatched
+          in: query
+          required: false
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: Plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ContingencyPlan" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /dispatches:
+    post:
+      summary: Reports delivery results of agendas and plan B notices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DispatchReport" }
+      responses:
+        "204": { description: Stored }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, minLength: 64, maxLength: 64 }
+      description: SHA-256 (hex) of the source spreadsheet
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid X-Api-Key
+    ValidationError:
+      description: Payload rejected
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field: { type: string }
+                    message: { type: string }
+
+  schemas:
+    ScheduleStatus:
+      type: string
+      enum: [pendingApproval, approved, rejected]
+    ContingencyPlanStatus:
+      type: string
+      enum: [pendingApproval, approved, rejected]
+    LineStatusCode:
+      type: string
+      enum: [normal, degraded, stopped, closed, unknown]
+
+    ScheduleImport:
+      type: object
+      required: [companyName, week, teams, employees, entryWindows]
+      properties:
+        companyName: { type: string, example: Empresa Fictícia S.A. }
+        week: { type: string, pattern: "^\\d{4}-W\\d{2}$", example: 2026-W47 }
+        entryWindows:
+          type: array
+          items: { type: string, pattern: "^\\d{2}:\\d{2}$" }
+          example: ["07:00", "08:00", "09:30", "10:30"]
+        teams:
+          type: array
+          items:
+            type: object
+            required: [teamName, demand]
+            properties:
+              teamName: { type: string, example: Financeiro }
+              demand:
+                type: array
+                items:
+                  type: object
+                  required: [date, minPeople, maxPeople, mandatory]
+                  properties:
+                    date: { type: string, format: date }
+                    minPeople: { type: integer, minimum: 0 }
+                    maxPeople: { type: integer, minimum: 0 }
+                    mandatory: { type: boolean }
+        employees:
+          type: array
+          items: { $ref: "#/components/schemas/Employee" }
+        rejectedRows:
+          type: integer
+          description: Rows refused by the robot validation (details stay in the HR report)
+
+    Employee:
+      type: object
+      required: [employeeId, name, email, teamName, boardingStation, lineNumber, monthlyOnSiteDays]
+      properties:
+        employeeId: { type: string, example: "F0001" }
+        name: { type: string }
+        email: { type: string, format: email }
+        teamName: { type: string }
+        boardingStation: { type: string, example: Corinthians-Itaquera }
+        lineNumber: { type: integer, example: 3 }
+        monthlyOnSiteDays: { type: integer, minimum: 0, maximum: 23 }
+        unavailableDates:
+          type: array
+          items: { type: string, format: date }
+        latestEntryWindow:
+          type: string
+          pattern: "^\\d{2}:\\d{2}$"
+          description: Personal restriction, e.g. must arrive by 08:00 due to school drop-off
+
+    ScheduleImportResult:
+      type: object
+      properties:
+        importId: { type: string }
+        scheduleId: { type: string }
+        status: { $ref: "#/components/schemas/ScheduleStatus" }
+        receivedEmployees: { type: integer }
+
+    Schedule:
+      type: object
+      properties:
+        scheduleId: { type: string }
+        version: { type: integer, description: Increments when HR edits; triggers re-dispatch }
+        week: { type: string, example: 2026-W47 }
+        status: { $ref: "#/components/schemas/ScheduleStatus" }
+        assignments:
+          type: array
+          items: { $ref: "#/components/schemas/Assignment" }
+
+    Assignment:
+      type: object
+      properties:
+        assignmentId: { type: string }
+        employeeId: { type: string }
+        name: { type: string }
+        email: { type: string, format: email }
+        teamName: { type: string }
+        lineNumber: { type: integer }
+        boardingStation: { type: string }
+        date: { type: string, format: date }
+        entryWindow: { type: string, example: "10:30" }
+        allowedEntryWindows:
+          type: array
+          items: { type: string }
+          example: ["07:00", "08:00", "09:30", "10:30"]
+          description: Company policy windows; the robot uses them to propose a later entry (RN14)
+        suggestedDepartureTime: { type: string, example: "09:35" }
+        predictedCrowding:
+          type: string
+          enum: [empty, moderate, full, critical]
+
+    LineStatusSnapshot:
+      type: object
+      required: [collectedAt, source, stale, lines]
+      properties:
+        collectedAt: { type: string, format: date-time }
+        source: { type: string, enum: [metroWebsite, simulated] }
+        stale: { type: boolean, description: true when the source is down and data is older than 30 min }
+        lines:
+          type: array
+          items:
+            type: object
+            required: [lineNumber, lineName, status, rawText]
+            properties:
+              lineNumber: { type: integer }
+              lineName: { type: string, example: Vermelha }
+              status: { $ref: "#/components/schemas/LineStatusCode" }
+              rawText: { type: string, example: Operação Normal }
+              sourceUpdatedAt: { type: string, format: date-time }
+
+    AlertCreate:
+      type: object
+      required: [dedupeKey, lineNumber, previousStatus, status, detectedAt, message]
+      properties:
+        dedupeKey: { type: string, example: line3-stopped-2026-11-10 }
+        lineNumber: { type: integer }
+        previousStatus: { $ref: "#/components/schemas/LineStatusCode" }
+        status: { $ref: "#/components/schemas/LineStatusCode" }
+        detectedAt: { type: string, format: date-time }
+        message: { type: string, example: "Linha 3-Vermelha paralisada desde 07:35." }
+
+    Alert:
+      allOf:
+        - $ref: "#/components/schemas/AlertCreate"
+        - type: object
+          properties:
+            alertId: { type: string }
+
+    ContingencyPlanCreate:
+      type: object
+      required: [alertId, date, teamName, action, assignmentIds, reason]
+      properties:
+        alertId: { type: string }
+        date: { type: string, format: date }
+        teamName: { type: string }
+        action: { type: string, enum: [remoteWork, shiftEntryWindow] }
+        newEntryWindow: { type: string, example: "10:30", description: Required when action = shiftEntryWindow }
+        assignmentIds:
+          type: array
+          items: { type: string }
+        reason: { type: string, example: "Linha 3-Vermelha paralisada. Sugestão: trabalho remoto hoje." }
+
+    ContingencyPlan:
+      allOf:
+        - $ref: "#/components/schemas/ContingencyPlanCreate"
+        - type: object
+          properties:
+            planId: { type: string }
+            status: { $ref: "#/components/schemas/ContingencyPlanStatus" }
+            affected:
+              type: array
+              items: { $ref: "#/components/schemas/Assignment" }
+
+    DispatchReport:
+      type: object
+      required: [runId, items]
+      properties:
+        runId: { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            required: [kind, referenceId, employeeId, delivered]
+            properties:
+              kind: { type: string, enum: [schedule, contingencyPlan] }
+              referenceId: { type: string, description: scheduleId or planId }
+              version: { type: integer }
+              employeeId: { type: string }
+              delivered: { type: boolean }
+              channel: { type: string, enum: [email] }
+              errorMessage: { type: string }

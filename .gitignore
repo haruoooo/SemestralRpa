@@ -1,0 +1,16 @@
+# Environment and secrets
+.venv/
+.env
+
+# Course material (not part of the public repository)
+Demanda/
+
+# Runtime data (may contain personal data)
+data/runtime/
+landingZone/
+logs/*.log
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
