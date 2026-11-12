@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ForaDoPico · Relatório técnico de RPA</title>
+<style>
+  @page { size: A4 portrait; margin: 16mm 15mm 16mm 15mm; }
+  @page wide { size: A3 landscape; margin: 10mm; }
+  :root { --ink: #1d2a3a; --muted: #5b6878; --accent: #1f4e79; --line: #d5dde8; --soft: #f3f6fa; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 24pt; margin: 0 0 4mm; color: var(--accent); }
+  h2 { font-size: 15pt; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 1.5mm; margin: 8mm 0 3mm; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 5mm 0 2mm; break-after: avoid; }
+  p { margin: 0 0 2.5mm; }
+  ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1mm; }
+  table { border-collapse: collapse; width: 100%; margin: 2mm 0 4mm; font-size: 9.3pt; break-inside: auto; }
+  th { background: var(--accent); color: #fff; text-align: left; padding: 1.6mm 2.2mm; font-weight: 600; }
+  td { border-bottom: 1px solid var(--line); padding: 1.5mm 2.2mm; vertical-align: top; }
+  tr { break-inside: avoid; }
+  code { font-family: Consolas, monospace; font-size: 8.8pt; background: var(--soft); padding: 0 1mm; border-radius: 2px; }
+  pre { font-family: Consolas, monospace; font-size: 7.6pt; background: var(--soft); border: 1px solid var(--line); padding: 2.5mm; white-space: pre-wrap; word-break: break-all; break-inside: avoid; }
+  figure { margin: 3mm 0 5mm; break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; border: 1px solid var(--line); }
+  figcaption { font-size: 8.8pt; color: var(--muted); margin-top: 1.5mm; }
+  .cover { height: 255mm; display: flex; flex-direction: column; justify-content: center; break-after: page; }
+  .cover .tag { color: var(--muted); font-size: 11pt; margin-bottom: 10mm; }
+  .cover .lead { font-size: 13pt; max-width: 150mm; margin-bottom: 12mm; }
+  .cover table { width: 120mm; font-size: 10.5pt; }
+  .cover .links { margin-top: 10mm; font-size: 10pt; }
+  .box { background: var(--soft); border-left: 4px solid var(--accent); padding: 3mm 4mm; margin: 3mm 0 4mm; break-inside: avoid; }
+  .two { display: flex; gap: 5mm; } .two figure { flex: 1; }
+  .wide { page: wide; break-before: page; }
+  .wide figure img { border: none; }
+  .wide h2 { margin-top: 0; }
+  .pending { color: #9a5b00; font-weight: 600; }
+  .clip { overflow: hidden; margin: 0 auto; border: 1px solid var(--line); }
+  .clip img { border: none; max-width: none; display: block; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="tag">FIAP · Engenharia de Software 4º ano · Global Solution 2026.2 · CitizenTech</div>
+  <h1>ForaDoPico · Automação (RPA)</h1>
+  <p class="lead">Relatório técnico da disciplina <strong>Robotic Process Automation</strong> (profs. Bruno Diniz e Cibele Ribeiro): o robô que tira do RH as tarefas manuais da escala presencial e protege o trabalhador quando a linha do metrô falha.</p>
+  <table>
+    <tr><th>Integrante</th><th>RM</th></tr>
+    <tr><td>Matheus Haruo</td><td>97663</td></tr>
+    <tr><td>João Saborido</td><td>98184</td></tr>
+    <tr><td>Pedro Guerra de Souza Freitas</td><td>99526</td></tr>
+    <tr><td>Victor Wittner</td><td>98667</td></tr>
+  </table>
+  <div class="links">
+    <p><strong>Repositório:</strong> <a href="https://github.com/haruoooo/SemestralRpa">github.com/haruoooo/SemestralRpa</a></p>
+    <p><strong>Vídeo de demonstração:</strong> <span class="pending">LINK_DO_VIDEO</span></p>
+  </div>
+</section>
+
+<h2>1. A CitizenTech e o problema</h2>
+<p><strong>ForaDoPico</strong> é uma plataforma B2B que monta a escala presencial das empresas híbridas fugindo dos horários de pico do Metrô de São Paulo. O cidadão beneficiado é o <strong>trabalhador CLT que vai ao escritório de metrô</strong>: ele perde quase 3 horas por dia no transporte, em trens com 8 a 10 pessoas por m² no pico. O MVP cobre as Linhas 1-Azul e 3-Vermelha.</p>
+<p>Por trás do produto existe um trabalho operacional que hoje é manual e falha justamente quando mais importa:</p>
+<table>
+  <tr><th style="width:50%">Hoje (manual)</th><th>Com o robô</th></tr>
+  <tr><td>O RH monta a escala em planilha, confere à mão quem vai em cada dia e manda a agenda por e-mail ou WhatsApp, um por um.</td><td>O robô importa a planilha, valida tudo, entrega à plataforma e envia as agendas aprovadas, com o convite para o calendário.</td></tr>
+  <tr><td>Ninguém acompanha a situação das linhas; o funcionário descobre a falha já na plataforma.</td><td>O robô lê a situação das linhas a cada 5 minutos e, se houver falha, propõe o plano B ao RH antes de o funcionário sair de casa.</td></tr>
+</table>
+
+<h2>2. Objetivo da automação e benefício ao cidadão</h2>
+<p><strong>Objetivo:</strong> executar, sem intervenção humana além da aprovação do RH, três processos de ponta a ponta que alimentam o MVP: importar a escala, enviar as agendas e monitorar as linhas com proposta de plano B.</p>
+<ul>
+  <li><strong>Agenda previsível e recebida com antecedência:</strong> cada funcionário recebe por e-mail os dias presenciais, o horário de entrada fora do pico, a hora de sair de casa e um lembrete no calendário.</li>
+  <li><strong>Plano B no dia em que a linha falha:</strong> com a Linha 3 paralisada às 07:30, quem ainda não embarcou recebe "Hoje: seu dia presencial virou remoto", e o compromisso some do calendário.</li>
+  <li><strong>Pessoa no circuito:</strong> o robô nunca publica uma escala nem aplica um plano B sozinho. O RH aprova no app, como pede o briefing ("IA responsável").</li>
+</ul>
+
+<h2>3. Descrição do processo</h2>
+<p>A automação é um robô em Python com três fluxos independentes, que rodam agendados num único processo (<code>python -m src.main scheduler</code>) ou um a um pela linha de comando:</p>
+<table>
+  <tr><th style="width:22%">Fluxo</th><th style="width:16%">Gatilho</th><th>Entrada → saída</th></tr>
+  <tr><td><code>scheduleImportFlow</code></td><td>A cada 5 min</td><td>Planilha <code>.xlsx</code> do RH em <code>data/input/</code> → escala na API (pendente de aprovação), lote pseudonimizado para Big Data, relatório do RH, arquivo em <code>processed/</code> ou <code>rejected/</code>.</td></tr>
+  <tr><td><code>agendaDispatchFlow</code></td><td>A cada 10 min</td><td>Escalas e planos B <strong>aprovados</strong> na API → e-mail em português com <code>agenda.ics</code> para cada funcionário e confirmação de envio na API.</td></tr>
+  <tr><td><code>lineMonitorFlow</code></td><td>A cada 5 min, dias úteis, 05:00 às 22:00</td><td>Página "Direto do Metrô" → situação das linhas, alertas e propostas de plano B (pendentes de aprovação) na API.</td></tr>
+</table>
+
+<section class="wide">
+  <h2>4. Desenho do fluxo (BPMN)</h2>
+<p>O passo a passo completo de cada fluxo, com as regras de negócio, exceções e cenários de teste, está no PDD (<code>docs/processDesign.md</code>). Os diagramas BPMN 2.0 abaixo são gerados a partir dele por <code>tools/bpmnDiagrams.py</code>. Os arquivos <code>.bpmn</code> em <code>docs/bpmn/</code> abrem no bpmn.io e no Camunda Modeler.</p>
+<p><strong>Notação usada:</strong> uma raia para o RH e outra para o robô; subprocessos de múltiplas instâncias (três traços) para as repetições; losangos com X para as decisões; envelopes tracejados (fluxos de mensagem) para as integrações com a API, o site do Metrô e o servidor de e-mail.</p>
+  <figure><img src="../../assets/bpmnScheduleImportFlow.png" alt="BPMN do fluxo 1"><figcaption>Figura 1. Fluxo 1 · <code>scheduleImportFlow</code>: importação e validação da planilha do RH.</figcaption></figure>
+  <figure><img src="../../assets/bpmnAgendaDispatchFlow.png" alt="BPMN do fluxo 2"><figcaption>Figura 2. Fluxo 2 · <code>agendaDispatchFlow</code>: envio das agendas e dos avisos de plano B aprovados.</figcaption></figure>
+</section>
+<section class="wide">
+  <figure><img src="../../assets/bpmnLineMonitorFlow.png" alt="BPMN do fluxo 3"><figcaption>Figura 3. Fluxo 3 · <code>lineMonitorFlow</code>: monitoramento das linhas e proposta de plano B.</figcaption></figure>
+</section>
+
+<h2>5. Tecnologias e justificativa</h2>
+<table>
+  <tr><th style="width:24%">Necessidade</th><th style="width:22%">Tecnologia</th><th>Por quê</th></tr>
+  <tr><td>Linguagem do robô</td><td>Python 3.13</td><td>Mesma linguagem da API (FastAPI), de Big Data e de IA do grupo. Código versionado e testável, diferente de um fluxo só visual.</td></tr>
+  <tr><td>Arquitetura</td><td>Ports &amp; Adapters (hexagonal)</td><td>As regras não conhecem planilha, site, API nem e-mail. Cada tecnologia é um adaptador trocável por variável de ambiente (API real, mock ou arquivo; site real ou simulado; SMTP ou console), o que permite testar sem rede e demonstrar falhas.</td></tr>
+  <tr><td>Leitura da planilha</td><td>openpyxl</td><td>Lê <code>.xlsx</code> sem Excel instalado e sem pandas.</td></tr>
+  <tr><td>Leitura do site</td><td>httpx + BeautifulSoup</td><td>Timeout explícito e leitura de uma única página pública. O robô se identifica com User-Agent próprio e faz uma requisição a cada 5 min.</td></tr>
+  <tr><td>Resiliência</td><td>tenacity</td><td>3 tentativas com backoff exponencial (esperas de 2 s e 4 s).</td></tr>
+  <tr><td>Agenda</td><td>icalendar (RFC 5545)</td><td>O <code>.ics</code> abre no Google, no Outlook e no celular. O UID do evento é o <code>assignmentId</code>, então um plano B cancela ou move o mesmo evento.</td></tr>
+  <tr><td>E-mail</td><td>smtplib + Mailtrap (sandbox)</td><td>Os e-mails ficam numa caixa de testes, sem atingir pessoas reais (LGPD).</td></tr>
+  <tr><td>Estado do robô</td><td>SQLite</td><td>Arquivo único, sem servidor: hashes processados, último status das linhas, envios feitos e outbox.</td></tr>
+  <tr><td>Agendamento</td><td>APScheduler</td><td>Roda os três fluxos num só processo, sem sobrepor execuções.</td></tr>
+  <tr><td>Mock da API</td><td>FastAPI + uvicorn</td><td>Mesmo contrato OpenAPI da API real, com um painel que mostra a integração e simula a aprovação do RH.</td></tr>
+  <tr><td>Testes</td><td>pytest</td><td>81 testes automatizados de sucesso, decisão e falha.</td></tr>
+</table>
+
+<h2>6. Regras de negócio, decisões e processamento</h2>
+<p>O robô usa <strong>decisões</strong> (losangos do BPMN) e <strong>repetições sobre coleções</strong> (subprocessos: cada arquivo, cada linha da planilha, cada funcionário, cada linha do metrô, cada time afetado).</p>
+<table>
+  <tr><th style="width:9%">Regra</th><th>Descrição</th></tr>
+  <tr><td>RN01</td><td>A planilha precisa ter as abas Semana, Demanda, Funcionarios e Janelas, com todas as colunas. Acentos e maiúsculas no nome são ignorados.</td></tr>
+  <tr><td>RN02</td><td>Arquivo com hash SHA-256 já processado é ignorado e vai para <code>rejected/duplicates/</code>.</td></tr>
+  <tr><td>RN03 a RN08</td><td>Para cada linha: campos obrigatórios e tipos (data, inteiro, e-mail, HH:MM); matrícula duplicada (mantém a primeira); estação existente e da linha informada; janela de entrada existente; mínimo ≤ máximo ≤ funcionários válidos do time; datas em dias úteis da semana.</td></tr>
+  <tr><td>RN09</td><td>Se mais de 20% das linhas de Funcionarios forem inválidas, ou qualquer linha de Demanda for inválida, <strong>o arquivo inteiro é rejeitado</strong>. Abaixo disso, as linhas válidas seguem e as inválidas vão para o relatório do RH.</td></tr>
+  <tr><td>RN10 e RN11</td><td>Só é enviada a escala aprovada pelo RH. Cada funcionário recebe cada versão uma única vez; se o RH editar, a versão muda e a agenda é reenviada como "Agenda atualizada".</td></tr>
+  <tr><td>RN12</td><td>Classificação do texto do Metrô: "Operação Normal" → <code>normal</code>; "Velocidade Reduzida" ou "Operação Parcial" → <code>degraded</code>; "Paralisada" → <code>stopped</code>; "Operação Encerrada" → <code>closed</code> (sem plano B); outro texto → <code>unknown</code> (aviso, sem plano B).</td></tr>
+  <tr><td>RN13</td><td>Só há alerta quando o status muda. A chave <code>linha + status + data</code> impede duplicatas.</td></tr>
+  <tr><td>RN14</td><td>Plano B: <code>stopped</code> → trabalho remoto; <code>degraded</code> → próxima janela de entrada permitida mais tarde (ou remoto, se não houver). Só entra quem ainda não passou do horário de entrada. Uma proposta por time e ação.</td></tr>
+  <tr><td>RN15</td><td>O plano B é sempre criado como pendente de aprovação.</td></tr>
+  <tr><td>RN16 e RN17</td><td>Com a fonte fora do ar há mais de 30 min, os dados ficam marcados como desatualizados e nenhum plano B novo é gerado. O monitor só roda em dias úteis, das 05:00 às 22:00.</td></tr>
+  <tr><td>RN18</td><td>Intervalo mínimo entre e-mails e limite opcional por execução, para respeitar o provedor; o restante sai na execução seguinte.</td></tr>
+</table>
+
+<h2>7. Tratamento de exceções e recuperação</h2>
+<p>Toda falha externa nasce num adaptador e vira uma exceção conhecida, que o fluxo trata. <strong>Nenhuma falha é silenciosa</strong>: cada uma gera log, muda o status da execução e define o código de saída (0 = sucesso, 2 = parcial, 1 = falha).</p>
+<table>
+  <tr><th style="width:8%">Código</th><th style="width:30%">Situação</th><th>Tratamento</th></tr>
+  <tr><td>EX01</td><td>Pasta de entrada inexistente</td><td>Cria a pasta, registra aviso e segue.</td></tr>
+  <tr><td>EX02</td><td>Arquivo corrompido ou que não é <code>.xlsx</code></td><td>Move para <code>rejected/</code> e gera relatório do RH. Os outros arquivos continuam sendo processados.</td></tr>
+  <tr><td>EX03 e EX04</td><td>Aba ou coluna faltando; linhas inválidas</td><td>Relatório com aba, linha, coluna e motivo, em português.</td></tr>
+  <tr><td>EX05</td><td>Dados duplicados (arquivo, matrícula, alerta, plano, e-mail)</td><td>Hash do arquivo, chaves de deduplicação e registro de envios por versão.</td></tr>
+  <tr><td>EX06</td><td>API fora do ar (timeout, conexão, 5xx)</td><td>3 tentativas com backoff. Depois disso, a importação e o relatório de envios vão para a <strong>outbox</strong>, reenviada no início da execução seguinte. No monitor, o estado da linha não é gravado, e a mesma mudança é reenviada. Nada se perde.</td></tr>
+  <tr><td>EX07</td><td>API recusa os dados (4xx)</td><td>Não repete a tentativa; registra a resposta e move o arquivo para <code>rejected/</code>.</td></tr>
+  <tr><td>EX08</td><td>Servidor de e-mail fora do ar</td><td>3 tentativas. Depois, para os envios daquela execução; o restante fica pendente para a próxima. Endereço recusado não é reenviado até o RH corrigir.</td></tr>
+  <tr><td>EX09 e EX10</td><td>Site do Metrô fora do ar ou com layout alterado</td><td>Usa o último estado (RN16). Se o layout mudou, registra alerta técnico e não gera plano B com dado duvidoso.</td></tr>
+  <tr><td>EX11</td><td>Erro inesperado</td><td>Capturado no fluxo, registrado com stack trace e sem dados pessoais. A execução sai com código 1, e o agendador continua rodando.</td></tr>
+</table>
+
+<h2>8. Logs e evidências de auditoria</h2>
+<p>Cada execução grava em <code>logs/robotYYYYMMDD.log</code>, no formato JSON Lines, com os campos <code>timestamp</code>, <code>level</code>, <code>runId</code>, <code>flow</code>, <code>step</code> (o número da etapa no PDD), <code>event</code>, <code>itemRef</code>, <code>message</code> e <code>data</code>. A execução termina sempre com um <code>RunSummary</code> que traz total, sucessos, falhas, itens pulados e duração.</p>
+<p>Os logs ficam em inglês, para a equipe técnica; tudo o que vai ao RH e ao funcionário fica em português. O funcionário aparece apenas como <code>employeeRef</code>: um hash da matrícula com salt secreto. A amostra completa de uma execução real está em <code>logs/samples/robotSample.log</code>.</p>
+<pre>{"timestamp": "2026-11-11T23:24:33-03:00", "level": "WARNING", "runId": "si-20261111-232433-8ce2", "flow": "scheduleImportFlow", "step": "4.4", "event": "RowRefused", "itemRef": "file8392859c", "message": "Refused Funcionarios row 11 column E-mail"}
+{"timestamp": "2026-11-11T23:24:51-03:00", "level": "WARNING", "runId": "si-20261111-232439-e5b1", "flow": "scheduleImportFlow", "step": "4.6", "event": "ImportQueued", "itemRef": "filec04f4cc7", "message": "API unavailable after retries; import saved to the outbox for the next run (EX06): POST /scheduleImports unreachable: ConnectError"}
+{"timestamp": "2026-11-11T23:25:09-03:00", "level": "ERROR", "runId": "ad-20261111-232456-6152", "flow": "agendaDispatchFlow", "step": "3.3", "event": "MailServerUnavailable", "itemRef": null, "message": "Mail server unavailable after retries; remaining e-mails stay pending for the next run (EX08): SMTP unreachable: ConnectionRefusedError"}
+{"timestamp": "2026-11-11T23:25:13-03:00", "level": "INFO", "runId": "lm-20261111-232513-2706", "flow": "lineMonitorFlow", "step": "5.5", "event": "ContingencyPlanProposed", "itemRef": "line1", "message": "Plan B plan-85bd6d67 (remoteWork) proposed for team Financeiro, pending HR approval (RN15)", "data": {"employeeRefs": ["9c69610aba32", "ab405dd7bffe"]}}
+{"timestamp": "2026-11-11T23:25:13-03:00", "level": "INFO", "runId": "lm-20261111-232513-2706", "flow": "lineMonitorFlow", "step": "7", "event": "RunSummary", "message": "Line monitor finished with status success", "data": {"status": "success", "itemsTotal": 2, "itemsSucceeded": 2, "itemsFailed": 0, "itemsSkipped": 0, "durationSeconds": 0.048, "details": {"alertsCreated": 2, "plansProposed": 6, "stale": false, "source": "simulated"}}}</pre>
+<p>O relatório do RH (<code>importReport&lt;hash&gt;.xlsx</code>) é gerado para cada planilha, aceita ou rejeitada, e é a evidência do processamento para quem não lê logs:</p>
+<figure><div class="clip" style="width:115mm;height:83mm"><img src="../../assets/hrReportAcceptedWithIssues.png" alt="Relatório do RH" style="width:183mm"></div><figcaption>Figura 4. Relatório do RH de uma planilha aceita com 2 linhas recusadas (o valor errado aparece só aqui, nunca no log).</figcaption></figure>
+
+<h2>9. Integração com o MVP</h2>
+<p>O robô é cliente da <strong>API única do ForaDoPico</strong> e segue um contrato OpenAPI 3.1 (<code>docs/integrations/secureDevOpsCloud/productApiContract.yaml</code>). Como a API real é construída em paralelo por outro integrante, o repositório traz um <strong>mock com o mesmo contrato</strong>. Trocar para a API real é mudar duas variáveis no <code>.env</code> (<code>PRODUCT_API_URL</code> e <code>PRODUCT_API_KEY</code>).</p>
+<table>
+  <tr><th style="width:36%">Integração</th><th>O que é consumido e por quem</th></tr>
+  <tr><td>API: <code>POST /scheduleImports</code> (idempotente pelo hash do arquivo)</td><td>Escala que o RH aprova na tela "Montar a semana".</td></tr>
+  <tr><td>API: <code>GET /schedules</code>, <code>GET /contingencyPlans</code>, <code>POST /dispatches</code></td><td>Status "agenda enviada" de cada funcionário no app.</td></tr>
+  <tr><td>API: <code>POST /lineStatus</code>, <code>POST /alerts</code></td><td>Tela "Alertas" do app e versão gratuita.</td></tr>
+  <tr><td>API: <code>GET /assignments</code>, <code>POST /contingencyPlans</code></td><td>Tela de plano B, onde o RH aprova ou recusa.</td></tr>
+  <tr><td>Arquivo estruturado: <code>landingZone/chegada/schedule/*.json</code></td><td>Camada Bronze de Big Data: lote pseudonimizado, sem nome e sem e-mail (<code>docs/integrations/bigDataDataIntegration/</code>).</td></tr>
+  <tr><td>E-mail + <code>.ics</code></td><td>Funcionário: agenda no calendário pessoal.</td></tr>
+</table>
+<p>Os documentos de entrega para as outras disciplinas estão em <code>docs/integrations/</code>, um por disciplina: o contrato e o guia de deploy para Secure DevOps &amp; Cloud, e o formato e o dicionário de dados para Big Data.</p>
+<figure><div class="clip" style="width:108mm;height:124mm"><img src="../../assets/mockPanelPlanBPending.png" alt="Painel do mock" style="width:115mm"></div><figcaption>Figura 5. Painel do mock da API após a Linha 3 parar e a Linha 1 ficar lenta às 07:30: escala aprovada com 20/20 agendas enviadas, situação das linhas, alertas e 6 planos B aguardando o RH, entre eles "Mudar horário de entrada → 10:30".</figcaption></figure>
+<figure><div class="clip" style="width:160mm;height:98mm"><img src="../../assets/remoteWorkEmail.png" alt="E-mail de trabalho remoto" style="width:163mm"></div><figcaption>Figura 6. Aviso de plano B "remoto": o <code>.ics</code> usa <code>METHOD:CANCEL</code> com o mesmo UID da agenda e remove o compromisso.</figcaption></figure>
+<figure><div class="clip" style="width:160mm;height:98mm"><img src="../../assets/shiftedEntryEmail.png" alt="E-mail de mudança de horário" style="width:163mm"></div><figcaption>Figura 7. Aviso de plano B "mudar horário": o mesmo evento passa de 09:30 para 10:30.</figcaption></figure>
+
+<h2>10. Testes realizados</h2>
+<p><strong>81 testes automatizados</strong> (<code>pytest -v</code>, relatório em <code>tests/evidence/pytestReport.txt</code>) cobrem as regras, os três fluxos, a leitura do HTML real do Metrô e a codificação dos e-mails, com adaptadores falsos e sem rede. A <strong>execução de ponta a ponta</strong> (<code>bash tools/collectEvidence.sh</code>) roda 20 comandos contra o mock, com falhas provocadas, e gera os logs, os prints e o roteiro <code>tests/evidence/scenarioRun.txt</code>. O mapa completo cenário → teste está em <code>tests/README.md</code>.</p>
+<table>
+  <tr><th style="width:11%">Tipo</th><th style="width:44%">Cenário</th><th>Resultado obtido</th></tr>
+  <tr><td>Sucesso</td><td>Planilha válida com 2 times e 20 funcionários</td><td>Enviada à API, lote gravado para Big Data, arquivo em <code>processed/</code>.</td></tr>
+  <tr><td>Sucesso</td><td>Escala aprovada pelo RH</td><td>20 e-mails com <code>.ics</code> e 20/20 confirmados na API.</td></tr>
+  <tr><td>Sucesso</td><td>Leitura real do site do Metrô</td><td>7 linhas lidas; Linhas 1 e 3 registradas.</td></tr>
+  <tr><td>Decisão</td><td>2 linhas inválidas em 20 (10%)</td><td>18 aceitas e relatório com as 2 recusadas e o motivo.</td></tr>
+  <tr><td>Decisão</td><td>30% de linhas inválidas</td><td>Arquivo inteiro rejeitado (RN09), sem chamar a API.</td></tr>
+  <tr><td>Decisão</td><td>Mesma versão da escala de novo / versão 2</td><td>Nenhum reenvio / reenvio como "Agenda atualizada".</td></tr>
+  <tr><td>Decisão</td><td>Linha 3 paralisada e Linha 1 lenta às 07:30</td><td>2 alertas e 6 planos B: remoto para a Linha 3, entrada às 10:30 ou remoto para a Linha 1. Quem já tinha embarcado ficou de fora.</td></tr>
+  <tr><td>Decisão</td><td>Mesmo status às 07:35 / leitura às 23:30</td><td>Sem alerta novo (RN13) / execução <code>skipped</code> (RN17).</td></tr>
+  <tr><td>Falha</td><td>Arquivo corrompido, aba faltando, arquivo repetido</td><td>Rejeitados com relatório; cópia em <code>rejected/duplicates/</code>.</td></tr>
+  <tr><td>Falha</td><td>API desligada durante a importação</td><td>3 tentativas, outbox, entrega automática na execução seguinte.</td></tr>
+  <tr><td>Falha</td><td>Servidor de e-mail fora do ar</td><td>3 tentativas, execução <code>partial</code>, todos enviados na execução seguinte.</td></tr>
+  <tr><td>Falha</td><td>Site do Metrô fora do ar</td><td>Último estado usado; às 08:20, dados marcados como desatualizados e nenhum plano B.</td></tr>
+</table>
+<div class="box"><strong>Defeitos encontrados pelos testes e corrigidos:</strong> o resumo saía como sucesso quando o envio do snapshot falhava; o mock descartava um plano B do mesmo time com outra janela; o anexo <code>.ics</code> ia sem <code>charset</code>, o que corrompia os acentos; e assuntos longos com acento chegavam quebrados ao Mailtrap por um comportamento do Python ao dobrar cabeçalhos. Todos ganharam testes de regressão.</div>
+
+<h2>11. Segurança e LGPD</h2>
+<ul>
+  <li><strong>Minimização:</strong> só matrícula, nome, e-mail, time, estação e restrições. Nada de GPS nem endereço.</li>
+  <li><strong>Logs sem dados pessoais:</strong> o funcionário é um hash com salt (<code>employeeRef</code>). Nas linhas recusadas, o log registra só aba, linha e coluna; o valor fica no relatório do RH. Três testes automatizados verificam isso.</li>
+  <li><strong>Big Data recebe dados pseudonimizados:</strong> sem nome e sem e-mail, como a disciplina exige para a camada Ouro.</li>
+  <li><strong>Segredos:</strong> chave da API, senha SMTP e salt só no <code>.env</code>, fora do Git. O <code>.env.example</code> não tem valores.</li>
+  <li><strong>Dados fictícios:</strong> o repositório só tem pessoas e empresa fictícias, com e-mails no domínio reservado <code>.example</code>. Os e-mails reais ficam presos no sandbox do Mailtrap.</li>
+  <li><strong>Pessoa no circuito:</strong> escala e plano B só valem depois da aprovação do RH.</li>
+  <li><strong>Raspagem responsável:</strong> uma página pública, uma requisição a cada 5 min, User-Agent identificado. O site da CPTM, que bloqueia robôs, não é usado.</li>
+  <li><strong>Saída do console:</strong> e-mails aparecem mascarados (<code>a***@dominio</code>).</li>
+</ul>
+
+<h2>12. Links</h2>
+<ul>
+  <li><strong>Repositório GitHub:</strong> <a href="https://github.com/haruoooo/SemestralRpa">https://github.com/haruoooo/SemestralRpa</a></li>
+  <li><strong>Vídeo de demonstração:</strong> <span class="pending">LINK_DO_VIDEO</span></li>
+  <li><strong>Documentos no repositório:</strong> <code>README.md</code>, <code>docs/processDesign.md</code> (PDD), <code>docs/bpmn/</code>, <code>docs/architecture.md</code>, <code>docs/integrations/</code>, <code>tests/README.md</code>.</li>
+</ul>
+
+</body>
+</html>

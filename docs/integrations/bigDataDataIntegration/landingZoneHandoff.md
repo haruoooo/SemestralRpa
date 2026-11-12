@@ -57,6 +57,8 @@ O lote é **pseudonimizado**: não traz nome nem e-mail. O funcionário aparece 
 
 ## 4. Exemplo (dados fictícios, resumido)
 
+Um lote completo, gerado numa execução real do robô com dados fictícios, está em [sampleBatch.json](sampleBatch.json).
+
 ```json
 {
   "dataset": "schedule",

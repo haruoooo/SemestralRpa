@@ -20,18 +20,26 @@ def _minutes(window: str) -> int:
 
 def predictedCrowding(window: str) -> str:
     minutes = _minutes(window)
-    if 450 <= minutes < 540:  # 07:30 to 09:00
+    if 450 <= minutes < 540:  # 07:30 to 09:00: morning peak
         return "critical"
-    if 420 <= minutes < 450 or 540 <= minutes < 600:
+    if 420 <= minutes < 450 or 540 <= minutes < 570:
         return "full"
-    if 360 <= minutes < 420 or 600 <= minutes < 660:
+    if 360 <= minutes < 420 or 570 <= minutes < 630:
         return "moderate"
     return "empty"
 
 
-def bestWindow(windows: list[str], latest: str | None) -> str:
+def bestWindows(windows: list[str], latest: str | None) -> list[str]:
+    """Allowed windows from the least to the most crowded (later first on a tie)."""
     allowed = [window for window in windows if latest is None or _minutes(window) <= _minutes(latest)] or sorted(windows)[:1]
-    return min(allowed, key=lambda window: (CROWDING_ORDER[predictedCrowding(window)], -_minutes(window)))
+    return sorted(allowed, key=lambda window: (CROWDING_ORDER[predictedCrowding(window)], -_minutes(window)))
+
+
+def bestWindow(windows: list[str], latest: str | None, turn: int = 0) -> str:
+    """Alternates between the two least crowded windows when both are off-peak, so arrivals are spread out."""
+    ranked = bestWindows(windows, latest)
+    offPeak = [window for window in ranked[:2] if CROWDING_ORDER[predictedCrowding(window)] <= CROWDING_ORDER["moderate"]]
+    return offPeak[turn % len(offPeak)] if offPeak else ranked[0]
 
 
 def departureTime(window: str) -> str:
@@ -75,8 +83,8 @@ def buildAssignments(payload: dict, scheduleId: str) -> list[dict]:
                         quota[member["employeeId"]] -= 1
 
         for day, people in sorted(days.items()):
-            for member in people:
-                window = bestWindow(windows, member.get("latestEntryWindow"))
+            for turn, member in enumerate(people):
+                window = bestWindow(windows, member.get("latestEntryWindow"), turn)
                 assignments.append(
                     {
                         "assignmentId": f"as-{scheduleId}-{member['employeeId']}-{day}",

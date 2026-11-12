@@ -1,0 +1,272 @@
+{
+  "dataset": "schedule",
+  "schemaVersion": 1,
+  "batchId": "si-20261111-232433-8ce2-8392859c",
+  "generatedAt": "2026-11-11T23:24:33-03:00",
+  "sourceFileHash": "8392859c84dd177e68933c38b7441bd9d79eb17b61b6586dafabeafc4cad3e0f",
+  "importId": "imp-e9c45ed8",
+  "scheduleId": "sch-5f55a7e2",
+  "companyName": "Empresa Fictícia S.A.",
+  "week": "2026-W48",
+  "entryWindows": [
+    "07:00",
+    "08:00",
+    "09:30",
+    "10:30"
+  ],
+  "teams": [
+    {
+      "teamName": "Financeiro",
+      "demand": [
+        {
+          "date": "2026-11-23",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-24",
+          "minPeople": 4,
+          "maxPeople": 6,
+          "mandatory": true
+        },
+        {
+          "date": "2026-11-25",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-26",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-27",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        }
+      ]
+    },
+    {
+      "teamName": "Tecnologia",
+      "demand": [
+        {
+          "date": "2026-11-23",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-24",
+          "minPeople": 4,
+          "maxPeople": 6,
+          "mandatory": true
+        },
+        {
+          "date": "2026-11-25",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-26",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-27",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        }
+      ]
+    }
+  ],
+  "employees": [
+    {
+      "employeeRef": "69f58bb8297b",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Corinthians-Itaquera",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [
+        "2026-11-23"
+      ],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "9c69610aba32",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Tucuruvi",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "de74719710b9",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Tatuapé",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": "08:00"
+    },
+    {
+      "employeeRef": "ab405dd7bffe",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Santana",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "c1abac8d19a6",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Penha",
+      "monthlyOnSiteDays": 12,
+      "unavailableDates": [
+        "2026-11-27"
+      ],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "405e6adb79c1",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Jabaquara",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "09660f1341de",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Brás",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "2b4728167707",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Vila Mariana",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "be1c388d739c",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Artur Alvim",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [
+        "2026-11-26"
+      ],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "3dc4ea7e984c",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Corinthians-Itaquera",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [
+        "2026-11-23"
+      ],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "48190a13eac0",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Tucuruvi",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "d3b535b038ec",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Tatuapé",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": "08:00"
+    },
+    {
+      "employeeRef": "eb1e1e7815ef",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Santana",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "91ac21b1f52d",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Penha",
+      "monthlyOnSiteDays": 12,
+      "unavailableDates": [
+        "2026-11-27"
+      ],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "db19ccf1d781",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Jabaquara",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "61e639db0041",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Brás",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "9be2f245359a",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Vila Mariana",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": null
+    },
+    {
+      "employeeRef": "9bc68696d6d8",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Artur Alvim",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [
+        "2026-11-26"
+      ],
+      "latestEntryWindow": null
+    }
+  ],
+  "quality": {
+    "employeesTotal": 20,
+    "employeesValid": 18,
+    "demandTotal": 10,
+    "demandValid": 10,
+    "rejectedRows": 2
+  }
+}
