@@ -15,6 +15,8 @@ from uuid import uuid4
 from fastapi import FastAPI, Header, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
+from mockApi.schedulingEngine import buildAssignments
+
 API_KEY = os.getenv("MOCK_API_KEY", "")
 DEFAULT_WINDOWS = ["07:00", "08:00", "09:30", "10:30"]
 
@@ -26,6 +28,7 @@ store: dict = {
     "alerts": {},  # dedupeKey -> alert
     "contingencyPlans": {},
     "dispatches": [],
+    "delivered": set(),  # (kind, referenceId, version, employeeId) confirmed by POST /dispatches
     "lineStatus": None,
 }
 
@@ -84,7 +87,10 @@ async def createScheduleImport(request: Request, idempotencyKey: str = Header(al
         return JSONResponse(store["imports"][idempotencyKey], status_code=200)
     payload = await request.json()
     scheduleId = f"sch-{uuid4().hex[:8]}"
-    store["schedules"][scheduleId] = {"scheduleId": scheduleId, "version": 1, "week": payload["week"], "status": "pendingApproval", "assignments": [], "source": payload}
+    store["schedules"][scheduleId] = {
+        "scheduleId": scheduleId, "version": 1, "week": payload["week"], "status": "pendingApproval",
+        "assignments": buildAssignments(payload, scheduleId), "source": payload,
+    }
     result = {"importId": f"imp-{uuid4().hex[:8]}", "scheduleId": scheduleId, "status": "pendingApproval", "receivedEmployees": len(payload.get("employees", []))}
     store["imports"][idempotencyKey] = result
     return result
@@ -93,13 +99,31 @@ async def createScheduleImport(request: Request, idempotencyKey: str = Header(al
 @app.get("/schedules")
 def listSchedules(status: str, dispatched: bool | None = None, apiKey: str | None = Header(default=None, alias="X-Api-Key")):
     _checkKey(apiKey)
-    return [{key: value for key, value in item.items() if key != "source"} for item in store["schedules"].values() if item["status"] == status]
+    items = [item for item in store["schedules"].values() if item["status"] == status]
+    if dispatched is not None:
+        items = [item for item in items if _isScheduleDispatched(item) == dispatched]
+    return [{key: value for key, value in item.items() if key != "source"} for item in items]
+
+
+def _isScheduleDispatched(schedule: dict) -> bool:
+    people = {item["employeeId"] for item in schedule["assignments"]}
+    return all(("schedule", schedule["scheduleId"], schedule["version"], person) in store["delivered"] for person in people)
+
+
+def _isPlanDispatched(plan: dict) -> bool:
+    return all(("contingencyPlan", plan["planId"], 1, item["employeeId"]) in store["delivered"] for item in plan["affected"])
+
+
+def _assignmentsFor(day: str) -> list[dict]:
+    """Assignments of approved schedules for the day; falls back to the fictitious demo company."""
+    approved = [item for schedule in store["schedules"].values() if schedule["status"] == "approved" for item in schedule["assignments"] if item["date"] == day]
+    return approved or _demoAssignments(day)
 
 
 @app.get("/assignments")
 def listAssignments(date: str, lineNumber: int | None = None, apiKey: str | None = Header(default=None, alias="X-Api-Key")):
     _checkKey(apiKey)
-    items = _demoAssignments(date)
+    items = _assignmentsFor(date)
     return [item for item in items if lineNumber is None or item["lineNumber"] == lineNumber]
 
 
@@ -140,7 +164,7 @@ async def createContingencyPlan(request: Request, apiKey: str | None = Header(de
     for plan in store["contingencyPlans"].values():
         if _planKey(plan) == _planKey(payload):
                 return JSONResponse(plan, status_code=200)
-    allAssignments = {item["assignmentId"]: item for item in _demoAssignments(payload["date"])}
+    allAssignments = {item["assignmentId"]: item for item in _assignmentsFor(payload["date"])}
     plan = {
         **payload,
         "planId": f"plan-{uuid4().hex[:8]}",
@@ -154,13 +178,20 @@ async def createContingencyPlan(request: Request, apiKey: str | None = Header(de
 @app.get("/contingencyPlans")
 def listContingencyPlans(status: str, dispatched: bool | None = None, apiKey: str | None = Header(default=None, alias="X-Api-Key")):
     _checkKey(apiKey)
-    return [plan for plan in store["contingencyPlans"].values() if plan["status"] == status]
+    plans = [plan for plan in store["contingencyPlans"].values() if plan["status"] == status]
+    if dispatched is not None:
+        plans = [plan for plan in plans if _isPlanDispatched(plan) == dispatched]
+    return plans
 
 
 @app.post("/dispatches", status_code=204)
 async def reportDispatches(request: Request, apiKey: str | None = Header(default=None, alias="X-Api-Key")):
     _checkKey(apiKey)
-    store["dispatches"].append(await request.json())
+    report = await request.json()
+    store["dispatches"].append(report)
+    for item in report["items"]:
+        if item["delivered"]:
+            store["delivered"].add((item["kind"], item["referenceId"], item.get("version", 1), item["employeeId"]))
 
 
 # ---------- Demo helpers (not part of the contract): simulate HR actions ----------
@@ -184,11 +215,26 @@ def decideSchedule(scheduleId: str, decision: str):
     return RedirectResponse("/", status_code=303)
 
 
+@app.post("/admin/scheduleVersions/{scheduleId}")
+def newScheduleVersion(scheduleId: str):
+    """Simulates HR editing an approved schedule: the version goes up and the agenda must be re-sent (RN11)."""
+    schedule = store["schedules"].get(scheduleId)
+    if not schedule:
+        raise HTTPException(status_code=404)
+    schedule["version"] += 1
+    for item in schedule["assignments"][::3]:  # Moves some people one window later, when possible
+        later = [window for window in item["allowedEntryWindows"] if window > item["entryWindow"]]
+        if later:
+            item["entryWindow"] = later[0]
+    return RedirectResponse("/", status_code=303)
+
+
 @app.post("/admin/reset")
 def reset():
     for key in ("imports", "schedules", "alerts", "contingencyPlans"):
         store[key].clear()
     store["dispatches"].clear()
+    store["delivered"].clear()
     store["lineStatus"] = None
     return RedirectResponse("/", status_code=303)
 
@@ -211,14 +257,16 @@ def panel():
     )
     planRows = "".join(
         f"<tr><td>{escape(plan['teamName'])}</td><td>{_ACTION_LABELS[plan['action']]}{' → ' + plan['newEntryWindow'] if plan.get('newEntryWindow') else ''}</td>"
-        f"<td>{len(plan['assignmentIds'])}</td><td>{escape(plan['reason'])}</td><td>{plan['status']}</td>"
+        f"<td>{len(plan['assignmentIds'])}</td><td>{escape(plan['reason'])}</td><td>{_SCHEDULE_LABELS.get(plan['status'], plan['status'])}</td>"
+        f"<td>{_deliveredCount('contingencyPlan', plan['planId'], 1, plan['affected'])}</td>"
         f"<td>{_decisionButtons('contingencyPlans', plan['planId']) if plan['status'] == 'pendingApproval' else ''}</td></tr>"
         for plan in store["contingencyPlans"].values()
     )
     scheduleRows = "".join(
         f"<tr><td>{escape(item['source']['companyName'])}</td><td>{escape(item['week'])}</td><td>{len(item['source']['employees'])}</td>"
         f"<td>{item['source'].get('rejectedRows', 0)}</td><td>v{item['version']}</td><td>{_SCHEDULE_LABELS.get(item['status'], item['status'])}</td>"
-        f"<td>{_decisionButtons('schedules', item['scheduleId']) if item['status'] == 'pendingApproval' else ''}</td></tr>"
+        f"<td>{_deliveredCount('schedule', item['scheduleId'], item['version'], item['assignments'])}</td>"
+        f"<td>{_decisionButtons('schedules', item['scheduleId']) if item['status'] == 'pendingApproval' else _newVersionButton(item)}</td></tr>"
         for item in reversed(list(store["schedules"].values()))
     )
     staleNote = "<p class='stale'>Atenção: dados desatualizados (fonte indisponível).</p>" if snapshot and snapshot.get("stale") else ""
@@ -229,11 +277,23 @@ body{{font-family:system-ui,sans-serif;margin:24px;max-width:1000px;color:#1b1b1
 td,th{{border-bottom:1px solid #ddd;padding:6px 8px;text-align:left}} .normal{{color:#0a7d2c}} .degraded{{color:#b26b00}} .stopped{{color:#b00020;font-weight:600}}
 .stale{{background:#fff3cd;padding:8px}} form{{display:inline}} button{{margin-right:4px}}</style></head><body>
 <h1>ForaDoPico · painel do mock da API</h1><p>{collected}</p>{staleNote}
-<h2>Escalas importadas (aprovação do RH)</h2><table><tr><th>Empresa</th><th>Semana</th><th>Funcionários</th><th>Linhas recusadas</th><th>Versão</th><th>Status</th><th></th></tr>{scheduleRows}</table>
+<h2>Escalas importadas (aprovação do RH)</h2><table><tr><th>Empresa</th><th>Semana</th><th>Funcionários</th><th>Linhas recusadas</th><th>Versão</th><th>Status</th><th>Agendas enviadas</th><th></th></tr>{scheduleRows}</table>
 <h2>Situação das linhas</h2><table><tr><th>Linha</th><th>Status</th><th>Texto do Metrô</th></tr>{lineRows}</table>
 <h2>Alertas</h2><table><tr><th>Hora</th><th>Mensagem</th></tr>{alertRows}</table>
-<h2>Planos B (aprovação do RH)</h2><table><tr><th>Time</th><th>Ação</th><th>Pessoas</th><th>Motivo</th><th>Status</th><th></th></tr>{planRows}</table>
+<h2>Planos B (aprovação do RH)</h2><table><tr><th>Time</th><th>Ação</th><th>Pessoas</th><th>Motivo</th><th>Status</th><th>Avisos enviados</th><th></th></tr>{planRows}</table>
 <form method="post" action="/admin/reset"><button>Limpar dados do mock</button></form></body></html>"""
+
+
+def _deliveredCount(kind: str, referenceId: str, version: int, assignments: list[dict]) -> str:
+    people = {item["employeeId"] for item in assignments}
+    done = sum((kind, referenceId, version, person) in store["delivered"] for person in people)
+    return f"{done}/{len(people)}"
+
+
+def _newVersionButton(schedule: dict) -> str:
+    if schedule["status"] != "approved":
+        return ""
+    return f"<form method='post' action='/admin/scheduleVersions/{schedule['scheduleId']}'><button>Simular edição do RH</button></form>"
 
 
 def _decisionButtons(resource: str, itemId: str) -> str:

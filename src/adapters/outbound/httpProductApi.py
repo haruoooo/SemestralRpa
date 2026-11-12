@@ -45,3 +45,19 @@ class HttpProductApi:
 
     def createContingencyPlan(self, plan: dict) -> dict:
         return self._request("POST", "/contingencyPlans", json=plan).json()
+
+    def listSchedules(self, status: str, dispatched: bool | None = None) -> list[dict]:
+        return self._request("GET", "/schedules", params=_statusParams(status, dispatched)).json()
+
+    def listContingencyPlans(self, status: str, dispatched: bool | None = None) -> list[dict]:
+        return self._request("GET", "/contingencyPlans", params=_statusParams(status, dispatched)).json()
+
+    def reportDispatches(self, report: dict) -> None:
+        self._request("POST", "/dispatches", json=report)
+
+
+def _statusParams(status: str, dispatched: bool | None) -> dict:
+    params = {"status": status}
+    if dispatched is not None:
+        params["dispatched"] = "true" if dispatched else "false"
+    return params

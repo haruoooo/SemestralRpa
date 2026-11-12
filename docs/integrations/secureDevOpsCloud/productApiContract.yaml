@@ -177,6 +177,7 @@ paths:
           in: query
           required: false
           schema: { type: boolean }
+          description: false = at least one affected employee has not received the notice yet
       responses:
         "200":
           description: Plans
@@ -398,6 +399,7 @@ components:
             affected:
               type: array
               items: { $ref: "#/components/schemas/Assignment" }
+              description: Assignments covered by the plan, with name and e-mail. The robot uses them to notify; if empty, it falls back to GET /assignments
 
     DispatchReport:
       type: object
@@ -412,7 +414,7 @@ components:
             properties:
               kind: { type: string, enum: [schedule, contingencyPlan] }
               referenceId: { type: string, description: scheduleId or planId }
-              version: { type: integer }
+              version: { type: integer, description: Schedule version; always 1 for contingencyPlan }
               employeeId: { type: string }
               delivered: { type: boolean }
               channel: { type: string, enum: [email] }

@@ -34,6 +34,18 @@ class Settings:
     inputDir: Path = Path("data/input")
     reportDir: Path = Path("data/output/reports")
     landingZonePath: Path = Path("landingZone/chegada")
+    notifierMode: str = "console"
+    smtpHost: str = "sandbox.smtp.mailtrap.io"
+    smtpPort: int = 2525
+    smtpUser: str = ""
+    smtpPassword: str = field(default="", repr=False)
+    mailFrom: str = "ForaDoPico <agenda@foradopico.example>"
+    mailMinIntervalSeconds: float = 10.0
+    mailOutputDir: Path = Path("data/output/mail")
+    dispatchLimitPerRun: int = 0
+    scheduleImportEveryMinutes: int = 5
+    agendaDispatchEveryMinutes: int = 10
+    lineMonitorEveryMinutes: int = 5
     logSalt: str = field(default="", repr=False)
 
     @classmethod
@@ -59,5 +71,17 @@ class Settings:
             inputDir=Path(env("INPUT_DIR", "data/input")),
             reportDir=Path(env("REPORT_DIR", "data/output/reports")),
             landingZonePath=Path(env("LANDING_ZONE_PATH", "landingZone/chegada")),
+            notifierMode=env("NOTIFIER_MODE", "console"),
+            smtpHost=env("SMTP_HOST", "sandbox.smtp.mailtrap.io"),
+            smtpPort=int(env("SMTP_PORT", "2525")),
+            smtpUser=env("SMTP_USER", ""),
+            smtpPassword=env("SMTP_PASSWORD", ""),
+            mailFrom=env("MAIL_FROM", "") or cls.mailFrom,
+            mailMinIntervalSeconds=float(env("MAIL_MIN_INTERVAL_SECONDS", "10")),
+            mailOutputDir=Path(env("MAIL_OUTPUT_DIR", "data/output/mail")),
+            dispatchLimitPerRun=int(env("DISPATCH_LIMIT_PER_RUN", "0")),
+            scheduleImportEveryMinutes=int(env("SCHEDULE_IMPORT_EVERY_MINUTES", "5")),
+            agendaDispatchEveryMinutes=int(env("AGENDA_DISPATCH_EVERY_MINUTES", "10")),
+            lineMonitorEveryMinutes=int(env("LINE_MONITOR_EVERY_MINUTES", "5")),
             logSalt=env("LOG_SALT", ""),
         )

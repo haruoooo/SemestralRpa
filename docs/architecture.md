@@ -50,7 +50,8 @@ Detalhes no [processDesign.md](processDesign.md).
 | `ImportReportPort` | `xlsxImportReport` (relatório do RH) | `REPORT_DIR` |
 | `LineStatusSourcePort` | `metroWebsiteSource` (raspagem), `simulatedSource` (fixture) | `LINE_STATUS_SOURCE` |
 | `ProductApiPort` | `httpProductApi` (real ou mock), `fileProductApi` | `PRODUCT_API_MODE` |
-| `NotificationPort` | `smtpNotifier` (Mailtrap), `consoleNotifier` | `NOTIFIER_MODE` |
+| `NotificationPort` | `SmtpNotifier` (Mailtrap) e `ConsoleNotifier` (salva `.eml`), em `emailNotifiers.py` | `NOTIFIER_MODE` |
+| `CalendarPort` | `icalendarCalendar` (`.ics` RFC 5545) | — |
 | `LandingZonePort` | `localLandingZone` (pasta `chegada/` do Big Data) | `LANDING_ZONE_PATH` |
 | `RobotStatePort` | `sqliteRobotState` | `STATE_DB_PATH` |
 

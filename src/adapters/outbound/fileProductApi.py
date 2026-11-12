@@ -56,3 +56,19 @@ class FileProductApi:
         created = {**plan, "planId": f"plan-{uuid4().hex[:8]}", "status": "pendingApproval"}
         self._write("contingencyPlans", created)
         return created
+
+    # Contingency mode has no HR approval screen: approved items come from fixture files, if present
+    def listSchedules(self, status: str, dispatched: bool | None = None) -> list[dict]:
+        return self._readApproved("approvedSchedules.json", status)
+
+    def listContingencyPlans(self, status: str, dispatched: bool | None = None) -> list[dict]:
+        return self._readApproved("approvedContingencyPlans.json", status)
+
+    def reportDispatches(self, report: dict) -> None:
+        self._write("dispatches", report)
+
+    def _readApproved(self, fileName: str, status: str) -> list[dict]:
+        path = self._outputDir / fileName
+        if not path.exists():
+            return []
+        return [item for item in json.loads(path.read_text(encoding="utf-8")) if item.get("status") == status]
