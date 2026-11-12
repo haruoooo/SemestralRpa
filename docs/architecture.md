@@ -46,6 +46,8 @@ Detalhes no [processDesign.md](processDesign.md).
 | Porta | Adaptadores | Selecionado por |
 |---|---|---|
 | `SpreadsheetReaderPort` | `openpyxlSpreadsheetReader` | — |
+| `InputFolderPort` | `localInputFolder` (`data/input/`, `processed/`, `rejected/`) | `INPUT_DIR` |
+| `ImportReportPort` | `xlsxImportReport` (relatório do RH) | `REPORT_DIR` |
 | `LineStatusSourcePort` | `metroWebsiteSource` (raspagem), `simulatedSource` (fixture) | `LINE_STATUS_SOURCE` |
 | `ProductApiPort` | `httpProductApi` (real ou mock), `fileProductApi` | `PRODUCT_API_MODE` |
 | `NotificationPort` | `smtpNotifier` (Mailtrap), `consoleNotifier` | `NOTIFIER_MODE` |
@@ -60,7 +62,7 @@ Detalhes no [processDesign.md](processDesign.md).
 |---|---|---|
 | Linguagem | Python 3.13 | Mesma linguagem da API, dos dados e da IA do grupo |
 | Leitura de .xlsx | openpyxl | Leve e sem pandas |
-| Validação | pydantic v2 | Mensagens de erro por campo, prontas para o relatório do RH |
+| Validação | Regras próprias no `domain` | Mensagens em português por aba, linha e coluna, prontas para o relatório do RH (o pydantic entra só via FastAPI no mock) |
 | HTTP | httpx | Timeout explícito, cliente usado também nos testes |
 | Retry | tenacity | Backoff exponencial declarativo |
 | Raspagem | beautifulsoup4 | HTML do Metrô |

@@ -21,13 +21,14 @@ O robô tira do RH as tarefas manuais que existem por trás do produto:
 | Fluxo | O que faz | Status |
 |---|---|---|
 | `lineMonitorFlow` | Monitora a situação das Linhas 1 e 3 a cada 5 min e, se houver falha, cria o alerta e propõe o plano B (remoto ou outro horário) para o RH aprovar | ✅ Implementado |
-| `scheduleImportFlow` | Importa e valida a planilha de escala do RH e envia à plataforma | 🚧 Em desenvolvimento |
+| `scheduleImportFlow` | Importa e valida a planilha de escala do RH, envia à plataforma, grava o lote pseudonimizado para Big Data e gera o relatório do RH | ✅ Implementado |
 | `agendaDispatchFlow` | Envia a agenda (.ics) por e-mail depois que o RH aprova | 🚧 Em desenvolvimento |
 
 Documentação:
 - [docs/processDesign.md](docs/processDesign.md): PDD com o passo a passo, regras de negócio, exceções, logs e testes.
 - [docs/architecture.md](docs/architecture.md): arquitetura Ports & Adapters.
-- [docs/contracts/productApiContract.yaml](docs/contracts/productApiContract.yaml): contrato com a API do produto.
+- [docs/integrations/secureDevOpsCloud/productApiContract.yaml](docs/integrations/secureDevOpsCloud/productApiContract.yaml): contrato com a API do produto.
+- [docs/integrations/bigDataDataIntegration/landingZoneHandoff.md](docs/integrations/bigDataDataIntegration/landingZoneHandoff.md): formato do lote entregue à pasta de pouso do Big Data.
 
 ## Estrutura
 
@@ -37,7 +38,8 @@ mockApi/        Mock da API do produto (mesmo contrato) com painel para demonstr
 docs/           PDD, BPMN, arquitetura e contrato da API
 tests/          Testes automatizados (sucesso, decisão e falha)
 logs/           Logs de auditoria (JSON Lines, sem dados pessoais)
-data/fixtures/  Dados fictícios para testes e demonstração
+data/fixtures/  Dados fictícios para testes e demonstração (planilhas de exemplo e modelo do RH)
+tools/          Gerador das planilhas fictícias
 ```
 
 ## Como rodar
@@ -57,13 +59,22 @@ copy .env.example .env            # Linux/macOS: cp .env.example .env
 uvicorn mockApi.app:app --port 8000
 ```
 
-**2. Rodar o monitor contra o site real do Metrô** (terminal 2):
+**2. Importar a planilha do RH** (terminal 2):
+
+```bash
+copy data\fixtures\scheduleValid.xlsx data\input\        # Linux/macOS: cp
+python -m src.main scheduleImport
+```
+
+O arquivo vai para `data/input/processed/` (ou `rejected/`), o relatório do RH para `data/output/reports/`, o lote para Big Data para `landingZone/chegada/schedule/` e a escala aparece no painel aguardando aprovação. Outras planilhas de exemplo: `scheduleTenPercentInvalid.xlsx` (2 linhas recusadas), `scheduleThirtyPercentInvalid.xlsx` (rejeitada pela RN09), `scheduleCorrupted.xlsx` e `scheduleMissingSheet.xlsx`. O modelo em branco para o RH é o `scheduleTemplate.xlsx`.
+
+**3. Rodar o monitor contra o site real do Metrô**:
 
 ```bash
 python -m src.main lineMonitor
 ```
 
-**3. Demonstrar o plano B** com uma falha simulada:
+**4. Demonstrar o plano B** com uma falha simulada:
 
 ```bash
 # No .env: LINE_STATUS_SOURCE=simulated
@@ -72,7 +83,7 @@ python -m src.main lineMonitor --ignoreWindow --at 07:30
 python -m src.main simulate --unavailable                 # Simula a fonte fora do ar
 ```
 
-**4. Testes:**
+**5. Testes:**
 
 ```bash
 pytest -v

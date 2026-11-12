@@ -20,6 +20,20 @@ class FileProductApi:
         target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         return target
 
+    def submitScheduleImport(self, payload: dict, idempotencyKey: str) -> dict:
+        marker = self._outputDir / "scheduleImports" / f"import{idempotencyKey[:16]}.json"
+        if marker.exists():  # Same idempotency semantics as the API
+            return json.loads(marker.read_text(encoding="utf-8"))["result"]
+        result = {
+            "importId": f"imp-{uuid4().hex[:8]}",
+            "scheduleId": f"sch-{uuid4().hex[:8]}",
+            "status": "pendingApproval",
+            "receivedEmployees": len(payload.get("employees", [])),
+        }
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(json.dumps({"idempotencyKey": idempotencyKey, "result": result, "payload": payload}, ensure_ascii=False, indent=2), encoding="utf-8")
+        return result
+
     def publishLineStatus(self, snapshot: dict) -> None:
         self._write("lineStatus", snapshot)
 

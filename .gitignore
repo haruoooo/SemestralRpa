@@ -7,6 +7,8 @@ Demanda/
 
 # Runtime data (may contain personal data)
 data/runtime/
+data/input/
+data/output/
 landingZone/
 logs/*.log
 

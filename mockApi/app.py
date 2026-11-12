@@ -1,4 +1,4 @@
-"""Local mock of the ForaDoPico product API, implementing docs/contracts/productApiContract.yaml.
+"""Local mock of the ForaDoPico product API, implementing docs/integrations/secureDevOpsCloud/productApiContract.yaml.
 
 Purpose: let the robot run end to end before the real API exists, and serve as a reference
 implementation for the product API team. Data lives in memory and is fictitious.
@@ -194,6 +194,7 @@ def reset():
 
 
 _STATUS_LABELS = {"normal": "Normal", "degraded": "Lentidão", "stopped": "Paralisada", "closed": "Encerrada", "unknown": "Desconhecida"}
+_SCHEDULE_LABELS = {"pendingApproval": "Aguardando aprovação", "approved": "Aprovada", "rejected": "Recusada"}
 _ACTION_LABELS = {"remoteWork": "Trabalho remoto", "shiftEntryWindow": "Mudar horário de entrada"}
 
 
@@ -214,6 +215,12 @@ def panel():
         f"<td>{_decisionButtons('contingencyPlans', plan['planId']) if plan['status'] == 'pendingApproval' else ''}</td></tr>"
         for plan in store["contingencyPlans"].values()
     )
+    scheduleRows = "".join(
+        f"<tr><td>{escape(item['source']['companyName'])}</td><td>{escape(item['week'])}</td><td>{len(item['source']['employees'])}</td>"
+        f"<td>{item['source'].get('rejectedRows', 0)}</td><td>v{item['version']}</td><td>{_SCHEDULE_LABELS.get(item['status'], item['status'])}</td>"
+        f"<td>{_decisionButtons('schedules', item['scheduleId']) if item['status'] == 'pendingApproval' else ''}</td></tr>"
+        for item in reversed(list(store["schedules"].values()))
+    )
     staleNote = "<p class='stale'>Atenção: dados desatualizados (fonte indisponível).</p>" if snapshot and snapshot.get("stale") else ""
     collected = f"Atualizado em {escape(snapshot['collectedAt'])} · fonte: {escape(snapshot['source'])}" if snapshot else "Nenhuma leitura recebida ainda."
     return f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta http-equiv="refresh" content="10">
@@ -222,6 +229,7 @@ body{{font-family:system-ui,sans-serif;margin:24px;max-width:1000px;color:#1b1b1
 td,th{{border-bottom:1px solid #ddd;padding:6px 8px;text-align:left}} .normal{{color:#0a7d2c}} .degraded{{color:#b26b00}} .stopped{{color:#b00020;font-weight:600}}
 .stale{{background:#fff3cd;padding:8px}} form{{display:inline}} button{{margin-right:4px}}</style></head><body>
 <h1>ForaDoPico · painel do mock da API</h1><p>{collected}</p>{staleNote}
+<h2>Escalas importadas (aprovação do RH)</h2><table><tr><th>Empresa</th><th>Semana</th><th>Funcionários</th><th>Linhas recusadas</th><th>Versão</th><th>Status</th><th></th></tr>{scheduleRows}</table>
 <h2>Situação das linhas</h2><table><tr><th>Linha</th><th>Status</th><th>Texto do Metrô</th></tr>{lineRows}</table>
 <h2>Alertas</h2><table><tr><th>Hora</th><th>Mensagem</th></tr>{alertRows}</table>
 <h2>Planos B (aprovação do RH)</h2><table><tr><th>Time</th><th>Ação</th><th>Pessoas</th><th>Motivo</th><th>Status</th><th></th></tr>{planRows}</table>
