@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="lineMonitorFlowDefinitions" targetNamespace="https://github.com/haruoooo/SemestralRpa" exporter="tools.bpmnDiagrams" exporterVersion="1.0">
+<bpmn:collaboration id="lineMonitorFlowCollaboration"><bpmn:participant id="lineMonitorFlowPool" name="Fluxo 3 · lineMonitorFlow" processRef="lineMonitorFlowProcess"/><bpmn:participant id="metroPool" name="Site do Metrô (Direto do Metrô)"/><bpmn:participant id="apiPool" name="API do ForaDoPico"/><bpmn:messageFlow id="message0" name="GET direto-metro.php" sourceRef="fetch" targetRef="metroPool"/><bpmn:messageFlow id="message1" name="POST /alerts" sourceRef="alert" targetRef="apiPool"/><bpmn:messageFlow id="message2" name="GET /assignments, POST /contingencyPlans" sourceRef="propose" targetRef="apiPool"/><bpmn:messageFlow id="message3" name="POST /lineStatus" sourceRef="snapshot" targetRef="apiPool"/></bpmn:collaboration>
+<bpmn:process id="lineMonitorFlowProcess" name="Fluxo 3 · lineMonitorFlow" isExecutable="false"><bpmn:laneSet id="lineMonitorFlowLanes"><bpmn:lane id="hr" name="RH"><bpmn:flowNodeRef>hrStart</bpmn:flowNodeRef><bpmn:flowNodeRef>hrDecide</bpmn:flowNodeRef><bpmn:flowNodeRef>hrEnd</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="robot" name="Robô RPA"><bpmn:flowNodeRef>timer</bpmn:flowNodeRef><bpmn:flowNodeRef>inWindow</bpmn:flowNodeRef><bpmn:flowNodeRef>outside</bpmn:flowNodeRef><bpmn:flowNodeRef>fetch</bpmn:flowNodeRef><bpmn:flowNodeRef>sourceUp</bpmn:flowNodeRef><bpmn:flowNodeRef>stale</bpmn:flowNodeRef><bpmn:flowNodeRef>staleEnd</bpmn:flowNodeRef><bpmn:flowNodeRef>parse</bpmn:flowNodeRef><bpmn:flowNodeRef>layoutOk</bpmn:flowNodeRef><bpmn:flowNodeRef>layoutChanged</bpmn:flowNodeRef><bpmn:flowNodeRef>snapshot</bpmn:flowNodeRef><bpmn:flowNodeRef>summary</bpmn:flowNodeRef><bpmn:flowNodeRef>end</bpmn:flowNodeRef><bpmn:flowNodeRef>sp3</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet>
+<bpmn:subProcess id="sp3" name="Para cada linha monitorada"><bpmn:incoming>flow11</bpmn:incoming><bpmn:outgoing>flow21</bpmn:outgoing><bpmn:multiInstanceLoopCharacteristics isSequential="true"/><bpmn:startEvent id="lineStart" name="Linha"><bpmn:outgoing>flow12</bpmn:outgoing></bpmn:startEvent><bpmn:task id="classify" name="Classificar a situação (RN12)"><bpmn:incoming>flow12</bpmn:incoming><bpmn:outgoing>flow13</bpmn:outgoing></bpmn:task><bpmn:exclusiveGateway id="changed" name="Status mudou? (RN13)"><bpmn:incoming>flow13</bpmn:incoming><bpmn:outgoing>flow14</bpmn:outgoing><bpmn:outgoing>flow15</bpmn:outgoing></bpmn:exclusiveGateway><bpmn:endEvent id="unchanged" name="Sem mudança"><bpmn:incoming>flow14</bpmn:incoming></bpmn:endEvent><bpmn:serviceTask id="alert" name="Criar alerta (chave linha + status + data)"><bpmn:incoming>flow15</bpmn:incoming><bpmn:outgoing>flow16</bpmn:outgoing></bpmn:serviceTask><bpmn:exclusiveGateway id="needsPlan" name="Paralisada ou lenta?"><bpmn:incoming>flow16</bpmn:incoming><bpmn:outgoing>flow17</bpmn:outgoing><bpmn:outgoing>flow18</bpmn:outgoing></bpmn:exclusiveGateway><bpmn:serviceTask id="propose" name="Propor plano B a quem ainda vai embarcar (RN14)"><bpmn:incoming>flow17</bpmn:incoming><bpmn:outgoing>flow19</bpmn:outgoing></bpmn:serviceTask><bpmn:task id="save" name="Gravar o novo estado da linha"><bpmn:incoming>flow18</bpmn:incoming><bpmn:incoming>flow19</bpmn:incoming><bpmn:outgoing>flow20</bpmn:outgoing></bpmn:task><bpmn:endEvent id="lineEnd" name="Linha tratada"><bpmn:incoming>flow20</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="flow12" sourceRef="lineStart" targetRef="classify"/><bpmn:sequenceFlow id="flow13" sourceRef="classify" targetRef="changed"/><bpmn:sequenceFlow id="flow14" name="Não" sourceRef="changed" targetRef="unchanged"/><bpmn:sequenceFlow id="flow15" name="Sim" sourceRef="changed" targetRef="alert"/><bpmn:sequenceFlow id="flow16" sourceRef="alert" targetRef="needsPlan"/><bpmn:sequenceFlow id="flow17" name="Sim" sourceRef="needsPlan" targetRef="propose"/><bpmn:sequenceFlow id="flow18" name="Não" sourceRef="needsPlan" targetRef="save"/><bpmn:sequenceFlow id="flow19" sourceRef="propose" targetRef="save"/><bpmn:sequenceFlow id="flow20" sourceRef="save" targetRef="lineEnd"/></bpmn:subProcess>
+<bpmn:startEvent id="hrStart" name="Plano B pendente no app"><bpmn:outgoing>flow0</bpmn:outgoing><bpmn:messageEventDefinition id="message_hrStart"/></bpmn:startEvent>
+<bpmn:userTask id="hrDecide" name="Aprovar ou recusar o plano B (RN15)"><bpmn:incoming>flow0</bpmn:incoming><bpmn:outgoing>flow1</bpmn:outgoing></bpmn:userTask>
+<bpmn:endEvent id="hrEnd" name="Decisão registrada (fluxo 2 avisa)"><bpmn:incoming>flow1</bpmn:incoming></bpmn:endEvent>
+<bpmn:startEvent id="timer" name="A cada 5 min, dias úteis"><bpmn:outgoing>flow2</bpmn:outgoing><bpmn:timerEventDefinition id="timer_timer"><bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/PT5M</bpmn:timeCycle></bpmn:timerEventDefinition></bpmn:startEvent>
+<bpmn:exclusiveGateway id="inWindow" name="Entre 05:00 e 22:00? (RN17)"><bpmn:incoming>flow2</bpmn:incoming><bpmn:outgoing>flow3</bpmn:outgoing><bpmn:outgoing>flow4</bpmn:outgoing></bpmn:exclusiveGateway>
+<bpmn:endEvent id="outside" name="Fora da janela"><bpmn:incoming>flow3</bpmn:incoming></bpmn:endEvent>
+<bpmn:serviceTask id="fetch" name="Baixar a página do Metrô (3 tentativas)"><bpmn:incoming>flow4</bpmn:incoming><bpmn:outgoing>flow5</bpmn:outgoing></bpmn:serviceTask>
+<bpmn:exclusiveGateway id="sourceUp" name="Fonte respondeu?"><bpmn:incoming>flow5</bpmn:incoming><bpmn:outgoing>flow6</bpmn:outgoing><bpmn:outgoing>flow8</bpmn:outgoing></bpmn:exclusiveGateway>
+<bpmn:task id="stale" name="Usar o último estado; marcar stale após 30 min (RN16)"><bpmn:incoming>flow6</bpmn:incoming><bpmn:outgoing>flow7</bpmn:outgoing></bpmn:task>
+<bpmn:endEvent id="staleEnd" name="Sem plano B novo"><bpmn:incoming>flow7</bpmn:incoming></bpmn:endEvent>
+<bpmn:task id="parse" name="Interpretar o HTML"><bpmn:incoming>flow8</bpmn:incoming><bpmn:outgoing>flow9</bpmn:outgoing></bpmn:task>
+<bpmn:exclusiveGateway id="layoutOk" name="Linhas 1 e 3 encontradas?"><bpmn:incoming>flow9</bpmn:incoming><bpmn:outgoing>flow10</bpmn:outgoing><bpmn:outgoing>flow11</bpmn:outgoing></bpmn:exclusiveGateway>
+<bpmn:endEvent id="layoutChanged" name="Layout mudou: alerta técnico (EX10)"><bpmn:incoming>flow10</bpmn:incoming><bpmn:errorEventDefinition id="error_layoutChanged"/></bpmn:endEvent>
+<bpmn:serviceTask id="snapshot" name="Publicar a situação das linhas"><bpmn:incoming>flow21</bpmn:incoming><bpmn:outgoing>flow22</bpmn:outgoing></bpmn:serviceTask>
+<bpmn:task id="summary" name="Registrar o resumo da execução"><bpmn:incoming>flow22</bpmn:incoming><bpmn:outgoing>flow23</bpmn:outgoing></bpmn:task>
+<bpmn:endEvent id="end" name="Fim"><bpmn:incoming>flow23</bpmn:incoming></bpmn:endEvent>
+<bpmn:sequenceFlow id="flow0" sourceRef="hrStart" targetRef="hrDecide"/>
+<bpmn:sequenceFlow id="flow1" sourceRef="hrDecide" targetRef="hrEnd"/>
+<bpmn:sequenceFlow id="flow2" sourceRef="timer" targetRef="inWindow"/>
+<bpmn:sequenceFlow id="flow3" name="Não" sourceRef="inWindow" targetRef="outside"/>
+<bpmn:sequenceFlow id="flow4" name="Sim" sourceRef="inWindow" targetRef="fetch"/>
+<bpmn:sequenceFlow id="flow5" sourceRef="fetch" targetRef="sourceUp"/>
+<bpmn:sequenceFlow id="flow6" name="Não (EX09)" sourceRef="sourceUp" targetRef="stale"/>
+<bpmn:sequenceFlow id="flow7" sourceRef="stale" targetRef="staleEnd"/>
+<bpmn:sequenceFlow id="flow8" name="Sim" sourceRef="sourceUp" targetRef="parse"/>
+<bpmn:sequenceFlow id="flow9" sourceRef="parse" targetRef="layoutOk"/>
+<bpmn:sequenceFlow id="flow10" name="Não" sourceRef="layoutOk" targetRef="layoutChanged"/>
+<bpmn:sequenceFlow id="flow11" name="Sim" sourceRef="layoutOk" targetRef="sp3"/>
+<bpmn:sequenceFlow id="flow21" sourceRef="sp3" targetRef="snapshot"/>
+<bpmn:sequenceFlow id="flow22" sourceRef="snapshot" targetRef="summary"/>
+<bpmn:sequenceFlow id="flow23" sourceRef="summary" targetRef="end"/>
+<bpmn:textAnnotation id="noteApi"><bpmn:text>Se a API falhar, o estado da linha não é gravado: a mesma mudança é reenviada na próxima execução (EX06).</bpmn:text></bpmn:textAnnotation>
+</bpmn:process>
+<bpmndi:BPMNDiagram id="lineMonitorFlowDiagram"><bpmndi:BPMNPlane id="lineMonitorFlowPlane" bpmnElement="lineMonitorFlowCollaboration">
+<bpmndi:BPMNShape id="lineMonitorFlowPool_di" bpmnElement="lineMonitorFlowPool" isHorizontal="true"><dc:Bounds x="0" y="20" width="2148" height="396"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hr_di" bpmnElement="hr" isHorizontal="true"><dc:Bounds x="34" y="20" width="2114" height="132"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="robot_di" bpmnElement="robot" isHorizontal="true"><dc:Bounds x="34" y="152" width="2114" height="264"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="metroPool_di" bpmnElement="metroPool" isHorizontal="true"><dc:Bounds x="0" y="466" width="684" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="apiPool_di" bpmnElement="apiPool" isHorizontal="true"><dc:Bounds x="0" y="530" width="2148" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="sp3_di" bpmnElement="sp3" isExpanded="true"><dc:Bounds x="812" y="158" width="964" height="252"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrStart_di" bpmnElement="hrStart"><dc:Bounds x="1216" y="69" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrDecide_di" bpmnElement="hrDecide"><dc:Bounds x="1302" y="53" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrEnd_di" bpmnElement="hrEnd"><dc:Bounds x="1460" y="69" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="timer_di" bpmnElement="timer"><dc:Bounds x="118" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="inWindow_di" bpmnElement="inWindow"><dc:Bounds x="234" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="outside_di" bpmnElement="outside"><dc:Bounds x="240" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="fetch_di" bpmnElement="fetch"><dc:Bounds x="326" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="sourceUp_di" bpmnElement="sourceUp"><dc:Bounds x="478" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="stale_di" bpmnElement="stale"><dc:Bounds x="448" y="317" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="staleEnd_di" bpmnElement="staleEnd"><dc:Bounds x="606" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="parse_di" bpmnElement="parse"><dc:Bounds x="570" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="layoutOk_di" bpmnElement="layoutOk"><dc:Bounds x="722" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="layoutChanged_di" bpmnElement="layoutChanged"><dc:Bounds x="728" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="lineStart_di" bpmnElement="lineStart"><dc:Bounds x="850" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="classify_di" bpmnElement="classify"><dc:Bounds x="936" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="changed_di" bpmnElement="changed"><dc:Bounds x="1088" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="unchanged_di" bpmnElement="unchanged"><dc:Bounds x="1094" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="alert_di" bpmnElement="alert"><dc:Bounds x="1180" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="needsPlan_di" bpmnElement="needsPlan"><dc:Bounds x="1332" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="propose_di" bpmnElement="propose"><dc:Bounds x="1424" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="save_di" bpmnElement="save"><dc:Bounds x="1546" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="lineEnd_di" bpmnElement="lineEnd"><dc:Bounds x="1704" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="snapshot_di" bpmnElement="snapshot"><dc:Bounds x="1790" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="summary_di" bpmnElement="summary"><dc:Bounds x="1912" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="end_di" bpmnElement="end"><dc:Bounds x="2070" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="noteApi_di" bpmnElement="noteApi"><dc:Bounds x="277" y="30" width="250" height="49"/></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="flow0_di" bpmnElement="flow0"><di:waypoint x="1250" y="86"/><di:waypoint x="1302" y="86"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow1_di" bpmnElement="flow1"><di:waypoint x="1408" y="86"/><di:waypoint x="1460" y="86"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow2_di" bpmnElement="flow2"><di:waypoint x="152" y="218"/><di:waypoint x="234" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow3_di" bpmnElement="flow3"><di:waypoint x="257" y="241"/><di:waypoint x="257" y="333"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow4_di" bpmnElement="flow4"><di:waypoint x="280" y="218"/><di:waypoint x="326" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow5_di" bpmnElement="flow5"><di:waypoint x="432" y="218"/><di:waypoint x="478" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow6_di" bpmnElement="flow6"><di:waypoint x="501" y="241"/><di:waypoint x="501" y="317"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow7_di" bpmnElement="flow7"><di:waypoint x="554" y="350"/><di:waypoint x="606" y="350"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow8_di" bpmnElement="flow8"><di:waypoint x="524" y="218"/><di:waypoint x="570" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow9_di" bpmnElement="flow9"><di:waypoint x="676" y="218"/><di:waypoint x="722" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow10_di" bpmnElement="flow10"><di:waypoint x="745" y="241"/><di:waypoint x="745" y="333"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow11_di" bpmnElement="flow11"><di:waypoint x="768" y="218"/><di:waypoint x="812" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow12_di" bpmnElement="flow12"><di:waypoint x="884" y="218"/><di:waypoint x="936" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow13_di" bpmnElement="flow13"><di:waypoint x="1042" y="218"/><di:waypoint x="1088" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow14_di" bpmnElement="flow14"><di:waypoint x="1111" y="241"/><di:waypoint x="1111" y="333"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow15_di" bpmnElement="flow15"><di:waypoint x="1134" y="218"/><di:waypoint x="1180" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow16_di" bpmnElement="flow16"><di:waypoint x="1286" y="218"/><di:waypoint x="1332" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow17_di" bpmnElement="flow17"><di:waypoint x="1378" y="218"/><di:waypoint x="1424" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow18_di" bpmnElement="flow18"><di:waypoint x="1355" y="241"/><di:waypoint x="1355" y="278"/><di:waypoint x="1599" y="278"/><di:waypoint x="1599" y="251"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow19_di" bpmnElement="flow19"><di:waypoint x="1530" y="218"/><di:waypoint x="1546" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow20_di" bpmnElement="flow20"><di:waypoint x="1652" y="218"/><di:waypoint x="1704" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow21_di" bpmnElement="flow21"><di:waypoint x="1776" y="218"/><di:waypoint x="1790" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow22_di" bpmnElement="flow22"><di:waypoint x="1896" y="218"/><di:waypoint x="1912" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow23_di" bpmnElement="flow23"><di:waypoint x="2018" y="218"/><di:waypoint x="2070" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="message0_di" bpmnElement="message0"><di:waypoint x="401" y="251"/><di:waypoint x="401" y="466"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="message1_di" bpmnElement="message1"><di:waypoint x="1255" y="251"/><di:waypoint x="1255" y="530"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="message2_di" bpmnElement="message2"><di:waypoint x="1499" y="251"/><di:waypoint x="1499" y="530"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="message3_di" bpmnElement="message3"><di:waypoint x="1865" y="251"/><di:waypoint x="1865" y="530"/></bpmndi:BPMNEdge>
+</bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

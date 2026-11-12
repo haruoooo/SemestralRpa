@@ -26,6 +26,7 @@ O robô tira do RH as tarefas manuais que existem por trás do produto:
 
 Documentação:
 - [docs/processDesign.md](docs/processDesign.md): PDD com o passo a passo, regras de negócio, exceções, logs e testes.
+- [docs/bpmn/](docs/bpmn/): diagramas BPMN 2.0 dos três fluxos (`.bpmn` e `.svg`).
 - [docs/architecture.md](docs/architecture.md): arquitetura Ports & Adapters.
 - [docs/integrations/secureDevOpsCloud/](docs/integrations/secureDevOpsCloud/): contrato da API do produto e guia de deploy do robô.
 - [docs/integrations/bigDataDataIntegration/](docs/integrations/bigDataDataIntegration/): formato do lote entregue à pasta de pouso do Big Data.
@@ -39,7 +40,7 @@ docs/           PDD, BPMN, arquitetura e contrato da API
 tests/          Testes automatizados (sucesso, decisão e falha)
 logs/           Logs de auditoria (JSON Lines, sem dados pessoais)
 data/fixtures/  Dados fictícios para testes e demonstração (planilhas de exemplo e modelo do RH)
-tools/          Gerador das planilhas fictícias
+tools/          Geradores das planilhas fictícias e dos diagramas BPMN
 ```
 
 ## Como rodar

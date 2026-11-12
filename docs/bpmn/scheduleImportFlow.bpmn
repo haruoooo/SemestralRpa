@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="scheduleImportFlowDefinitions" targetNamespace="https://github.com/haruoooo/SemestralRpa" exporter="tools.bpmnDiagrams" exporterVersion="1.0">
+<bpmn:collaboration id="scheduleImportFlowCollaboration"><bpmn:participant id="scheduleImportFlowPool" name="Fluxo 1 · scheduleImportFlow" processRef="scheduleImportFlowProcess"/><bpmn:participant id="apiPool" name="API do ForaDoPico"/><bpmn:messageFlow id="message0" name="POST /scheduleImports" sourceRef="outbox" targetRef="apiPool"/><bpmn:messageFlow id="message1" name="POST /scheduleImports" sourceRef="send" targetRef="apiPool"/></bpmn:collaboration>
+<bpmn:process id="scheduleImportFlowProcess" name="Fluxo 1 · scheduleImportFlow" isExecutable="false"><bpmn:laneSet id="scheduleImportFlowLanes"><bpmn:lane id="hr" name="RH"><bpmn:flowNodeRef>hrStart</bpmn:flowNodeRef><bpmn:flowNodeRef>hrFill</bpmn:flowNodeRef><bpmn:flowNodeRef>hrSave</bpmn:flowNodeRef><bpmn:flowNodeRef>hrEnd</bpmn:flowNodeRef></bpmn:lane><bpmn:lane id="robot" name="Robô RPA"><bpmn:flowNodeRef>timer</bpmn:flowNodeRef><bpmn:flowNodeRef>outbox</bpmn:flowNodeRef><bpmn:flowNodeRef>list</bpmn:flowNodeRef><bpmn:flowNodeRef>hasFiles</bpmn:flowNodeRef><bpmn:flowNodeRef>noFiles</bpmn:flowNodeRef><bpmn:flowNodeRef>summary</bpmn:flowNodeRef><bpmn:flowNodeRef>end</bpmn:flowNodeRef><bpmn:flowNodeRef>sp1</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet>
+<bpmn:subProcess id="sp1" name="Para cada arquivo"><bpmn:incoming>flow7</bpmn:incoming><bpmn:outgoing>flow23</bpmn:outgoing><bpmn:multiInstanceLoopCharacteristics isSequential="true"/><bpmn:startEvent id="fileStart" name="Arquivo"><bpmn:outgoing>flow8</bpmn:outgoing></bpmn:startEvent><bpmn:task id="hash" name="Calcular o hash SHA-256"><bpmn:incoming>flow8</bpmn:incoming><bpmn:outgoing>flow9</bpmn:outgoing></bpmn:task><bpmn:exclusiveGateway id="isDuplicate" name="Já importado? (RN02)"><bpmn:incoming>flow9</bpmn:incoming><bpmn:outgoing>flow10</bpmn:outgoing><bpmn:outgoing>flow12</bpmn:outgoing></bpmn:exclusiveGateway><bpmn:task id="moveDuplicate" name="Mover para rejected/duplicates/"><bpmn:incoming>flow10</bpmn:incoming><bpmn:outgoing>flow11</bpmn:outgoing></bpmn:task><bpmn:endEvent id="duplicateEnd" name="Ignorado"><bpmn:incoming>flow11</bpmn:incoming></bpmn:endEvent><bpmn:task id="validate" name="Abrir e validar abas, colunas e linhas (RN01, RN03 a RN08)"><bpmn:incoming>flow12</bpmn:incoming><bpmn:outgoing>flow13</bpmn:outgoing></bpmn:task><bpmn:exclusiveGateway id="isAccepted" name="Dentro do limite? (RN09)"><bpmn:incoming>flow13</bpmn:incoming><bpmn:outgoing>flow14</bpmn:outgoing><bpmn:outgoing>flow16</bpmn:outgoing></bpmn:exclusiveGateway><bpmn:task id="reject" name="Gerar relatório do RH e mover para rejected/ (EX02 a EX04)"><bpmn:incoming>flow14</bpmn:incoming><bpmn:outgoing>flow15</bpmn:outgoing></bpmn:task><bpmn:endEvent id="rejectEnd" name="Rejeitada"><bpmn:incoming>flow15</bpmn:incoming></bpmn:endEvent><bpmn:serviceTask id="send" name="Enviar à API com Idempotency-Key (3 tentativas)"><bpmn:incoming>flow16</bpmn:incoming><bpmn:outgoing>flow17</bpmn:outgoing></bpmn:serviceTask><bpmn:exclusiveGateway id="apiAnswered" name="API respondeu?"><bpmn:incoming>flow17</bpmn:incoming><bpmn:outgoing>flow18</bpmn:outgoing><bpmn:outgoing>flow19</bpmn:outgoing></bpmn:exclusiveGateway><bpmn:task id="queue" name="Guardar na outbox"><bpmn:incoming>flow19</bpmn:incoming><bpmn:outgoing>flow20</bpmn:outgoing></bpmn:task><bpmn:serviceTask id="land" name="Gravar lote pseudonimizado na pasta de pouso"><bpmn:incoming>flow18</bpmn:incoming><bpmn:incoming>flow20</bpmn:incoming><bpmn:outgoing>flow21</bpmn:outgoing><bpmn:dataOutputAssociation id="assoc_land_landingStore"><bpmn:targetRef>landingStore</bpmn:targetRef></bpmn:dataOutputAssociation></bpmn:serviceTask><bpmn:task id="report" name="Gerar relatório do RH e mover para processed/"><bpmn:incoming>flow21</bpmn:incoming><bpmn:outgoing>flow22</bpmn:outgoing></bpmn:task><bpmn:endEvent id="importedEnd" name="Importada"><bpmn:incoming>flow22</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="flow8" sourceRef="fileStart" targetRef="hash"/><bpmn:sequenceFlow id="flow9" sourceRef="hash" targetRef="isDuplicate"/><bpmn:sequenceFlow id="flow10" name="Sim" sourceRef="isDuplicate" targetRef="moveDuplicate"/><bpmn:sequenceFlow id="flow11" sourceRef="moveDuplicate" targetRef="duplicateEnd"/><bpmn:sequenceFlow id="flow12" name="Não" sourceRef="isDuplicate" targetRef="validate"/><bpmn:sequenceFlow id="flow13" sourceRef="validate" targetRef="isAccepted"/><bpmn:sequenceFlow id="flow14" name="Não" sourceRef="isAccepted" targetRef="reject"/><bpmn:sequenceFlow id="flow15" sourceRef="reject" targetRef="rejectEnd"/><bpmn:sequenceFlow id="flow16" name="Sim" sourceRef="isAccepted" targetRef="send"/><bpmn:sequenceFlow id="flow17" sourceRef="send" targetRef="apiAnswered"/><bpmn:sequenceFlow id="flow18" name="Sim" sourceRef="apiAnswered" targetRef="land"/><bpmn:sequenceFlow id="flow19" name="Não (EX06)" sourceRef="apiAnswered" targetRef="queue"/><bpmn:sequenceFlow id="flow20" sourceRef="queue" targetRef="land"/><bpmn:sequenceFlow id="flow21" sourceRef="land" targetRef="report"/><bpmn:sequenceFlow id="flow22" sourceRef="report" targetRef="importedEnd"/></bpmn:subProcess>
+<bpmn:startEvent id="hrStart" name="Escala da semana definida"><bpmn:outgoing>flow0</bpmn:outgoing></bpmn:startEvent>
+<bpmn:userTask id="hrFill" name="Preencher a planilha no modelo do RH"><bpmn:incoming>flow0</bpmn:incoming><bpmn:outgoing>flow1</bpmn:outgoing></bpmn:userTask>
+<bpmn:userTask id="hrSave" name="Salvar em data/input/"><bpmn:incoming>flow1</bpmn:incoming><bpmn:outgoing>flow2</bpmn:outgoing></bpmn:userTask>
+<bpmn:endEvent id="hrEnd" name="Planilha entregue ao robô"><bpmn:incoming>flow2</bpmn:incoming></bpmn:endEvent>
+<bpmn:startEvent id="timer" name="A cada 5 min"><bpmn:outgoing>flow3</bpmn:outgoing><bpmn:timerEventDefinition id="timer_timer"><bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/PT5M</bpmn:timeCycle></bpmn:timerEventDefinition></bpmn:startEvent>
+<bpmn:serviceTask id="outbox" name="Reenviar importações da outbox (EX06)"><bpmn:incoming>flow3</bpmn:incoming><bpmn:outgoing>flow4</bpmn:outgoing></bpmn:serviceTask>
+<bpmn:task id="list" name="Listar arquivos em data/input/"><bpmn:incoming>flow4</bpmn:incoming><bpmn:outgoing>flow5</bpmn:outgoing></bpmn:task>
+<bpmn:exclusiveGateway id="hasFiles" name="Há arquivos?"><bpmn:incoming>flow5</bpmn:incoming><bpmn:outgoing>flow6</bpmn:outgoing><bpmn:outgoing>flow7</bpmn:outgoing></bpmn:exclusiveGateway>
+<bpmn:endEvent id="noFiles" name="Nada a processar"><bpmn:incoming>flow6</bpmn:incoming></bpmn:endEvent>
+<bpmn:task id="summary" name="Registrar o resumo da execução (RunSummary)"><bpmn:incoming>flow23</bpmn:incoming><bpmn:outgoing>flow24</bpmn:outgoing></bpmn:task>
+<bpmn:endEvent id="end" name="Fim"><bpmn:incoming>flow24</bpmn:incoming></bpmn:endEvent>
+<bpmn:dataStoreReference id="landingStore" name="Pasta de pouso (Big Data)"/>
+<bpmn:sequenceFlow id="flow0" sourceRef="hrStart" targetRef="hrFill"/>
+<bpmn:sequenceFlow id="flow1" sourceRef="hrFill" targetRef="hrSave"/>
+<bpmn:sequenceFlow id="flow2" sourceRef="hrSave" targetRef="hrEnd"/>
+<bpmn:sequenceFlow id="flow3" sourceRef="timer" targetRef="outbox"/>
+<bpmn:sequenceFlow id="flow4" sourceRef="outbox" targetRef="list"/>
+<bpmn:sequenceFlow id="flow5" sourceRef="list" targetRef="hasFiles"/>
+<bpmn:sequenceFlow id="flow6" name="Não" sourceRef="hasFiles" targetRef="noFiles"/>
+<bpmn:sequenceFlow id="flow7" name="Sim" sourceRef="hasFiles" targetRef="sp1"/>
+<bpmn:sequenceFlow id="flow23" sourceRef="sp1" targetRef="summary"/>
+<bpmn:sequenceFlow id="flow24" sourceRef="summary" targetRef="end"/>
+<bpmn:textAnnotation id="noteReport"><bpmn:text>Planilha rejeitada: o RH lê o relatório importReport&lt;hash&gt;.xlsx (aba, linha, coluna e motivo), corrige e salva de novo.</bpmn:text></bpmn:textAnnotation>
+</bpmn:process>
+<bpmndi:BPMNDiagram id="scheduleImportFlowDiagram"><bpmndi:BPMNPlane id="scheduleImportFlowPlane" bpmnElement="scheduleImportFlowCollaboration">
+<bpmndi:BPMNShape id="scheduleImportFlowPool_di" bpmnElement="scheduleImportFlowPool" isHorizontal="true"><dc:Bounds x="0" y="20" width="2148" height="396"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hr_di" bpmnElement="hr" isHorizontal="true"><dc:Bounds x="34" y="20" width="2114" height="132"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="robot_di" bpmnElement="robot" isHorizontal="true"><dc:Bounds x="34" y="152" width="2114" height="264"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="apiPool_di" bpmnElement="apiPool" isHorizontal="true"><dc:Bounds x="0" y="551" width="2148" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="sp1_di" bpmnElement="sp1" isExpanded="true"><dc:Bounds x="568" y="158" width="1330" height="252"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrStart_di" bpmnElement="hrStart"><dc:Bounds x="118" y="69" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrFill_di" bpmnElement="hrFill"><dc:Bounds x="204" y="53" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrSave_di" bpmnElement="hrSave"><dc:Bounds x="326" y="53" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hrEnd_di" bpmnElement="hrEnd"><dc:Bounds x="484" y="69" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="timer_di" bpmnElement="timer"><dc:Bounds x="118" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="outbox_di" bpmnElement="outbox"><dc:Bounds x="204" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="list_di" bpmnElement="list"><dc:Bounds x="326" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hasFiles_di" bpmnElement="hasFiles"><dc:Bounds x="478" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="noFiles_di" bpmnElement="noFiles"><dc:Bounds x="484" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="fileStart_di" bpmnElement="fileStart"><dc:Bounds x="606" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="hash_di" bpmnElement="hash"><dc:Bounds x="692" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="isDuplicate_di" bpmnElement="isDuplicate"><dc:Bounds x="844" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="moveDuplicate_di" bpmnElement="moveDuplicate"><dc:Bounds x="814" y="317" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="duplicateEnd_di" bpmnElement="duplicateEnd"><dc:Bounds x="972" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="validate_di" bpmnElement="validate"><dc:Bounds x="936" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="isAccepted_di" bpmnElement="isAccepted"><dc:Bounds x="1088" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="reject_di" bpmnElement="reject"><dc:Bounds x="1058" y="317" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="rejectEnd_di" bpmnElement="rejectEnd"><dc:Bounds x="1289" y="333" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="send_di" bpmnElement="send"><dc:Bounds x="1302" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="apiAnswered_di" bpmnElement="apiAnswered"><dc:Bounds x="1454" y="195" width="46" height="46"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="queue_di" bpmnElement="queue"><dc:Bounds x="1424" y="317" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="land_di" bpmnElement="land"><dc:Bounds x="1546" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="report_di" bpmnElement="report"><dc:Bounds x="1668" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="importedEnd_di" bpmnElement="importedEnd"><dc:Bounds x="1826" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="summary_di" bpmnElement="summary"><dc:Bounds x="1912" y="185" width="106" height="66"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="end_di" bpmnElement="end"><dc:Bounds x="2070" y="201" width="34" height="34"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="landingStore_di" bpmnElement="landingStore"><dc:Bounds x="1574" y="460" width="50" height="44"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="noteReport_di" bpmnElement="noteReport"><dc:Bounds x="753" y="30" width="250" height="49"/></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="flow0_di" bpmnElement="flow0"><di:waypoint x="152" y="86"/><di:waypoint x="204" y="86"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow1_di" bpmnElement="flow1"><di:waypoint x="310" y="86"/><di:waypoint x="326" y="86"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow2_di" bpmnElement="flow2"><di:waypoint x="432" y="86"/><di:waypoint x="484" y="86"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow3_di" bpmnElement="flow3"><di:waypoint x="152" y="218"/><di:waypoint x="204" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow4_di" bpmnElement="flow4"><di:waypoint x="310" y="218"/><di:waypoint x="326" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow5_di" bpmnElement="flow5"><di:waypoint x="432" y="218"/><di:waypoint x="478" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow6_di" bpmnElement="flow6"><di:waypoint x="501" y="241"/><di:waypoint x="501" y="333"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow7_di" bpmnElement="flow7"><di:waypoint x="524" y="218"/><di:waypoint x="568" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow8_di" bpmnElement="flow8"><di:waypoint x="640" y="218"/><di:waypoint x="692" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow9_di" bpmnElement="flow9"><di:waypoint x="798" y="218"/><di:waypoint x="844" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow10_di" bpmnElement="flow10"><di:waypoint x="867" y="241"/><di:waypoint x="867" y="317"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow11_di" bpmnElement="flow11"><di:waypoint x="920" y="350"/><di:waypoint x="972" y="350"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow12_di" bpmnElement="flow12"><di:waypoint x="890" y="218"/><di:waypoint x="936" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow13_di" bpmnElement="flow13"><di:waypoint x="1042" y="218"/><di:waypoint x="1088" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow14_di" bpmnElement="flow14"><di:waypoint x="1111" y="241"/><di:waypoint x="1111" y="317"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow15_di" bpmnElement="flow15"><di:waypoint x="1164" y="350"/><di:waypoint x="1289" y="350"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow16_di" bpmnElement="flow16"><di:waypoint x="1134" y="218"/><di:waypoint x="1302" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow17_di" bpmnElement="flow17"><di:waypoint x="1408" y="218"/><di:waypoint x="1454" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow18_di" bpmnElement="flow18"><di:waypoint x="1500" y="218"/><di:waypoint x="1546" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow19_di" bpmnElement="flow19"><di:waypoint x="1477" y="241"/><di:waypoint x="1477" y="317"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow20_di" bpmnElement="flow20"><di:waypoint x="1530" y="350"/><di:waypoint x="1599" y="350"/><di:waypoint x="1599" y="251"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow21_di" bpmnElement="flow21"><di:waypoint x="1652" y="218"/><di:waypoint x="1668" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow22_di" bpmnElement="flow22"><di:waypoint x="1774" y="218"/><di:waypoint x="1826" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow23_di" bpmnElement="flow23"><di:waypoint x="1898" y="218"/><di:waypoint x="1912" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="flow24_di" bpmnElement="flow24"><di:waypoint x="2018" y="218"/><di:waypoint x="2070" y="218"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="message0_di" bpmnElement="message0"><di:waypoint x="279" y="251"/><di:waypoint x="279" y="551"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="message1_di" bpmnElement="message1"><di:waypoint x="1377" y="251"/><di:waypoint x="1377" y="551"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="assoc_land_landingStore_di" bpmnElement="assoc_land_landingStore"><di:waypoint x="1577" y="251"/><di:waypoint x="1577" y="460"/></bpmndi:BPMNEdge>
+</bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>
