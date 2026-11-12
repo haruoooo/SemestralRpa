@@ -28,6 +28,7 @@ Documentação:
 - [docs/processDesign.md](docs/processDesign.md): PDD com o passo a passo, regras de negócio, exceções, logs e testes.
 - [docs/bpmn/](docs/bpmn/): diagramas BPMN 2.0 dos três fluxos (`.bpmn` e `.svg`).
 - [docs/architecture.md](docs/architecture.md): arquitetura Ports & Adapters.
+- [docs/videoScript.md](docs/videoScript.md): roteiro do vídeo de demonstração.
 - [docs/integrations/secureDevOpsCloud/](docs/integrations/secureDevOpsCloud/): contrato da API do produto e guia de deploy do robô.
 - [docs/integrations/bigDataDataIntegration/](docs/integrations/bigDataDataIntegration/): formato do lote entregue à pasta de pouso do Big Data.
 
