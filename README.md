@@ -36,9 +36,10 @@ Documentação:
 ```
 src/            Código do robô (domain, application, adapters, infrastructure)
 mockApi/        Mock da API do produto (mesmo contrato) com painel para demonstração
-docs/           PDD, BPMN, arquitetura e contrato da API
-tests/          Testes automatizados (sucesso, decisão e falha)
-logs/           Logs de auditoria (JSON Lines, sem dados pessoais)
+docs/           PDD, BPMN, arquitetura, integrações e relatório técnico (PDF)
+tests/          Testes automatizados (sucesso, decisão e falha) e evidências em tests/evidence/
+logs/           Logs de auditoria (JSON Lines, sem dados pessoais); amostra em logs/samples/
+assets/         Prints e arquivos de evidência (painel, e-mails, relatório do RH, BPMN)
 data/fixtures/  Dados fictícios para testes e demonstração (planilhas de exemplo e modelo do RH)
 tools/          Geradores das planilhas fictícias e dos diagramas BPMN
 ```
@@ -115,8 +116,11 @@ python -m src.main scheduler
 **7. Testes:**
 
 ```bash
-pytest -v
+pytest -v                         # 81 testes automatizados
+bash tools/collectEvidence.sh     # Execução de ponta a ponta de todos os cenários + prints (Git Bash)
 ```
+
+O mapa de cenários (sucesso, decisão e falha) e onde cada um é verificado está em [tests/README.md](tests/README.md). Para gerar o PDF de novo depois de mudar o relatório, imprima `docs/report/technicalReport.html` com o Edge ou o Chrome (`--headless --print-to-pdf`).
 
 ## Segurança e LGPD
 
@@ -128,4 +132,4 @@ pytest -v
 ## Links
 
 - Vídeo de demonstração: _a publicar_
-- Relatório técnico (PDF): _a publicar_
+- Relatório técnico (PDF): [docs/technicalReport.pdf](docs/technicalReport.pdf)

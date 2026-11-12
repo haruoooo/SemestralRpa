@@ -1,0 +1,375 @@
+
+### Fluxo 1 · Sucesso, decisão e falha na importação (válida, 10% inválida, 30% inválida, corrompida, sem aba)
+
+$ python -m src.main scheduleImport
+23:24:33 INFO     [1] RunStarted: Schedule import started
+23:24:33 INFO     [3] FilesFound: Found 5 file(s) to process
+23:24:33 INFO     [4.1] FileStarted: Processing file scheduleCorrupted.xlsx
+23:24:33 INFO     [4.8] ReportWritten: HR report written: data\runtime\evidence\reports\importReport30302b1d.xlsx
+23:24:33 WARNING  [4.5] FileRejected: File scheduleCorrupted.xlsx moved to rejected: Invalid file (EX02): Workbook could not be opened: BadZipFile
+23:24:33 INFO     [4.1] FileStarted: Processing file scheduleDemoSmall.xlsx
+23:24:33 INFO     [4.5] ValidationFinished: Validation: 3/3 employees and 5/5 demand rows valid
+23:24:33 INFO     [4.6] ImportSent: Import imp-c3e1eacd created, schedule sch-18108e6e pending HR approval
+23:24:33 INFO     [4.7] LandingZoneWritten: Pseudonymized batch written to the landing zone: data\runtime\evidence\landing\schedule\schedule20261111_232433_b4463885.json
+23:24:33 INFO     [4.8] ReportWritten: HR report written: data\runtime\evidence\reports\importReportb4463885.xlsx
+23:24:33 INFO     [4.9] FileImported: File scheduleDemoSmall.xlsx imported with 3 employee(s) and 0 refused row(s); moved to processed
+23:24:33 INFO     [4.1] FileStarted: Processing file scheduleMissingSheet.xlsx
+23:24:33 WARNING  [4.4] RowRefused: Refused Janelas row - column -
+23:24:33 INFO     [4.5] ValidationFinished: Validation: 0/0 employees and 0/0 demand rows valid
+23:24:33 INFO     [4.8] ReportWritten: HR report written: data\runtime\evidence\reports\importReportce8fa359.xlsx
+23:24:33 WARNING  [4.5] FileRejected: File scheduleMissingSheet.xlsx moved to rejected: Spreadsheet rejected by validation rules (RN01/RN09)
+23:24:33 INFO     [4.1] FileStarted: Processing file scheduleTenPercentInvalid.xlsx
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 11 column E-mail
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 21 column Estação de embarque
+23:24:33 INFO     [4.5] ValidationFinished: Validation: 18/20 employees and 10/10 demand rows valid
+23:24:33 INFO     [4.6] ImportSent: Import imp-e9c45ed8 created, schedule sch-5f55a7e2 pending HR approval
+23:24:33 INFO     [4.7] LandingZoneWritten: Pseudonymized batch written to the landing zone: data\runtime\evidence\landing\schedule\schedule20261111_232433_8392859c.json
+23:24:33 INFO     [4.8] ReportWritten: HR report written: data\runtime\evidence\reports\importReport8392859c.xlsx
+23:24:33 INFO     [4.9] FileImported: File scheduleTenPercentInvalid.xlsx imported with 18 employee(s) and 2 refused row(s); moved to processed
+23:24:33 INFO     [4.1] FileStarted: Processing file scheduleThirtyPercentInvalid.xlsx
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 9 column Dias presenciais no mês
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 10 column Matrícula
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 11 column E-mail
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 19 column Linha
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 20 column Restrição de horário
+23:24:33 WARNING  [4.4] RowRefused: Refused Funcionarios row 21 column Estação de embarque
+23:24:33 INFO     [4.5] ValidationFinished: Validation: 14/20 employees and 10/10 demand rows valid
+23:24:33 INFO     [4.8] ReportWritten: HR report written: data\runtime\evidence\reports\importReportdf1b28ba.xlsx
+23:24:33 WARNING  [4.5] FileRejected: File scheduleThirtyPercentInvalid.xlsx moved to rejected: Spreadsheet rejected by validation rules (RN01/RN09)
+23:24:33 INFO     [5] RunSummary: Schedule import finished with status partial
+(exit code 2)
+
+
+### Fluxo 1 · Falha: o mesmo arquivo de novo (RN02)
+
+$ python -m src.main scheduleImport
+23:24:34 INFO     [1] RunStarted: Schedule import started
+23:24:34 INFO     [3] FilesFound: Found 1 file(s) to process
+23:24:34 INFO     [4.1] FileStarted: Processing file scheduleDemoSmallCopia.xlsx
+23:24:34 WARNING  [4.1] DuplicateFile: File scheduleDemoSmallCopia.xlsx was already imported; moved to rejected/duplicates (RN02)
+23:24:34 INFO     [5] RunSummary: Schedule import finished with status success
+(exit code 0)
+
+
+### Fluxo 1 · Falha: API fora do ar durante a importação (EX06, outbox)
+
+$ python -m src.main scheduleImport
+23:24:39 INFO     [1] RunStarted: Schedule import started
+23:24:39 INFO     [3] FilesFound: Found 1 file(s) to process
+23:24:39 INFO     [4.1] FileStarted: Processing file scheduleValid.xlsx
+23:24:39 INFO     [4.5] ValidationFinished: Validation: 20/20 employees and 10/10 demand rows valid
+23:24:41 WARNING  [4.6] RetryScheduled: Sending schedule import failed (attempt 1/3): ApiUnavailableError: POST /scheduleImports unreachable: ConnectError
+23:24:45 WARNING  [4.6] RetryScheduled: Sending schedule import failed (attempt 2/3): ApiUnavailableError: POST /scheduleImports unreachable: ConnectError
+23:24:51 WARNING  [4.6] ImportQueued: API unavailable after retries; import saved to the outbox for the next run (EX06): POST /scheduleImports unreachable: ConnectError
+23:24:51 INFO     [4.7] LandingZoneWritten: Pseudonymized batch written to the landing zone: data\runtime\evidence\landing\schedule\schedule20261111_232439_c04f4cc7.json
+23:24:51 INFO     [4.8] ReportWritten: HR report written: data\runtime\evidence\reports\importReportc04f4cc7.xlsx
+23:24:51 INFO     [4.9] FileImported: File scheduleValid.xlsx imported with 20 employee(s) and 0 refused row(s); moved to processed
+23:24:51 INFO     [5] RunSummary: Schedule import finished with status partial
+(exit code 2)
+
+
+### Fluxo 1 · Recuperação: API de volta, outbox reenviada
+
+$ python -m src.main scheduleImport
+23:24:52 INFO     [1] RunStarted: Schedule import started
+23:24:52 INFO     [2] OutboxReplayStarted: Replaying 1 pending send(s) from the outbox (EX06)
+23:24:52 INFO     [2] OutboxDelivered: Queued import delivered as imp-b1cd402e (schedule sch-dc961859)
+23:24:52 INFO     [3] NoFilesToProcess: No files to process
+23:24:52 INFO     [5] RunSummary: Schedule import finished with status success
+(exit code 0)
+
+
+### Fluxo 2 · Sucesso: RH aprova a escala e o robô envia as agendas
+
+$ python -m src.main agendaDispatch --at 2026-11-20T18:00
+23:24:54 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-20T18:00-03:00 (demo mode)
+23:24:54 INFO     [1] RunStarted: Agenda dispatch started (channel=email)
+23:24:54 INFO     [2] WorkFound: Found 1 approved schedule(s) and 0 approved plan(s) B not yet dispatched
+23:24:54 INFO     [3] ScheduleStarted: Schedule sch-dc961859 version 1: 20 employee(s)
+[E-mail não enviado: modo console] Para i***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454001.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para j***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454002.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para e***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454003.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para b***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454004.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para f***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454005.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para c***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454006.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para d***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454007.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para g***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454008.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para h***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454009.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para a***@empresaficticia.example · Sua agenda presencial: Quarta, 25/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454010.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para i***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454011.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para j***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454012.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para e***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454013.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para b***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454014.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para f***@empresaficticia.example · Sua agenda presencial: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232454015.eml
+23:24:54 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para c***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232455016.eml
+23:24:55 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para d***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232455017.eml
+23:24:55 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para g***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232455018.eml
+23:24:55 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para h***@empresaficticia.example · Sua agenda presencial: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232455019.eml
+23:24:55 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+[E-mail não enviado: modo console] Para a***@empresaficticia.example · Sua agenda presencial: Quarta, 25/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232455020.eml
+23:24:55 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v1)
+23:24:55 INFO     [5] DispatchReported: Reported 20 delivery result(s) to the API
+23:24:55 INFO     [6] RunSummary: Agenda dispatch finished with status success
+(exit code 0)
+
+
+### Fluxo 2 · Decisão: segunda execução não reenvia (RN11)
+
+$ python -m src.main agendaDispatch --at 2026-11-20T18:10
+23:24:55 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-20T18:10-03:00 (demo mode)
+23:24:55 INFO     [1] RunStarted: Agenda dispatch started (channel=email)
+23:24:55 INFO     [2] WorkFound: Found 0 approved schedule(s) and 0 approved plan(s) B not yet dispatched
+23:24:55 INFO     [6] RunSummary: Agenda dispatch finished with status success
+(exit code 0)
+
+
+### Fluxo 2 · Falha: RH edita a escala (versão 2) com o servidor de e-mail fora do ar (EX08)
+
+$ python -m src.main agendaDispatch --at 2026-11-20T18:20
+23:24:56 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-20T18:20-03:00 (demo mode)
+23:24:56 INFO     [1] RunStarted: Agenda dispatch started (channel=email)
+23:24:56 INFO     [2] WorkFound: Found 1 approved schedule(s) and 0 approved plan(s) B not yet dispatched
+23:24:56 INFO     [3] ScheduleStarted: Schedule sch-dc961859 version 2: 20 employee(s)
+23:24:58 WARNING  [3.3] RetryScheduled: Sending e-mail failed (attempt 1/3): NotificationUnavailableError: SMTP unreachable: ConnectionRefusedError
+23:25:02 WARNING  [3.3] RetryScheduled: Sending e-mail failed (attempt 2/3): NotificationUnavailableError: SMTP unreachable: ConnectionRefusedError
+23:25:09 ERROR    [3.3] MailServerUnavailable: Mail server unavailable after retries; remaining e-mails stay pending for the next run (EX08): SMTP unreachable: ConnectionRefusedError
+23:25:09 INFO     [5] DispatchReported: Reported 1 delivery result(s) to the API
+23:25:09 INFO     [6] RunSummary: Agenda dispatch finished with status partial
+(exit code 2)
+
+
+### Fluxo 2 · Recuperação: servidor de volta, versão 2 enviada como Agenda atualizada
+
+$ python -m src.main agendaDispatch --at 2026-11-20T18:30
+23:25:09 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-20T18:30-03:00 (demo mode)
+23:25:09 INFO     [1] RunStarted: Agenda dispatch started (channel=email)
+23:25:09 INFO     [2] WorkFound: Found 1 approved schedule(s) and 0 approved plan(s) B not yet dispatched
+23:25:09 INFO     [3] ScheduleStarted: Schedule sch-dc961859 version 2: 20 employee(s)
+[E-mail não enviado: modo console] Para i***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232509001.eml
+23:25:09 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para j***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232509002.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para e***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510003.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para b***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510004.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para f***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510005.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para c***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510006.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para d***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510007.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para g***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510008.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para h***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510009.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para a***@empresaficticia.example · Agenda atualizada: Quarta, 25/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510010.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para i***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510011.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para j***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510012.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para e***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510013.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para b***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510014.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para f***@empresaficticia.example · Agenda atualizada: Segunda, 23/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510015.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para c***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510016.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para d***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510017.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para g***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510018.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para h***@empresaficticia.example · Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510019.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+[E-mail não enviado: modo console] Para a***@empresaficticia.example · Agenda atualizada: Quarta, 25/11 a Quinta, 26/11 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232510020.eml
+23:25:10 INFO     [3.3] EmailSent: E-mail sent (schedule sch-dc961859 v2)
+23:25:10 INFO     [5] DispatchReported: Reported 20 delivery result(s) to the API
+23:25:10 INFO     [6] RunSummary: Agenda dispatch finished with status success
+(exit code 0)
+
+
+### Fluxo 3 · Leitura de base (todas as linhas normais)
+
+$ python -m src.main simulate
+Cenário simulado atualizado em data\runtime\evidence\scenario.json:
+  Linha 1-Azul: Operação Normal
+  Linha 2-Verde: Operação Normal
+  Linha 3-Vermelha: Operação Normal
+  Fonte disponível: sim
+(exit code 0)
+
+$ python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T07:00
+23:25:11 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T07:00-03:00 (demo mode)
+23:25:11 INFO     [1] RunStarted: Line monitor started (source=simulated)
+23:25:11 INFO     [2] SourceFetched: Received 3 lines from simulated
+23:25:11 INFO     [5.2] LineStatusRecorded: Line 1 recorded as normal; routine change, no alert
+23:25:11 INFO     [5.2] LineStatusRecorded: Line 3 recorded as normal; routine change, no alert
+23:25:11 INFO     [6] SnapshotPublished: Snapshot with 3 lines published (stale=False)
+23:25:11 INFO     [7] RunSummary: Line monitor finished with status success
+(exit code 0)
+
+
+### Fluxo 3 · Decisão: Linha 3 paralisada e Linha 1 com velocidade reduzida às 07:30
+
+$ python -m src.main simulate --line 3 --text Paralisada
+Cenário simulado atualizado em data\runtime\evidence\scenario.json:
+  Linha 1-Azul: Operação Normal
+  Linha 2-Verde: Operação Normal
+  Linha 3-Vermelha: Paralisada
+  Fonte disponível: sim
+(exit code 0)
+
+$ python -m src.main simulate --line 1 --text Velocidade Reduzida
+Cenário simulado atualizado em data\runtime\evidence\scenario.json:
+  Linha 1-Azul: Velocidade Reduzida
+  Linha 2-Verde: Operação Normal
+  Linha 3-Vermelha: Paralisada
+  Fonte disponível: sim
+(exit code 0)
+
+$ python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T07:30
+23:25:13 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T07:30-03:00 (demo mode)
+23:25:13 INFO     [1] RunStarted: Line monitor started (source=simulated)
+23:25:13 INFO     [2] SourceFetched: Received 3 lines from simulated
+23:25:13 WARNING  [5.2] LineStatusChanged: Line 1 changed from normal to degraded
+23:25:13 INFO     [5.3] AlertCreated: Alert alert-6a8a69b2 created (line1-degraded-2026-11-24)
+23:25:13 INFO     [5.4] AffectedAssignmentsFound: Found 6 of 6 on-site assignments still ahead on line 1
+23:25:13 INFO     [5.5] ContingencyPlanProposed: Plan B plan-85bd6d67 (remoteWork) proposed for team Financeiro, pending HR approval (RN15)
+23:25:13 INFO     [5.5] ContingencyPlanProposed: Plan B plan-6d8e0e04 (shiftEntryWindow to 10:30) proposed for team Financeiro, pending HR approval (RN15)
+23:25:13 INFO     [5.5] ContingencyPlanProposed: Plan B plan-52592ddb (remoteWork) proposed for team Tecnologia, pending HR approval (RN15)
+23:25:13 INFO     [5.5] ContingencyPlanProposed: Plan B plan-b57de12c (shiftEntryWindow to 10:30) proposed for team Tecnologia, pending HR approval (RN15)
+23:25:13 WARNING  [5.2] LineStatusChanged: Line 3 changed from normal to stopped
+23:25:13 INFO     [5.3] AlertCreated: Alert alert-a80031d4 created (line3-stopped-2026-11-24)
+23:25:13 INFO     [5.4] AffectedAssignmentsFound: Found 5 of 6 on-site assignments still ahead on line 3
+23:25:13 INFO     [5.5] ContingencyPlanProposed: Plan B plan-a2c2dc98 (remoteWork) proposed for team Financeiro, pending HR approval (RN15)
+23:25:13 INFO     [5.5] ContingencyPlanProposed: Plan B plan-af3de644 (remoteWork) proposed for team Tecnologia, pending HR approval (RN15)
+23:25:13 INFO     [6] SnapshotPublished: Snapshot with 3 lines published (stale=False)
+23:25:13 INFO     [7] RunSummary: Line monitor finished with status success
+(exit code 0)
+
+
+### Fluxo 3 · Decisão: mesmo status na leitura seguinte não gera alerta (RN13)
+
+$ python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T07:35
+23:25:14 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T07:35-03:00 (demo mode)
+23:25:14 INFO     [1] RunStarted: Line monitor started (source=simulated)
+23:25:14 INFO     [2] SourceFetched: Received 3 lines from simulated
+23:25:14 INFO     [5.2] LineStatusUnchanged: Line 1 still degraded (RN13)
+23:25:14 INFO     [5.2] LineStatusUnchanged: Line 3 still stopped (RN13)
+23:25:14 INFO     [6] SnapshotPublished: Snapshot with 3 lines published (stale=False)
+23:25:14 INFO     [7] RunSummary: Line monitor finished with status success
+(exit code 0)
+
+
+### Fluxo 2 · RH aprova os planos B e o robô avisa os funcionários
+
+$ python -m src.main agendaDispatch --at 2026-11-24T07:37
+23:25:16 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T07:37-03:00 (demo mode)
+23:25:16 INFO     [1] RunStarted: Agenda dispatch started (channel=email)
+23:25:16 INFO     [2] WorkFound: Found 0 approved schedule(s) and 6 approved plan(s) B not yet dispatched
+23:25:16 INFO     [4] PlanStarted: Plan B plan-85bd6d67 (remoteWork) for team Financeiro: 2 employee(s)
+[E-mail não enviado: modo console] Para b***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232516001.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-85bd6d67 v1)
+[E-mail não enviado: modo console] Para d***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517002.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-85bd6d67 v1)
+23:25:17 INFO     [4] PlanStarted: Plan B plan-6d8e0e04 (shiftEntryWindow) for team Financeiro: 1 employee(s)
+[E-mail não enviado: modo console] Para h***@empresaficticia.example · Hoje: sua entrada mudou para 10:30 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517003.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-6d8e0e04 v1)
+23:25:17 INFO     [4] PlanStarted: Plan B plan-52592ddb (remoteWork) for team Tecnologia: 2 employee(s)
+[E-mail não enviado: modo console] Para b***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517004.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-52592ddb v1)
+[E-mail não enviado: modo console] Para d***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517005.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-52592ddb v1)
+23:25:17 INFO     [4] PlanStarted: Plan B plan-b57de12c (shiftEntryWindow) for team Tecnologia: 1 employee(s)
+[E-mail não enviado: modo console] Para h***@empresaficticia.example · Hoje: sua entrada mudou para 10:30 · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517006.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-b57de12c v1)
+23:25:17 INFO     [4] PlanStarted: Plan B plan-a2c2dc98 (remoteWork) for team Financeiro: 3 employee(s)
+[E-mail não enviado: modo console] Para c***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517007.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-a2c2dc98 v1)
+[E-mail não enviado: modo console] Para e***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517008.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-a2c2dc98 v1)
+[E-mail não enviado: modo console] Para g***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517009.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-a2c2dc98 v1)
+23:25:17 INFO     [4] PlanStarted: Plan B plan-af3de644 (remoteWork) for team Tecnologia: 2 employee(s)
+[E-mail não enviado: modo console] Para e***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517010.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-af3de644 v1)
+[E-mail não enviado: modo console] Para g***@empresaficticia.example · Hoje: seu dia presencial virou remoto · ForaDoPico · salvo em data\runtime\evidence\mail\mail20261111232517011.eml
+23:25:17 INFO     [3.3] EmailSent: E-mail sent (contingencyPlan plan-af3de644 v1)
+23:25:17 INFO     [5] DispatchReported: Reported 11 delivery result(s) to the API
+23:25:17 INFO     [6] RunSummary: Agenda dispatch finished with status success
+(exit code 0)
+
+
+### Fluxo 3 · Falha: site do Metrô fora do ar (EX09) e dados desatualizados após 30 min (RN16)
+
+$ python -m src.main simulate --unavailable
+Cenário simulado atualizado em data\runtime\evidence\scenario.json:
+  Linha 1-Azul: Velocidade Reduzida
+  Linha 2-Verde: Operação Normal
+  Linha 3-Vermelha: Paralisada
+  Fonte disponível: não
+(exit code 0)
+
+$ python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T07:40
+23:25:19 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T07:40-03:00 (demo mode)
+23:25:19 INFO     [1] RunStarted: Line monitor started (source=simulated)
+23:25:19 WARNING  [2] RetryScheduled: Fetching line status failed (attempt 1/3): SourceUnavailableError: Simulated source marked as unavailable
+23:25:21 WARNING  [2] RetryScheduled: Fetching line status failed (attempt 2/3): SourceUnavailableError: Simulated source marked as unavailable
+23:25:25 WARNING  [3] SourceUnavailable: Source unavailable after retries, using last known state (EX09): Simulated source marked as unavailable
+23:25:25 INFO     [6] SnapshotPublished: Snapshot with 2 lines published (stale=False)
+23:25:25 INFO     [7] RunSummary: Line monitor finished with status partial
+(exit code 2)
+
+$ python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T08:20
+23:25:26 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T08:20-03:00 (demo mode)
+23:25:26 INFO     [1] RunStarted: Line monitor started (source=simulated)
+23:25:26 WARNING  [2] RetryScheduled: Fetching line status failed (attempt 1/3): SourceUnavailableError: Simulated source marked as unavailable
+23:25:28 WARNING  [2] RetryScheduled: Fetching line status failed (attempt 2/3): SourceUnavailableError: Simulated source marked as unavailable
+23:25:32 WARNING  [3] SourceUnavailable: Source unavailable after retries, using last known state (EX09): Simulated source marked as unavailable
+23:25:32 WARNING  [3] DataStale: Last successful reading is older than 30 min; no plan B will be generated (RN16)
+23:25:32 INFO     [6] SnapshotPublished: Snapshot with 2 lines published (stale=True)
+23:25:32 INFO     [7] RunSummary: Line monitor finished with status partial
+(exit code 2)
+
+
+### Fluxo 3 · Decisão: fora da janela de operação (RN17)
+
+$ python -m src.main lineMonitor --at 2026-11-24T23:30
+23:25:33 WARNING  [1] ClockOverridden: Robot clock frozen at 2026-11-24T23:30-03:00 (demo mode)
+23:25:33 INFO     [1] RunStarted: Line monitor started (source=simulated)
+23:25:33 INFO     [1] OutsideOperatingWindow: Outside weekday operating window; nothing to do (RN17)
+23:25:33 INFO     [7] RunSummary: Line monitor finished with status skipped
+(exit code 0)
+
+
+### Fluxo 3 · Leitura real do site do Metrô
+
+$ python -m src.main lineMonitor --ignoreWindow
+23:25:34 INFO     [1] RunStarted: Line monitor started (source=metroWebsite)
+23:25:34 INFO     [2] SourceFetched: Received 7 lines from metroWebsite
+23:25:34 INFO     [5.2] LineStatusRecorded: Line 1 recorded as normal; routine change, no alert
+23:25:34 INFO     [5.2] LineStatusRecorded: Line 3 recorded as normal; routine change, no alert
+23:25:34 INFO     [6] SnapshotPublished: Snapshot with 7 lines published (stale=False)
+23:25:34 INFO     [7] RunSummary: Line monitor finished with status success
+(exit code 0)
+
