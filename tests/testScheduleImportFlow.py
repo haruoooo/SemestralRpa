@@ -49,10 +49,9 @@ class FakeApi:
 
 
 class Environment:
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, samples: Path):
         self.root = root
-        self.samples = root / "samples"
-        buildAllSamples(self.samples)
+        self.samples = samples
         self.input = root / "input"
         self.settings = replace(
             Settings(), retryBaseSeconds=0, logSalt="test", logDir=root / "logs",
@@ -91,9 +90,16 @@ class Environment:
         return [record.event for record in self.records]
 
 
+@pytest.fixture(scope="session")
+def samples(tmp_path_factory) -> Path:
+    folder = tmp_path_factory.mktemp("samples")
+    buildAllSamples(folder)  # Built once per test session; each test copies what it needs
+    return folder
+
+
 @pytest.fixture
-def env(tmp_path: Path) -> Environment:
-    return Environment(tmp_path)
+def env(tmp_path: Path, samples: Path) -> Environment:
+    return Environment(tmp_path, samples)
 
 
 # ---------- Success ----------

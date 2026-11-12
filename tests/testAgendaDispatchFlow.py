@@ -296,3 +296,18 @@ def testMimeMessageCarriesIcsAttachment(state, settings):
     assert attachment.get_param("charset") == "utf-8" and attachment.get_param("method") == "REQUEST"
     assert "Dia presencial · entrada às 10:30" in attachment.get_content()
     assert maskEmail("ana@x.example") == "a***@x.example"
+
+
+@pytest.mark.parametrize(
+    "subject",
+    [
+        "Sua agenda presencial: Segunda, 23/11 a Quarta, 25/11 · ForaDoPico",
+        "Agenda atualizada: Terça, 24/11 a Sexta, 27/11 · ForaDoPico · com acentuação e um assunto bem comprido",
+    ],
+)
+def testSubjectWithAccentsSurvivesEncoding(subject):
+    from email import message_from_bytes, policy
+
+    raw = bytes(buildMimeMessage(OutgoingEmail("ana@x.example", subject, "Texto", "<p>Texto</p>"), "ForaDoPico <agenda@foradopico.example>"))
+    assert b"?q??=" not in raw  # Broken empty encoded-word seen in Mailtrap
+    assert message_from_bytes(raw, policy=policy.default)["Subject"] == subject
