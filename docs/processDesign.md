@@ -66,13 +66,13 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | 3 | Listar os `.xlsx` em `data/input/`. Se não houver nenhum, registrar "No files to process" e encerrar | Decisão |
 | 4 | **Para cada arquivo:** | Repetição |
 | 4.1 | Calcular o hash SHA-256. Se já foi processado, mover para `rejected/duplicates/` e seguir para o próximo (RN02) | Decisão |
-| 4.2 | Abrir o arquivo. Se estiver corrompido ou não for `.xlsx`, rejeitá-lo (EX02) | Decisão |
+| 4.2 | Abrir o arquivo. Se estiver corrompido ou não for `.xlsx` (por exemplo, um `.csv`), rejeitá-lo (EX02). Nenhum arquivo da pasta é ignorado em silêncio | Decisão |
 | 4.3 | Validar a estrutura: abas e colunas obrigatórias (RN01) | Decisão |
 | 4.4 | **Para cada linha** de `Demanda` e de `Funcionarios`: validar campos (RN03 a RN08) e duplicidade (RN04) | Repetição + decisão |
 | 4.5 | Aplicar o limite de rejeição (RN09): rejeitar o arquivo inteiro ou aceitar só as linhas válidas | Decisão |
-| 4.6 | Montar o payload e enviar à API com `Idempotency-Key` igual ao hash do arquivo | Integração |
-| 4.7 | Gravar o lote validado na pasta de pouso do Big Data (`chegada/schedule/scheduleYYYYMMDD_HHMMSS.json`) | Integração |
-| 4.8 | Gerar o relatório para o RH (`importReport<hash8>.xlsx`, em português) com as linhas recusadas e o motivo | Saída |
+| 4.6 | Montar o payload e enviar à API com `Idempotency-Key` igual ao hash do arquivo. Se a API estiver fora do ar depois das 3 tentativas, o envio vai para a outbox e o arquivo segue o fluxo (EX06). Se a API recusar (4xx), o arquivo vai para `rejected/` (EX07) | Decisão + integração |
+| 4.7 | Gravar o lote validado e **pseudonimizado** (sem nome e sem e-mail; funcionário como `employeeRef`) na pasta de pouso do Big Data (`chegada/schedule/scheduleYYYYMMDD_HHMMSS_<hash8>.json`). Formato em [landingZoneHandoff.md](integrations/bigDataDataIntegration/landingZoneHandoff.md) | Integração |
+| 4.8 | Gerar o relatório para o RH (`importReport<hash8>.xlsx`, em português) com a situação do arquivo, as linhas recusadas e o motivo. É gerado também para arquivos aceitos e rejeitados | Saída |
 | 4.9 | Mover o arquivo para `processed/` e registrar o hash no estado do robô | Saída |
 | 5 | Registrar o resumo da execução: arquivos lidos, aceitos, rejeitados, linhas válidas e inválidas, duração | Fim |
 
@@ -190,7 +190,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 - O formato é JSON Lines, em `logs/robotYYYYMMDD.log`, mais uma saída legível no console.
 - Campos de cada registro: `timestamp`, `level`, `runId`, `flow`, `step`, `event`, `itemRef`, `message`.
 - Ao final de cada execução há um registro `RunSummary` com o total de itens, sucessos, falhas, itens pulados e a duração.
-- **LGPD:** o log nunca tem nome, e-mail nem estação. O funcionário aparece como `employeeRef` (hash da matrícula com salt).
+- **LGPD:** o log nunca tem nome, e-mail nem estação. O funcionário aparece como `employeeRef` (hash da matrícula com salt). Nas linhas recusadas, o log registra só aba, linha e coluna; o valor errado fica apenas no relatório do RH.
 - Exemplo:
 
 ```json

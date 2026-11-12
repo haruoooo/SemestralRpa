@@ -28,6 +28,9 @@ class HttpProductApi:
     def healthCheck(self) -> bool:
         return self._request("GET", "/health").status_code == 200
 
+    def submitScheduleImport(self, payload: dict, idempotencyKey: str) -> dict:
+        return self._request("POST", "/scheduleImports", json=payload, headers={"Idempotency-Key": idempotencyKey}).json()
+
     def publishLineStatus(self, snapshot: dict) -> None:
         self._request("POST", "/lineStatus", json=snapshot)
 

@@ -31,6 +31,9 @@ class Settings:
     stateDbPath: Path = Path("data/runtime/robotState.db")
     fileApiOutputDir: Path = Path("data/runtime/fileApi")
     logDir: Path = Path("logs")
+    inputDir: Path = Path("data/input")
+    reportDir: Path = Path("data/output/reports")
+    landingZonePath: Path = Path("landingZone/chegada")
     logSalt: str = field(default="", repr=False)
 
     @classmethod
@@ -53,5 +56,8 @@ class Settings:
             stateDbPath=Path(env("STATE_DB_PATH", "data/runtime/robotState.db")),
             fileApiOutputDir=Path(env("FILE_API_OUTPUT_DIR", "data/runtime/fileApi")),
             logDir=Path(env("LOG_DIR", "logs")),
+            inputDir=Path(env("INPUT_DIR", "data/input")),
+            reportDir=Path(env("REPORT_DIR", "data/output/reports")),
+            landingZonePath=Path(env("LANDING_ZONE_PATH", "landingZone/chegada")),
             logSalt=env("LOG_SALT", ""),
         )

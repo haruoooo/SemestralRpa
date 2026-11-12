@@ -24,3 +24,7 @@ class ApiRejectedError(RobotError):
         super().__init__(message)
         self.statusCode = statusCode
         self.responseBody = responseBody
+
+
+class InvalidSpreadsheetError(RobotError):
+    """The input file is corrupted or is not a .xlsx workbook. EX02."""

@@ -1,6 +1,7 @@
 """Robot entry point (CLI). Builds the adapters chosen in .env and runs a flow.
 
 Examples:
+    python -m src.main scheduleImport
     python -m src.main lineMonitor
     python -m src.main lineMonitor --ignoreWindow
     python -m src.main lineMonitor --ignoreWindow --at 07:30
@@ -13,12 +14,17 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from src.adapters.inbound.localInputFolder import LocalInputFolder
 from src.adapters.inbound.metroWebsiteSource import MetroWebsiteSource
+from src.adapters.inbound.openpyxlSpreadsheetReader import OpenpyxlSpreadsheetReader
 from src.adapters.inbound.simulatedSource import SimulatedSource, writeScenario
 from src.adapters.outbound.fileProductApi import FileProductApi
 from src.adapters.outbound.httpProductApi import HttpProductApi
+from src.adapters.outbound.localLandingZone import LocalLandingZone
 from src.adapters.outbound.sqliteRobotState import SqliteRobotState
+from src.adapters.outbound.xlsxImportReport import XlsxImportReport
 from src.application.flows.lineMonitorFlow import FLOW_NAME as LINE_MONITOR_FLOW, LineMonitorFlow
+from src.application.flows.scheduleImportFlow import FLOW_NAME as SCHEDULE_IMPORT_FLOW, ScheduleImportFlow
 from src.infrastructure.robotLogger import RunLogger, buildRunId
 from src.infrastructure.settings import Settings
 from src.infrastructure.timeProvider import SAO_PAULO, nowLocal
@@ -65,6 +71,20 @@ def runLineMonitor(settings: Settings, ignoreWindow: bool, at: str | None = None
     return flow.run().exitCode
 
 
+def runScheduleImport(settings: Settings) -> int:
+    flow = ScheduleImportFlow(
+        reader=OpenpyxlSpreadsheetReader(),
+        inputFolder=LocalInputFolder(settings.inputDir),
+        api=buildProductApi(settings),
+        landingZone=LocalLandingZone(settings.landingZonePath),
+        report=XlsxImportReport(settings.reportDir),
+        state=SqliteRobotState(settings.stateDbPath),
+        settings=settings,
+        logger=RunLogger(SCHEDULE_IMPORT_FLOW, buildRunId("si", nowLocal()), settings.logDir),
+    )
+    return flow.run().exitCode
+
+
 def runSimulate(settings: Settings, line: int | None, text: str | None, unavailable: bool) -> int:
     if (line is None) != (text is None):
         print("Informe --line e --text juntos (ex.: --line 3 --text \"Paralisada\").")
@@ -81,6 +101,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="foraDoPicoRpa", description="ForaDoPico RPA robot")
     commands = parser.add_subparsers(dest="command", required=True)
 
+    commands.add_parser("scheduleImport", help="Import the HR spreadsheets waiting in the input folder")
+
     monitor = commands.add_parser("lineMonitor", help="Run the line monitor flow once")
     monitor.add_argument("--ignoreWindow", action="store_true", help="Run even outside the weekday operating window (demo)")
     monitor.add_argument("--at", help="Freeze the robot clock (demo), e.g. 07:30 or 2026-11-10T07:30")
@@ -93,6 +115,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     settings = Settings.fromEnvironment()
 
+    if args.command == "scheduleImport":
+        return runScheduleImport(settings)
     if args.command == "lineMonitor":
         return runLineMonitor(settings, args.ignoreWindow, args.at)
     if args.command == "simulate":
