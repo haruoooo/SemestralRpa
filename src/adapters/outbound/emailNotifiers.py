@@ -1,6 +1,7 @@
 """E-mail adapters: SMTP (Mailtrap sandbox in the project) and console (saves .eml files, sends nothing)."""
 
 import smtplib
+from email import policy
 import socket
 import time
 from email.message import EmailMessage
@@ -12,8 +13,13 @@ from src.domain.exceptions import NotificationRejectedError, NotificationUnavail
 from src.infrastructure.timeProvider import nowLocal
 
 
+# Python folds long non-ASCII headers into broken encoded-words ("=?utf-8?q??="), which mail clients show
+# as garbage in the subject. With a 998-char line limit (RFC 5322 maximum) the subject is never folded.
+_MAIL_POLICY = policy.SMTP.clone(max_line_length=998)
+
+
 def buildMimeMessage(email: OutgoingEmail, sender: str) -> EmailMessage:
-    message = EmailMessage()
+    message = EmailMessage(policy=_MAIL_POLICY)
     message["From"] = sender
     message["To"] = email.to
     message["Subject"] = email.subject
