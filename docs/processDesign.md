@@ -1,7 +1,7 @@
 # PDD — Process Design Document · ForaDoPico RPA
 
 > Disciplina: Robotic Process Automation · Global Solution 2026.2 · CitizenTech
-> Status: **v1.0, validado em 09/11/2026**. Os diagramas BPMN oficiais são gerados a partir deste documento.
+> Status: **v1.0, validado em 09/11/2026**. Os diagramas BPMN oficiais são gerados a partir deste documento e ficam em [bpmn/](bpmn/): `.bpmn` (BPMN 2.0, abre no bpmn.io ou no Camunda Modeler) e `.svg` (imagem). Para gerar de novo: `python -m tools.bpmnDiagrams`.
 
 ## 1. Contexto
 

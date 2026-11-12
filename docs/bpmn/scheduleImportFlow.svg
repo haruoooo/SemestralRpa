@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2158" height="625" viewBox="0 0 2158 625" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#1d2a3a"/></marker><marker id="openArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#fff" stroke="#1d2a3a"/></marker><marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7"><circle cx="5" cy="5" r="4" fill="#fff" stroke="#1d2a3a"/></marker></defs>
+<rect width="100%" height="100%" fill="#fff"/>
+<rect x="0.5" y="20" width="2148" height="396" fill="none" stroke="#1d2a3a" stroke-width="1.4"/>
+<line x1="34" y1="20" x2="34" y2="416" stroke="#1d2a3a" stroke-width="1.2"/>
+<text transform="translate(22.0 218.0) rotate(-90)" font-size="13" font-weight="600" text-anchor="middle" fill="#1d2a3a">Fluxo 1 · scheduleImportFlow</text>
+<rect x="34" y="20" width="2114" height="132" fill="#fffdf7" stroke="#1d2a3a" stroke-width="1"/>
+<line x1="64" y1="20" x2="64" y2="152" stroke="#1d2a3a" stroke-width="1"/>
+<text transform="translate(53.0 86.0) rotate(-90)" font-size="12" font-weight="600" text-anchor="middle" fill="#1d2a3a">RH</text>
+<rect x="34" y="152" width="2114" height="264" fill="#fcfdff" stroke="#1d2a3a" stroke-width="1"/>
+<line x1="64" y1="152" x2="64" y2="416" stroke="#1d2a3a" stroke-width="1"/>
+<text transform="translate(53.0 284.0) rotate(-90)" font-size="12" font-weight="600" text-anchor="middle" fill="#1d2a3a">Robô RPA</text>
+<rect x="568" y="158" width="1330" height="252" rx="12" fill="#f7fafd" stroke="#1d2a3a" stroke-width="1.4"/>
+<text font-size="11" font-weight="600" text-anchor="start" fill="#1d2a3a"><tspan x="578.0" y="174.1">Para cada arquivo</tspan></text>
+<line x1="1226.0" y1="394" x2="1240.0" y2="394" stroke="#1d2a3a" stroke-width="1.8"/><line x1="1226.0" y1="399" x2="1240.0" y2="399" stroke="#1d2a3a" stroke-width="1.8"/><line x1="1226.0" y1="404" x2="1240.0" y2="404" stroke="#1d2a3a" stroke-width="1.8"/>
+<rect x="0.5" y="551" width="2147.5" height="46" fill="#f4f4f4" stroke="#1d2a3a" stroke-width="1.4"/>
+<text font-size="12" font-weight="600" text-anchor="middle" fill="#1d2a3a"><tspan x="1074.2" y="577.6">API do ForaDoPico</tspan></text>
+<path d="M152.0 86.0 L204.0 86.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M310.0 86.0 L326.0 86.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M432.0 86.0 L484.0 86.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M152.0 218.0 L204.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M310.0 218.0 L326.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M432.0 218.0 L478.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M501.0 241.0 L501.0 333.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="507.0" y="291.1">Não</tspan></text>
+<path d="M524.0 218.0 L568.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="546.0" y="207.6">Sim</tspan></text>
+<path d="M640.0 218.0 L692.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M798.0 218.0 L844.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M867.0 241.0 L867.0 317.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="873.0" y="283.1">Sim</tspan></text>
+<path d="M920.0 350.0 L972.0 350.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M890.0 218.0 L936.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="913.0" y="207.6">Não</tspan></text>
+<path d="M1042.0 218.0 L1088.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1111.0 241.0 L1111.0 317.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="1117.0" y="283.1">Não</tspan></text>
+<path d="M1164.0 350.0 L1289.2 350.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1134.0 218.0 L1302.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1218.0" y="207.6">Sim</tspan></text>
+<path d="M1408.0 218.0 L1454.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1500.0 218.0 L1546.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1523.0" y="207.6">Sim</tspan></text>
+<path d="M1477.0 241.0 L1477.0 317.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text font-size="10" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="1483.0" y="283.1">Não (EX06)</tspan></text>
+<path d="M1530.0 350.0 L1599.0 350.0 L1599.0 251.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1652.0 218.0 L1668.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1774.0 218.0 L1826.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M1898.0 218.0 L1912.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M2018.0 218.0 L2070.0 218.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" marker-end="url(#arrow)"/>
+<path d="M279.0 251.0 L279.0 551.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" stroke-dasharray="6 4" marker-start="url(#dot)" marker-end="url(#openArrow)"/>
+<text font-size="9" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="284.0" y="432.1">POST /scheduleImports</tspan></text>
+<path d="M1377.0 251.0 L1377.0 551.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" stroke-dasharray="6 4" marker-start="url(#dot)" marker-end="url(#openArrow)"/>
+<text font-size="9" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="1382.0" y="432.1">POST /scheduleImports</tspan></text>
+<path d="M1577.0 251.0 L1577.0 460.0" fill="none" stroke="#1d2a3a" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+<path d="M765.0 30 H753.0 V79 H765.0" fill="none" stroke="#1d2a3a" stroke-width="1.2"/>
+<text font-size="10" font-weight="normal" text-anchor="start" fill="#1d2a3a"><tspan x="759.0" y="45.1">Planilha rejeitada: o RH lê o relatório</tspan><tspan x="759.0" y="58.1">importReport&lt;hash&gt;.xlsx (aba, linha,</tspan><tspan x="759.0" y="71.1">coluna e motivo), corrige e salva de novo.</tspan></text>
+<circle cx="135.0" cy="86.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="1.5"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="135.0" y="117.1">Escala da semana</tspan><tspan x="135.0" y="130.1">definida</tspan></text>
+<rect x="204.0" y="53.0" width="106.0" height="66.0" rx="9" fill="#fff6e5" stroke="#1d2a3a" stroke-width="1.4"/><circle cx="215.0" cy="63.0" r="3.2" fill="none" stroke="#1d2a3a" stroke-width="1.2"/><path d="M209.0 73.0 q6 -9 12 0" fill="none" stroke="#1d2a3a" stroke-width="1.2"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="257.0" y="79.6">Preencher a</tspan><tspan x="257.0" y="92.6">planilha no</tspan><tspan x="257.0" y="105.6">modelo do RH</tspan></text>
+<rect x="326.0" y="53.0" width="106.0" height="66.0" rx="9" fill="#fff6e5" stroke="#1d2a3a" stroke-width="1.4"/><circle cx="337.0" cy="63.0" r="3.2" fill="none" stroke="#1d2a3a" stroke-width="1.2"/><path d="M331.0 73.0 q6 -9 12 0" fill="none" stroke="#1d2a3a" stroke-width="1.2"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="379.0" y="86.1">Salvar em</tspan><tspan x="379.0" y="99.1">data/input/</tspan></text>
+<circle cx="501.0" cy="86.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="3.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="501.0" y="117.1">Planilha entregue</tspan><tspan x="501.0" y="130.1">ao robô</tspan></text>
+<circle cx="135.0" cy="218.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="1.5"/><circle cx="135.0" cy="218.0" r="13" fill="none" stroke="#1d2a3a" stroke-width="1"/><path d="M135.0 210.0 L135.0 218.0 L141.0 221.0" fill="none" stroke="#1d2a3a" stroke-width="1.3"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="135.0" y="249.1">A cada 5 min</tspan></text>
+<rect x="204.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><circle cx="215.0" cy="198.0" r="5" fill="none" stroke="#1d2a3a" stroke-width="1.2" stroke-dasharray="2 1.4"/><circle cx="215.0" cy="198.0" r="2" fill="none" stroke="#1d2a3a" stroke-width="1.1"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="257.0" y="211.6">Reenviar</tspan><tspan x="257.0" y="224.6">importações da</tspan><tspan x="257.0" y="237.6">outbox (EX06)</tspan></text>
+<rect x="326.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="379.0" y="215.1">Listar arquivos</tspan><tspan x="379.0" y="228.1">em data/input/</tspan></text>
+<path d="M501.0 195.0 L524.0 218.0 L501.0 241.0 L478.0 218.0 Z" fill="#fff" stroke="#1d2a3a" stroke-width="1.4"/><path d="M494.0 211.0 L508.0 225.0 M508.0 211.0 L494.0 225.0" stroke="#1d2a3a" stroke-width="2.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="501.0" y="188.1">Há arquivos?</tspan></text>
+<circle cx="501.0" cy="350.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="3.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="501.0" y="381.1">Nada a processar</tspan></text>
+<circle cx="623.0" cy="218.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="1.5"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="623.0" y="249.1">Arquivo</tspan></text>
+<rect x="692.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="745.0" y="215.1">Calcular o hash</tspan><tspan x="745.0" y="228.1">SHA-256</tspan></text>
+<path d="M867.0 195.0 L890.0 218.0 L867.0 241.0 L844.0 218.0 Z" fill="#fff" stroke="#1d2a3a" stroke-width="1.4"/><path d="M860.0 211.0 L874.0 225.0 M874.0 211.0 L860.0 225.0" stroke="#1d2a3a" stroke-width="2.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="867.0" y="188.1">Já importado? (RN02)</tspan></text>
+<rect x="814.0" y="317.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="867.0" y="347.1">Mover para</tspan><tspan x="867.0" y="360.1">rejected/duplicates/</tspan></text>
+<circle cx="989.0" cy="350.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="3.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="989.0" y="381.1">Ignorado</tspan></text>
+<rect x="936.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="989.0" y="202.1">Abrir e validar</tspan><tspan x="989.0" y="215.1">abas, colunas e</tspan><tspan x="989.0" y="228.1">linhas (RN01,</tspan><tspan x="989.0" y="241.1">RN03 a RN08)</tspan></text>
+<path d="M1111.0 195.0 L1134.0 218.0 L1111.0 241.0 L1088.0 218.0 Z" fill="#fff" stroke="#1d2a3a" stroke-width="1.4"/><path d="M1104.0 211.0 L1118.0 225.0 M1118.0 211.0 L1104.0 225.0" stroke="#1d2a3a" stroke-width="2.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1111.0" y="188.1">Dentro do limite? (RN09)</tspan></text>
+<rect x="1058.0" y="317.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1111.0" y="334.1">Gerar relatório</tspan><tspan x="1111.0" y="347.1">do RH e mover</tspan><tspan x="1111.0" y="360.1">para rejected/</tspan><tspan x="1111.0" y="373.1">(EX02 a EX04)</tspan></text>
+<circle cx="1306.2" cy="350.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="3.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1306.2" y="381.1">Rejeitada</tspan></text>
+<rect x="1302.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><circle cx="1313.0" cy="198.0" r="5" fill="none" stroke="#1d2a3a" stroke-width="1.2" stroke-dasharray="2 1.4"/><circle cx="1313.0" cy="198.0" r="2" fill="none" stroke="#1d2a3a" stroke-width="1.1"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1355.0" y="211.6">Enviar à API com</tspan><tspan x="1355.0" y="224.6">Idempotency-Key</tspan><tspan x="1355.0" y="237.6">(3 tentativas)</tspan></text>
+<path d="M1477.0 195.0 L1500.0 218.0 L1477.0 241.0 L1454.0 218.0 Z" fill="#fff" stroke="#1d2a3a" stroke-width="1.4"/><path d="M1470.0 211.0 L1484.0 225.0 M1484.0 211.0 L1470.0 225.0" stroke="#1d2a3a" stroke-width="2.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1477.0" y="188.1">API respondeu?</tspan></text>
+<rect x="1424.0" y="317.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1477.0" y="347.1">Guardar na</tspan><tspan x="1477.0" y="360.1">outbox</tspan></text>
+<rect x="1546.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><circle cx="1557.0" cy="198.0" r="5" fill="none" stroke="#1d2a3a" stroke-width="1.2" stroke-dasharray="2 1.4"/><circle cx="1557.0" cy="198.0" r="2" fill="none" stroke="#1d2a3a" stroke-width="1.1"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1599.0" y="205.1">Gravar lote</tspan><tspan x="1599.0" y="218.1">pseudonimizado</tspan><tspan x="1599.0" y="231.1">na pasta de</tspan><tspan x="1599.0" y="244.1">pouso</tspan></text>
+<rect x="1668.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1721.0" y="208.6">Gerar relatório</tspan><tspan x="1721.0" y="221.6">do RH e mover</tspan><tspan x="1721.0" y="234.6">para processed/</tspan></text>
+<circle cx="1843.0" cy="218.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="3.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1843.0" y="249.1">Importada</tspan></text>
+<rect x="1912.0" y="185.0" width="106.0" height="66.0" rx="9" fill="#eef4fb" stroke="#1d2a3a" stroke-width="1.4"/><text font-size="11" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1965.0" y="202.1">Registrar o</tspan><tspan x="1965.0" y="215.1">resumo da</tspan><tspan x="1965.0" y="228.1">execução</tspan><tspan x="1965.0" y="241.1">(RunSummary)</tspan></text>
+<circle cx="2087.0" cy="218.0" r="17" fill="#fff" stroke="#1d2a3a" stroke-width="3.4"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="2087.0" y="249.1">Fim</tspan></text>
+<path d="M1574.0 466.0 v32 a25.0 6 0 0 0 50 0 v-32 a25.0 6 0 0 0 -50 0 a25.0 6 0 0 0 50 0" fill="#fff" stroke="#1d2a3a" stroke-width="1.3"/><text font-size="10" font-weight="normal" text-anchor="middle" fill="#1d2a3a"><tspan x="1599.0" y="518.1">Pasta de pouso (Big</tspan><tspan x="1599.0" y="531.1">Data)</tspan></text>
+</svg>
