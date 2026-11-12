@@ -22,13 +22,13 @@ O robô tira do RH as tarefas manuais que existem por trás do produto:
 |---|---|---|
 | `lineMonitorFlow` | Monitora a situação das Linhas 1 e 3 a cada 5 min e, se houver falha, cria o alerta e propõe o plano B (remoto ou outro horário) para o RH aprovar | ✅ Implementado |
 | `scheduleImportFlow` | Importa e valida a planilha de escala do RH, envia à plataforma, grava o lote pseudonimizado para Big Data e gera o relatório do RH | ✅ Implementado |
-| `agendaDispatchFlow` | Envia a agenda (.ics) por e-mail depois que o RH aprova | 🚧 Em desenvolvimento |
+| `agendaDispatchFlow` | Envia por e-mail a agenda (.ics) aprovada pelo RH e os avisos de plano B, que cancelam ou movem o evento no calendário | ✅ Implementado |
 
 Documentação:
 - [docs/processDesign.md](docs/processDesign.md): PDD com o passo a passo, regras de negócio, exceções, logs e testes.
 - [docs/architecture.md](docs/architecture.md): arquitetura Ports & Adapters.
-- [docs/integrations/secureDevOpsCloud/productApiContract.yaml](docs/integrations/secureDevOpsCloud/productApiContract.yaml): contrato com a API do produto.
-- [docs/integrations/bigDataDataIntegration/landingZoneHandoff.md](docs/integrations/bigDataDataIntegration/landingZoneHandoff.md): formato do lote entregue à pasta de pouso do Big Data.
+- [docs/integrations/secureDevOpsCloud/](docs/integrations/secureDevOpsCloud/): contrato da API do produto e guia de deploy do robô.
+- [docs/integrations/bigDataDataIntegration/](docs/integrations/bigDataDataIntegration/): formato do lote entregue à pasta de pouso do Big Data.
 
 ## Estrutura
 
@@ -68,13 +68,35 @@ python -m src.main scheduleImport
 
 O arquivo vai para `data/input/processed/` (ou `rejected/`), o relatório do RH para `data/output/reports/`, o lote para Big Data para `landingZone/chegada/schedule/` e a escala aparece no painel aguardando aprovação. Outras planilhas de exemplo: `scheduleTenPercentInvalid.xlsx` (2 linhas recusadas), `scheduleThirtyPercentInvalid.xlsx` (rejeitada pela RN09), `scheduleCorrupted.xlsx` e `scheduleMissingSheet.xlsx`. O modelo em branco para o RH é o `scheduleTemplate.xlsx`.
 
-**3. Rodar o monitor contra o site real do Metrô**:
+**3. Aprovar e enviar as agendas.** No painel, clique em **Aprovar** na escala e rode:
+
+```bash
+python -m src.main agendaDispatch
+```
+
+Com `NOTIFIER_MODE=console`, cada e-mail é salvo como `.eml` em `data/output/mail/` (abre no Outlook). Com `NOTIFIER_MODE=smtp`, ele chega na caixa do Mailtrap. Para a demonstração, use a planilha `scheduleDemoSmall.xlsx` (3 pessoas), que cabe na cota gratuita do Mailtrap.
+
+**Roteiro completo do vídeo** (semana fictícia de 23 a 27/11/2026):
+
+```bash
+# No .env: LINE_STATUS_SOURCE=simulated e NOTIFIER_MODE=smtp
+copy data\fixtures\scheduleDemoSmall.xlsx data\input\
+python -m src.main scheduleImport                                  # Escala aguardando aprovação no painel
+#   -> Aprovar no painel
+python -m src.main agendaDispatch                                  # Agendas no Mailtrap
+python -m src.main simulate --line 3 --text "Paralisada"
+python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T07:30  # Alerta + plano B pendente
+#   -> Aprovar o plano B no painel
+python -m src.main agendaDispatch --at 2026-11-24T07:32            # "Hoje: seu dia presencial virou remoto"
+```
+
+**4. Rodar o monitor contra o site real do Metrô**:
 
 ```bash
 python -m src.main lineMonitor
 ```
 
-**4. Demonstrar o plano B** com uma falha simulada:
+**5. Demonstrar só o plano B** com uma falha simulada:
 
 ```bash
 # No .env: LINE_STATUS_SOURCE=simulated
@@ -83,7 +105,13 @@ python -m src.main lineMonitor --ignoreWindow --at 07:30
 python -m src.main simulate --unavailable                 # Simula a fonte fora do ar
 ```
 
-**5. Testes:**
+**6. Modo produção** (os três fluxos agendados num único processo: importação a cada 5 min, envio a cada 10 min e monitor a cada 5 min em dias úteis):
+
+```bash
+python -m src.main scheduler
+```
+
+**7. Testes:**
 
 ```bash
 pytest -v

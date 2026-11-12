@@ -111,10 +111,10 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | 2 | Buscar escalas aprovadas e não enviadas. Se a API estiver fora do ar, registrar e encerrar; a próxima execução tenta de novo (EX06) | Decisão |
 | 3 | **Para cada escala → para cada funcionário:** | Repetição |
 | 3.1 | Se este funcionário já recebeu esta versão da escala, pular (RN11) | Decisão |
-| 3.2 | Gerar o `.ics` com os dias presenciais, a janela de entrada e o horário sugerido para sair de casa | Processamento |
-| 3.3 | Enviar o e-mail. Se falhar, tentar 3 vezes e depois marcar o envio como pendente (EX08) | Decisão |
-| 4 | Repetir os passos 2 e 3 para os **planos B aprovados**, com um e-mail de mudança do dia ("Hoje seu dia presencial virou remoto" ou "Sua entrada mudou para 10h30") | Repetição |
-| 5 | Informar à API o resultado de cada envio (`POST /dispatches`) | Integração |
+| 3.2 | Gerar o `.ics` com os dias presenciais, a janela de entrada, o horário sugerido para sair de casa e um lembrete 15 min antes da saída. Cada evento usa o `assignmentId` como UID | Processamento |
+| 3.3 | Enviar o e-mail. Se o servidor falhar, tentar 3 vezes; depois, **parar os envios desta execução** e deixar o restante pendente para a próxima (EX08). Endereço recusado: registrar a falha e não tentar de novo até o RH corrigir o cadastro (nova versão). Envio confirmado é gravado no estado do robô antes de avisar a API, para nunca mandar o mesmo e-mail duas vezes | Decisão |
+| 4 | Repetir os passos 2 e 3 para os **planos B aprovados**, com um e-mail de mudança do dia ("Hoje: seu dia presencial virou remoto" ou "Hoje: sua entrada mudou para 10:30"). O `.ics` anexo **cancela ou move o mesmo evento** da agenda da semana (mesmo UID), sem duplicar o compromisso no calendário | Repetição |
+| 5 | Informar à API o resultado de cada envio (`POST /dispatches`). Se a API estiver fora do ar, o relatório vai para a outbox e é reenviado no início da próxima execução (EX06) | Integração |
 | 6 | Registrar o resumo: enviados, pulados, falhas | Fim |
 
 ### 4.3 Regras de negócio
@@ -122,7 +122,8 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | Código | Regra |
 |---|---|
 | RN10 | Só é enviada a agenda de escala com status `approved` pelo RH |
-| RN11 | Cada funcionário recebe cada versão da escala uma única vez. Se o RH alterar a escala, a versão muda e a agenda é reenviada |
+| RN11 | Cada funcionário recebe cada versão da escala uma única vez. Se o RH alterar a escala, a versão muda e a agenda é reenviada com o assunto "Agenda atualizada" |
+| RN18 | Limite de envio: o robô respeita um intervalo mínimo entre e-mails (`MAIL_MIN_INTERVAL_SECONDS`) e, se configurado, um máximo por execução (`DISPATCH_LIMIT_PER_RUN`). O que passar do limite sai na execução seguinte |
 
 ---
 
@@ -202,7 +203,11 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | Tipo | Cenário | Resultado esperado |
 |---|---|---|
 | Sucesso | Planilha válida com 2 times e 20 funcionários | Enviada à API, gravada na pasta de pouso, arquivo em `processed/` |
-| Sucesso | Escala aprovada pelo RH | 20 e-mails com `.ics` enviados e confirmados na API |
+| Sucesso | Escala aprovada pelo RH | Um e-mail com `.ics` por funcionário, confirmados na API |
+| Decisão | Mesma versão da escala em duas execuções | Nenhum e-mail repetido (RN11) |
+| Decisão | RH edita a escala (versão 2) | Agenda reenviada como "Agenda atualizada" (RN11) |
+| Decisão | Plano B "remoto" aprovado | E-mail de mudança e `.ics` que cancela o evento do dia |
+| Falha | Servidor de e-mail fora do ar | 3 tentativas, envios param e saem na próxima execução (EX08) |
 | Decisão | Planilha com 2 linhas inválidas em 20 (10%) | 18 aceitas e relatório com as 2 recusadas |
 | Decisão | Planilha com 30% de linhas inválidas | Arquivo inteiro rejeitado (RN09) |
 | Decisão | Linha 3 passa para "Paralisada" | Alerta e plano B "remoto" pendente para os funcionários afetados |

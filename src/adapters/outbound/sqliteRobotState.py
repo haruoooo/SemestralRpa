@@ -32,6 +32,15 @@ CREATE TABLE IF NOT EXISTS outbox (
     createdAt TEXT NOT NULL,
     UNIQUE (kind, idempotencyKey)
 );
+CREATE TABLE IF NOT EXISTS dispatchLedger (
+    kind TEXT NOT NULL,
+    referenceId TEXT NOT NULL,
+    version INTEGER NOT NULL,
+    employeeId TEXT NOT NULL,
+    outcome TEXT NOT NULL,
+    dispatchedAt TEXT NOT NULL,
+    PRIMARY KEY (kind, referenceId, version, employeeId)
+);
 CREATE TABLE IF NOT EXISTS keyValue (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
@@ -124,4 +133,20 @@ class SqliteRobotState:
         with self._connection:
             self._connection.execute(
                 "UPDATE outbox SET attempts = attempts + 1, lastError = ? WHERE outboxId = ?", (error, outboxId)
+            )
+
+    # ---------- agendaDispatchFlow ----------
+
+    def isDispatched(self, kind: str, referenceId: str, version: int, employeeId: str) -> bool:
+        row = self._connection.execute(
+            "SELECT 1 FROM dispatchLedger WHERE kind = ? AND referenceId = ? AND version = ? AND employeeId = ?",
+            (kind, referenceId, version, employeeId),
+        ).fetchone()
+        return row is not None
+
+    def markDispatched(self, kind: str, referenceId: str, version: int, employeeId: str, outcome: str, at: datetime) -> None:
+        with self._connection:
+            self._connection.execute(
+                "INSERT OR REPLACE INTO dispatchLedger VALUES (?, ?, ?, ?, ?, ?)",
+                (kind, referenceId, version, employeeId, outcome, at.isoformat()),
             )

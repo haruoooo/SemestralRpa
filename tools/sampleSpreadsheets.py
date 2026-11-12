@@ -98,9 +98,19 @@ def employeesWithInvalidRows(count: int) -> list[list]:
     return rows
 
 
+def demoEmployees() -> list[list]:
+    """3 people of one team: small enough for the Mailtrap free quota in the demo video."""
+    return [row for row in defaultEmployees() if row[3] == "Financeiro"][:3]
+
+
+def demoDemand() -> list[list]:
+    return [["Financeiro", MONDAY + timedelta(days=offset), 1, 3, "Sim" if offset == 1 else "Não"] for offset in range(5)]
+
+
 def buildAllSamples(folder: Path) -> list[Path]:
     built = [
         buildWorkbook(folder / "scheduleValid.xlsx"),
+        buildWorkbook(folder / "scheduleDemoSmall.xlsx", employees=demoEmployees(), demand=demoDemand()),
         buildWorkbook(folder / "scheduleTenPercentInvalid.xlsx", employees=employeesWithInvalidRows(2)),
         buildWorkbook(folder / "scheduleThirtyPercentInvalid.xlsx", employees=employeesWithInvalidRows(6)),
         buildWorkbook(folder / "scheduleMissingSheet.xlsx", dropSheets=(SHEET_WINDOWS,)),

@@ -28,3 +28,11 @@ class ApiRejectedError(RobotError):
 
 class InvalidSpreadsheetError(RobotError):
     """The input file is corrupted or is not a .xlsx workbook. EX02."""
+
+
+class NotificationUnavailableError(RobotError):
+    """The mail server could not be used (timeout, connection, auth, throttling). Retryable. EX08."""
+
+
+class NotificationRejectedError(RobotError):
+    """The mail server refused the recipient (invalid address). Not retried."""
