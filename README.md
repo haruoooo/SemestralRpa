@@ -117,7 +117,7 @@ python -m src.main scheduler
 **7. Testes:**
 
 ```bash
-pytest -v                         # 81 testes automatizados
+pytest -v                         # 87 testes automatizados
 bash tools/collectEvidence.sh     # Execução de ponta a ponta de todos os cenários + prints (Git Bash)
 ```
 

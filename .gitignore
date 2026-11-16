@@ -16,3 +16,6 @@ logs/*.log
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Zips made locally to send the handoff folders
+docs/integrations/*.zip

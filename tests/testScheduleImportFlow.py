@@ -253,3 +253,19 @@ def testNoPersonalDataInLogsOrLandingZone(env):
     assert not any(item in landed for item in names + emails)
     assert buildEmployeeRef("F1001", "test") in landed
     assert all(record.getMessage()[0].isupper() for record in env.records)
+
+
+def testLandingBatchCarriesPlannedDaysForBigData(env):  # RN19, schemaVersion 2
+    env.drop("scheduleValid.xlsx")
+    env.run()
+    [batch] = list((env.root / "landing" / "schedule").glob("schedule*.json"))
+    landed = json.loads(batch.read_text(encoding="utf-8"))
+    assert landed["schemaVersion"] == 2
+    first = landed["employees"][0]
+    assert first["plannedDays"] == [
+        {"date": "2026-11-24", "entryWindow": "07:00"},
+        {"date": "2026-11-25", "entryWindow": "07:00"},
+        {"date": "2026-11-26", "entryWindow": "07:00"},
+    ]
+    assert landed["quality"]["currentScheduleValid"] == landed["quality"]["currentScheduleTotal"] == 60
+    assert ("Linhas da escala atual aceitas", "60 de 60") in env.reportRows("Resumo")

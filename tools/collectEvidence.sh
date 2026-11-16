@@ -4,7 +4,6 @@
 #   logs/samples/      JSON Lines logs of the run (no personal data)
 #   tests/evidence/    console transcript and pytest report
 #   assets/            screenshots (mock panel, e-mails, HR report, BPMN) and sample files
-#   docs/integrations/bigDataDataIntegration/sampleBatch.json
 #
 # Requirements: Git Bash on Windows (or bash on Linux/macOS), the .venv installed, Microsoft Edge or Chrome
 # for the screenshots, internet for the live Metro reading. No e-mail is really sent (console mode and a
@@ -135,7 +134,6 @@ for pair in "hrReportAcceptedWithIssues:$ACCEPTED_REPORT" "hrReportRejected:$REJ
   "$PY" -m tools.renderEvidence xlsx "$file" "$E/$name.html"
   shot "$name.png" 700 "file:///$FILE_ROOT/$E/$name.html"
 done
-cp "$(ls "$E"/landing/schedule/*.json | head -1)" docs/integrations/bigDataDataIntegration/sampleBatch.json
 for flow in scheduleImportFlow agendaDispatchFlow lineMonitorFlow; do
   size=$(grep -o 'width="[0-9]*" height="[0-9]*"' "docs/bpmn/$flow.svg" | head -1 | tr -dc '0-9 ' )
   shot "bpmn${flow^}.png" "$(echo "$size" | awk '{print $2}')" "file:///$FILE_ROOT/docs/bpmn/$flow.svg" "$(echo "$size" | awk '{print $1}')"

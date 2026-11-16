@@ -1,6 +1,6 @@
 # Entrega para Big Data · pasta de pouso da escala
 
-> Origem: robô RPA, fluxo `scheduleImportFlow`. Versão do formato: `schemaVersion = 1`.
+> Origem: robô RPA, fluxo `scheduleImportFlow`. Versão do formato: `schemaVersion = 2` (15/11/2026: novo campo `employees[].plannedDays`).
 > Contato: Matheus Haruo (RPA).
 
 ## 1. O que o robô entrega
@@ -29,7 +29,7 @@ O lote é **pseudonimizado**: não traz nome nem e-mail. O funcionário aparece 
 | Campo | Tipo | Exemplo | Descrição |
 |---|---|---|---|
 | `dataset` | texto | `schedule` | Sempre `schedule` |
-| `schemaVersion` | inteiro | `1` | Muda se o formato mudar |
+| `schemaVersion` | inteiro | `2` | Muda se o formato mudar. A v2 só **acrescentou** `plannedDays` e os dois contadores da escala atual; nenhum campo da v1 mudou |
 | `batchId` | texto | `si-20261111-223027-ab12-265023e6` | Identificador único do lote (execução + hash) |
 | `generatedAt` | data-hora ISO 8601 | `2026-11-11T22:30:27-03:00` | Momento da importação |
 | `sourceFileHash` | texto (64) | `265023e6…` | SHA-256 da planilha de origem |
@@ -50,19 +50,35 @@ O lote é **pseudonimizado**: não traz nome nem e-mail. O funcionário aparece 
 | `employees[].monthlyOnSiteDays` | inteiro (0 a 23) | `8` | Dias presenciais no mês pela política da empresa |
 | `employees[].unavailableDates` | lista de datas | `["2026-11-23"]` | Dias em que a pessoa não pode ir |
 | `employees[].latestEntryWindow` | texto ou `null` | `"08:00"` | Horário máximo de entrada (restrição pessoal) |
+| `employees[].plannedDays` | lista | `[{"date":"2026-11-24","entryWindow":"08:00"}]` | **Escala atual** da empresa, antes do ForaDoPico: em quais dias e em qual horário a pessoa vai hoje. Vem da aba opcional "Escala atual" da planilha do RH (RN19). Lista vazia quando o RH não preencheu a aba ou não informou aquela pessoa. Ordenada por data |
+| `employees[].plannedDays[].date` | data | `2026-11-24` | Dia útil da semana do lote |
+| `employees[].plannedDays[].entryWindow` | texto | `08:00` | Horário de entrada praticado hoje (sempre um dos `entryWindows`) |
 | `quality.employeesTotal` | inteiro | `20` | Linhas de funcionários na planilha |
 | `quality.employeesValid` | inteiro | `18` | Linhas aceitas (só estas estão em `employees`) |
 | `quality.demandTotal` / `demandValid` | inteiro | `10` / `10` | Linhas de demanda lidas e aceitas |
-| `quality.rejectedRows` | inteiro | `2` | Total de linhas recusadas |
+| `quality.rejectedRows` | inteiro | `2` | Total de linhas recusadas de Funcionarios e Demanda |
+| `quality.currentScheduleTotal` / `currentScheduleValid` | inteiro | `60` / `60` | Linhas da aba Escala atual lidas e aceitas. Linhas ruins dessa aba vão para o relatório do RH, mas **nunca rejeitam** o lote |
 
 ## 4. Exemplo (dados fictícios, resumido)
 
-Um lote completo, gerado numa execução real do robô com dados fictícios, está em [sampleBatch.json](sampleBatch.json).
+A pasta [samples/](samples/) tem dois lotes completos, gerados por **duas execuções reais e separadas** do robô (dados fictícios):
+
+| Arquivo | Semana | Funcionários | Observação |
+|---|---|---|---|
+| [schedule20261115_231049_e2b83ca3.json](samples/schedule20261115_231049_e2b83ca3.json) | 2026-W47 (16 a 20/11) | 19 | Primeira carga |
+| [schedule20261115_231053_82222ec0.json](samples/schedule20261115_231053_82222ec0.json) | 2026-W48 (23 a 27/11) | 20 | Carga seguinte: as 19 pessoas da W47 com o **mesmo `employeeRef`**, mais 1 contratação nova |
+
+Para a carga incremental:
+- processe os arquivos em ordem de nome, que é a ordem de `generatedAt`;
+- use `batchId` (ou `sourceFileHash`) como chave de idempotência do lote;
+- use `employeeRef` + `week` como chave da dimensão funcionário-semana.
+
+As amostras usam um **salt público de demonstração**, não o salt de produção. Os `employeeRef` são consistentes entre as duas amostras, mas não batem com os de uma execução real.
 
 ```json
 {
   "dataset": "schedule",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "batchId": "si-20261111-223027-ab12-265023e6",
   "generatedAt": "2026-11-11T22:30:27-03:00",
   "sourceFileHash": "265023e6…",
@@ -76,13 +92,23 @@ Um lote completo, gerado numa execução real do robô com dados fictícios, est
   ],
   "employees": [
     {"employeeRef": "69f58bb8297b", "teamName": "Financeiro", "lineNumber": 3, "boardingStation": "Corinthians-Itaquera",
-     "monthlyOnSiteDays": 8, "unavailableDates": ["2026-11-23"], "latestEntryWindow": null}
+     "monthlyOnSiteDays": 8, "unavailableDates": ["2026-11-23"], "latestEntryWindow": null,
+     "plannedDays": [{"date": "2026-11-24", "entryWindow": "07:00"}, {"date": "2026-11-25", "entryWindow": "07:00"}]}
   ],
-  "quality": {"employeesTotal": 20, "employeesValid": 18, "demandTotal": 10, "demandValid": 10, "rejectedRows": 2}
+  "quality": {"employeesTotal": 20, "employeesValid": 18, "demandTotal": 10, "demandValid": 10, "rejectedRows": 2,
+              "currentScheduleTotal": 60, "currentScheduleValid": 54}
 }
 ```
 
 ## 5. Como gerar lotes de teste
+
+Para gerar de novo as duas amostras (W47 e W48), sem precisar da API no ar:
+
+```bash
+python -m tools.landingSamples
+```
+
+Para gerar um lote a partir de qualquer planilha:
 
 ```bash
 python -m tools.sampleSpreadsheets                  # Gera as planilhas fictícias em data/fixtures/

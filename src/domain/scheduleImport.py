@@ -20,8 +20,13 @@ SHEET_WEEK = "Semana"
 SHEET_DEMAND = "Demanda"
 SHEET_EMPLOYEES = "Funcionarios"
 SHEET_WINDOWS = "Janelas"
+SHEET_CURRENT = "Escala atual"  # Optional: the schedule practiced today, before ForaDoPico (impact baseline)
 
 # Sheet -> ordered columns (display name used in the template and in HR messages)
+OPTIONAL_COLUMNS: dict[str, tuple[str, ...]] = {
+    SHEET_CURRENT: ("Matrícula", "Data", "Horário de entrada"),
+}
+
 REQUIRED_COLUMNS: dict[str, tuple[str, ...]] = {
     SHEET_WEEK: ("Empresa", "Semana"),
     SHEET_DEMAND: ("Time", "Data", "Mínimo", "Máximo", "Obrigatório"),
@@ -64,6 +69,10 @@ class ValidationResult:
     employeesValid: int = 0
     demandTotal: int = 0
     demandValid: int = 0
+    currentTotal: int = 0
+    currentValid: int = 0
+    plannedDays: dict[str, list[dict]] = field(default_factory=dict)  # employeeId -> [{date, entryWindow}] (RN19)
+    employeeIdsRead: set[str] = field(default_factory=set)  # Every id typed in Funcionarios, valid or not
 
     @property
     def rejectedRows(self) -> int:
@@ -214,6 +223,7 @@ def validateWorkbook(sheets: dict[str, SheetData]) -> ValidationResult:
     employees = _validateEmployees(found[SHEET_EMPLOYEES], positions[SHEET_EMPLOYEES], windows, result)
     teamSizes = Counter(employee["teamName"] for employee in employees)
     teams = _validateDemand(found[SHEET_DEMAND], positions[SHEET_DEMAND], monday, teamSizes, result)
+    _validateCurrentSchedule(sheets, {employee["employeeId"] for employee in employees}, windows, monday, result)
 
     # RN09: rejection threshold
     if result.employeesTotal == 0:
@@ -243,6 +253,44 @@ def validateWorkbook(sheets: dict[str, SheetData]) -> ValidationResult:
         "rejectedRows": result.rejectedRows,
     }
     return result
+
+
+def _validateCurrentSchedule(sheets: dict[str, SheetData], validIds: set[str], windows: list[str], monday: date, result: ValidationResult) -> None:
+    """RN19: optional sheet. Bad rows are reported to HR but never reject the file (it is analysis data only)."""
+    data = next((item for name, item in sheets.items() if _headerKey(name) == _headerKey(SHEET_CURRENT)), None)
+    if data is None:
+        return
+    columns = OPTIONAL_COLUMNS[SHEET_CURRENT]
+    headerIndex = {_headerKey(header): index for index, header in enumerate(data.headers) if not _isEmpty(header)}
+    missing = [column for column in columns if _headerKey(column) not in headerIndex]
+    if missing:
+        result.issues.extend(RowIssue(SHEET_CURRENT, 1, column, f"Coluna {column} não encontrada; a aba {SHEET_CURRENT} foi ignorada") for column in missing)
+        return
+    positions = {column: headerIndex[_headerKey(column)] for column in columns}
+    seen: set[tuple[str, str]] = set()
+    for rowNumber, cells in _dataRows(data):
+        result.currentTotal += 1
+        values = _rowValues(cells, positions)
+        try:
+            employeeId = _text(values["Matrícula"], "Matrícula")
+            if employeeId not in validIds:
+                if employeeId in result.employeeIdsRead:
+                    continue  # Employee refused in Funcionarios: the cause is already in the report, do not repeat it
+                raise _RowValidationError(f"Matrícula {employeeId} não existe na aba Funcionarios")
+            day = _weekday(values["Data"], monday).isoformat()
+            window = parseTime(values["Horário de entrada"], "Horário de entrada")
+            if window not in windows:
+                raise _RowValidationError(f"Horário {window} não está na aba Janelas ({', '.join(windows)})")
+            if (employeeId, day) in seen:
+                raise _RowValidationError("Funcionário repetido no mesmo dia")
+        except _RowValidationError as error:
+            result.issues.append(RowIssue(SHEET_CURRENT, rowNumber, None, str(error)))
+            continue
+        seen.add((employeeId, day))
+        result.currentValid += 1
+        result.plannedDays.setdefault(employeeId, []).append({"date": day, "entryWindow": window})
+    for days in result.plannedDays.values():
+        days.sort(key=lambda item: item["date"])
 
 
 def _validateWeekSheet(data: SheetData, columns: dict[str, int], result: ValidationResult) -> tuple[str, str, date] | None:
@@ -297,6 +345,7 @@ def _validateEmployees(data: SheetData, columns: dict[str, int], windows: list[s
 
         employeeId = check("Matrícula", lambda: _text(values["Matrícula"], "Matrícula"))
         if employeeId is not None:
+            result.employeeIdsRead.add(employeeId)
             if employeeId in seenIds:  # RN04: first occurrence wins
                 rowIssues.append(RowIssue(SHEET_EMPLOYEES, rowNumber, "Matrícula", "Matrícula duplicada"))
             seenIds.add(employeeId)

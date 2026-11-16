@@ -244,6 +244,7 @@ class ScheduleImportFlow:
             "Motivo da rejeição": result.rejectionReason or "-",
             "Funcionários aceitos": f"{result.employeesValid} de {result.employeesTotal}",
             "Linhas de demanda aceitas": f"{result.demandValid} de {result.demandTotal}",
+            "Linhas da escala atual aceitas": f"{result.currentValid} de {result.currentTotal}" if result.currentTotal else "Aba não enviada (opcional)",
             "Escala na plataforma": (apiResult or {}).get("scheduleId", "-"),
             "Processado em": self._clock().strftime("%d/%m/%Y %H:%M"),
         }
@@ -262,7 +263,7 @@ class ScheduleImportFlow:
         payload = result.payload
         return {
             "dataset": LANDING_DATASET,
-            "schemaVersion": 1,
+            "schemaVersion": 2,  # v2: employees[].plannedDays (current schedule, RN19)
             "batchId": f"{self._logger.runId}-{fileHash[:8]}",
             "generatedAt": now.isoformat(timespec="seconds"),
             "sourceFileHash": fileHash,
@@ -281,6 +282,7 @@ class ScheduleImportFlow:
                     "monthlyOnSiteDays": employee["monthlyOnSiteDays"],
                     "unavailableDates": employee["unavailableDates"],
                     "latestEntryWindow": employee.get("latestEntryWindow"),
+                    "plannedDays": result.plannedDays.get(employee["employeeId"], []),
                 }
                 for employee in payload["employees"]
             ],
@@ -290,5 +292,7 @@ class ScheduleImportFlow:
                 "demandTotal": result.demandTotal,
                 "demandValid": result.demandValid,
                 "rejectedRows": result.rejectedRows,
+                "currentScheduleTotal": result.currentTotal,
+                "currentScheduleValid": result.currentValid,
             },
         }

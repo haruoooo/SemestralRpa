@@ -56,6 +56,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | `Demanda` | Time, Data, Mínimo, Máximo, Obrigatório (Sim/Não) |
 | `Funcionarios` | Matrícula, Nome, E-mail, Time, Estação de embarque, Linha, Dias presenciais no mês, Dias indisponíveis, Restrição de horário |
 | `Janelas` | Horário de entrada permitido (ex.: 07:00, 08:00, 09:30, 10:30) |
+| `Escala atual` (opcional) | Matrícula, Data, Horário de entrada: a escala que a empresa pratica hoje, antes do ForaDoPico. Serve de base para Big Data medir o impacto |
 
 ### 3.3 Passo a passo
 
@@ -68,7 +69,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | 4.1 | Calcular o hash SHA-256. Se já foi processado, mover para `rejected/duplicates/` e seguir para o próximo (RN02) | Decisão |
 | 4.2 | Abrir o arquivo. Se estiver corrompido ou não for `.xlsx` (por exemplo, um `.csv`), rejeitá-lo (EX02). Nenhum arquivo da pasta é ignorado em silêncio | Decisão |
 | 4.3 | Validar a estrutura: abas e colunas obrigatórias (RN01) | Decisão |
-| 4.4 | **Para cada linha** de `Demanda` e de `Funcionarios`: validar campos (RN03 a RN08) e duplicidade (RN04) | Repetição + decisão |
+| 4.4 | **Para cada linha** de `Demanda` e de `Funcionarios`: validar campos (RN03 a RN08) e duplicidade (RN04). Se a aba `Escala atual` existir, validar também cada linha dela (RN19) | Repetição + decisão |
 | 4.5 | Aplicar o limite de rejeição (RN09): rejeitar o arquivo inteiro ou aceitar só as linhas válidas | Decisão |
 | 4.6 | Montar o payload e enviar à API com `Idempotency-Key` igual ao hash do arquivo. Se a API estiver fora do ar depois das 3 tentativas, o envio vai para a outbox e o arquivo segue o fluxo (EX06). Se a API recusar (4xx), o arquivo vai para `rejected/` (EX07) | Decisão + integração |
 | 4.7 | Gravar o lote validado e **pseudonimizado** (sem nome e sem e-mail; funcionário como `employeeRef`) na pasta de pouso do Big Data (`chegada/schedule/scheduleYYYYMMDD_HHMMSS_<hash8>.json`). Formato em [landingZoneHandoff.md](integrations/bigDataDataIntegration/landingZoneHandoff.md) | Integração |
@@ -89,6 +90,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 | RN07 | Mínimo ≤ Máximo, e Máximo ≤ total de funcionários válidos do time |
 | RN08 | As datas da aba `Demanda` precisam ser dias úteis dentro da semana informada |
 | RN09 | Se mais de 20% das linhas de `Funcionarios` forem inválidas, ou se alguma linha de `Demanda` for inválida, **o arquivo inteiro é rejeitado**: uma escala montada sobre dados incompletos prejudica o funcionário. Abaixo disso, as linhas válidas seguem e as inválidas vão para o relatório |
+| RN19 | Aba `Escala atual` (opcional): cada linha precisa ter uma matrícula aceita em `Funcionarios`, um dia útil da semana e um horário da aba `Janelas`, sem repetir pessoa e dia. Linhas ruins vão para o relatório do RH, mas **nunca rejeitam** o arquivo, porque é dado de análise. As linhas de funcionários já recusados são ignoradas sem repetir o aviso. O resultado vai para Big Data em `employees[].plannedDays` |
 
 ---
 

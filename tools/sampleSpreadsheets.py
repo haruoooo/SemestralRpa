@@ -11,7 +11,15 @@ from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 
-from src.domain.scheduleImport import REQUIRED_COLUMNS, SHEET_DEMAND, SHEET_EMPLOYEES, SHEET_WEEK, SHEET_WINDOWS
+from src.domain.scheduleImport import (
+    OPTIONAL_COLUMNS,
+    REQUIRED_COLUMNS,
+    SHEET_CURRENT,
+    SHEET_DEMAND,
+    SHEET_EMPLOYEES,
+    SHEET_WEEK,
+    SHEET_WINDOWS,
+)
 
 COMPANY = "Empresa Fictícia S.A."
 WEEK = "2026-W48"
@@ -31,41 +39,54 @@ def _ascii(text: str) -> str:
     return text.lower().translate(str.maketrans("áéíóúâêôãõç", "aeiouaeoaoc")).replace(" ", ".")
 
 
-def defaultEmployees() -> list[list]:
+def defaultEmployees(monday: date = MONDAY) -> list[list]:
     rows = []
     for teamIndex, team in enumerate(_TEAMS):
         for index, (name, line, station) in enumerate(_PEOPLE):
             employeeId = f"F{teamIndex + 1}{index + 1:03d}"
-            unavailable = (MONDAY + timedelta(days=index % 5)).strftime("%d/%m/%Y") if index % 4 == 0 else None
+            unavailable = (monday + timedelta(days=index % 5)).strftime("%d/%m/%Y") if index % 4 == 0 else None
             restriction = "08:00" if index == 2 else None
             rows.append([employeeId, name, f"{_ascii(name)}.{team.lower()}@empresaficticia.example", team, station, line, 8 + index % 5, unavailable, restriction])
     return rows
 
 
-def defaultDemand() -> list[list]:
+def defaultDemand(monday: date = MONDAY) -> list[list]:
     rows = []
     for team in _TEAMS:
         for offset in range(5):
             mandatory = offset == 1  # Tuesday is the team meeting day
-            rows.append([team, MONDAY + timedelta(days=offset), 4 if mandatory else 2, 6, "Sim" if mandatory else "Não"])
+            rows.append([team, monday + timedelta(days=offset), 4 if mandatory else 2, 6, "Sim" if mandatory else "Não"])
+    return rows
+
+
+def currentScheduleFor(employees: list[list], monday: date = MONDAY) -> list[list]:
+    """Schedule practiced today, before ForaDoPico: everybody on Tuesday to Thursday, at the peak (RN19 sheet)."""
+    rows = []
+    for index, row in enumerate(employees):
+        window = "07:00" if index % 3 == 0 else "08:00"
+        rows.extend([row[0], monday + timedelta(days=offset), window] for offset in (1, 2, 3))
     return rows
 
 
 def buildWorkbook(path: Path, employees: list[list] | None = None, demand: list[list] | None = None,
-                  windows: list[str] | None = None, week: str = WEEK, dropSheets: tuple[str, ...] = ()) -> Path:
+                  windows: list[str] | None = None, week: str = WEEK, dropSheets: tuple[str, ...] = (),
+                  currentSchedule: list[list] | None = None) -> Path:
+    monday = date.fromisocalendar(int(week[:4]), int(week[6:]), 1) if week[6:].isdigit() and week[6:] != "00" else MONDAY
+    employees = defaultEmployees(monday) if employees is None else employees
     workbook = Workbook()
     workbook.remove(workbook.active)
     content = {
         SHEET_WEEK: [[COMPANY, week]],
-        SHEET_DEMAND: defaultDemand() if demand is None else demand,
-        SHEET_EMPLOYEES: defaultEmployees() if employees is None else employees,
+        SHEET_DEMAND: defaultDemand(monday) if demand is None else demand,
+        SHEET_EMPLOYEES: employees,
         SHEET_WINDOWS: [[window] for window in (WINDOWS if windows is None else windows)],
+        SHEET_CURRENT: currentScheduleFor(employees, monday) if currentSchedule is None else currentSchedule,
     }
     for sheet, rows in content.items():
         if sheet in dropSheets:
             continue
         worksheet = workbook.create_sheet(sheet)
-        worksheet.append(list(REQUIRED_COLUMNS[sheet]))
+        worksheet.append(list({**REQUIRED_COLUMNS, **OPTIONAL_COLUMNS}[sheet]))
         for cell in worksheet[1]:
             cell.font = Font(bold=True, color="FFFFFF")
             cell.fill = PatternFill("solid", fgColor="1F4E79")
@@ -73,7 +94,7 @@ def buildWorkbook(path: Path, employees: list[list] | None = None, demand: list[
             worksheet.append(row)
         for column in "ABCDEFGHI":
             worksheet.column_dimensions[column].width = 22
-        for cell in worksheet["B"] if sheet == SHEET_DEMAND else []:
+        for cell in worksheet["B"] if sheet in (SHEET_DEMAND, SHEET_CURRENT) else []:
             cell.number_format = "DD/MM/YYYY"
     path.parent.mkdir(parents=True, exist_ok=True)
     workbook.save(path)
@@ -103,8 +124,8 @@ def demoEmployees() -> list[list]:
     return [row for row in defaultEmployees() if row[3] == "Financeiro"][:3]
 
 
-def demoDemand() -> list[list]:
-    return [["Financeiro", MONDAY + timedelta(days=offset), 1, 3, "Sim" if offset == 1 else "Não"] for offset in range(5)]
+def demoDemand(monday: date = MONDAY) -> list[list]:
+    return [["Financeiro", monday + timedelta(days=offset), 1, 3, "Sim" if offset == 1 else "Não"] for offset in range(5)]
 
 
 def buildAllSamples(folder: Path) -> list[Path]:
@@ -114,7 +135,10 @@ def buildAllSamples(folder: Path) -> list[Path]:
         buildWorkbook(folder / "scheduleTenPercentInvalid.xlsx", employees=employeesWithInvalidRows(2)),
         buildWorkbook(folder / "scheduleThirtyPercentInvalid.xlsx", employees=employeesWithInvalidRows(6)),
         buildWorkbook(folder / "scheduleMissingSheet.xlsx", dropSheets=(SHEET_WINDOWS,)),
-        buildWorkbook(folder / "scheduleTemplate.xlsx", employees=[], demand=[], week=WEEK),
+        buildWorkbook(folder / "scheduleTemplate.xlsx", employees=[], demand=[], week=WEEK, currentSchedule=[]),
+        # Two consecutive weeks for the Big Data incremental load; W47 has one person less (hired for W48)
+        buildWorkbook(folder / "scheduleW47.xlsx", employees=[row for row in defaultEmployees(date.fromisocalendar(2026, 47, 1)) if row[0] != "F2010"], week="2026-W47"),
+        buildWorkbook(folder / "scheduleW48.xlsx", week="2026-W48"),
     ]
     corrupted = folder / "scheduleCorrupted.xlsx"
     corrupted.write_bytes(b"Este arquivo nao e uma planilha valida")

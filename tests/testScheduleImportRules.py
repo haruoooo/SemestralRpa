@@ -156,3 +156,56 @@ def testInvalidWeekIsRejected():
 def testAllMessagesForHrStartWithCapitalLetter():
     result = validateWorkbook(sheets(employees=employeesWithInvalidRows(6)))
     assert result.issues and all(message[0].isupper() for message in messages(result) + [result.rejectionReason])
+
+
+# ---------- RN19: optional "Escala atual" sheet (impact baseline for Big Data) ----------
+
+
+def withCurrentSchedule(rows: list[list], headers: list[str] | None = None, employees=None) -> dict[str, SheetData]:
+    data = sheets(employees=employees)
+    data["Escala atual"] = SheetData(headers or ["Matrícula", "Data", "Horário de entrada"], [(index, row) for index, row in enumerate(rows, start=2)])
+    return data
+
+
+def testCurrentScheduleIsOptional():
+    result = validateWorkbook(sheets())
+    assert result.accepted and result.currentTotal == 0 and result.plannedDays == {}
+
+
+def testCurrentScheduleBecomesPlannedDaysSortedByDate():
+    rows = [["F1001", date(2026, 11, 26), "08:00"], ["F1001", "24/11/2026", "07:00"], ["F1002", date(2026, 11, 25), "08:00"]]
+    result = validateWorkbook(withCurrentSchedule(rows))
+    assert result.accepted and result.currentValid == 3
+    assert result.plannedDays["F1001"] == [{"date": "2026-11-24", "entryWindow": "07:00"}, {"date": "2026-11-26", "entryWindow": "08:00"}]
+
+
+def testBadCurrentScheduleRowsAreReportedButNeverRejectTheFile():
+    rows = [
+        ["F9999", date(2026, 11, 24), "08:00"],   # Unknown id
+        ["F1001", date(2026, 11, 28), "08:00"],   # Saturday
+        ["F1001", date(2026, 11, 24), "06:15"],   # Window not in Janelas
+        ["F1002", date(2026, 11, 24), "08:00"],
+        ["F1002", date(2026, 11, 24), "09:30"],   # Same person twice on the same day
+    ]
+    result = validateWorkbook(withCurrentSchedule(rows))
+    assert result.accepted and result.rejectedRows == 0
+    assert result.currentValid == 1 and result.currentTotal == 5
+    current = [issue.message for issue in result.issues if issue.sheet == "Escala atual"]
+    assert "Matrícula F9999 não existe na aba Funcionarios" in current
+    assert any("não é dia útil" in message for message in current)
+    assert any("06:15 não está na aba Janelas" in message for message in current)
+    assert "Funcionário repetido no mesmo dia" in current
+
+
+def testRefusedEmployeeIsNotReportedAgainInCurrentSchedule():
+    employees = defaultEmployees()
+    employees[0][2] = "sem-arroba"  # F1001 refused in Funcionarios
+    result = validateWorkbook(withCurrentSchedule([["F1001", date(2026, 11, 24), "08:00"]], employees=employees))
+    assert result.accepted and "F1001" not in result.plannedDays
+    assert [issue.sheet for issue in result.issues] == ["Funcionarios"]
+
+
+def testCurrentScheduleWithMissingColumnIsIgnored():
+    result = validateWorkbook(withCurrentSchedule([["F1001", date(2026, 11, 24)]], headers=["Matrícula", "Data"]))
+    assert result.accepted and result.plannedDays == {}
+    assert any("a aba Escala atual foi ignorada" in issue.message for issue in result.issues)

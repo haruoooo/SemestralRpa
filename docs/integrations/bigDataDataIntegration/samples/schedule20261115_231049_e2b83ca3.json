@@ -1,0 +1,549 @@
+{
+  "dataset": "schedule",
+  "schemaVersion": 2,
+  "batchId": "si-20261115-231049-2450-e2b83ca3",
+  "generatedAt": "2026-11-15T23:10:49-03:00",
+  "sourceFileHash": "e2b83ca3a4a535a5e5ac789926ce39290f2b1a64a916b303660a821656894caa",
+  "importId": "imp-fb7bd0c2",
+  "scheduleId": "sch-7e7992e1",
+  "companyName": "Empresa Fictícia S.A.",
+  "week": "2026-W47",
+  "entryWindows": [
+    "07:00",
+    "08:00",
+    "09:30",
+    "10:30"
+  ],
+  "teams": [
+    {
+      "teamName": "Financeiro",
+      "demand": [
+        {
+          "date": "2026-11-16",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-17",
+          "minPeople": 4,
+          "maxPeople": 6,
+          "mandatory": true
+        },
+        {
+          "date": "2026-11-18",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-19",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-20",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        }
+      ]
+    },
+    {
+      "teamName": "Tecnologia",
+      "demand": [
+        {
+          "date": "2026-11-16",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-17",
+          "minPeople": 4,
+          "maxPeople": 6,
+          "mandatory": true
+        },
+        {
+          "date": "2026-11-18",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-19",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        },
+        {
+          "date": "2026-11-20",
+          "minPeople": 2,
+          "maxPeople": 6,
+          "mandatory": false
+        }
+      ]
+    }
+  ],
+  "employees": [
+    {
+      "employeeRef": "4b89f8763733",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Corinthians-Itaquera",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [
+        "2026-11-16"
+      ],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "de35775b531c",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Tucuruvi",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "4aac2b45a5f1",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Tatuapé",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": "08:00",
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "1ac1339b26d2",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Santana",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "6c95e12be0e0",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Penha",
+      "monthlyOnSiteDays": 12,
+      "unavailableDates": [
+        "2026-11-20"
+      ],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "7aec5b11683d",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Jabaquara",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "eeb0efa4a1eb",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Brás",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "8794ecd6a706",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Vila Mariana",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "da3c7a55e789",
+      "teamName": "Financeiro",
+      "lineNumber": 3,
+      "boardingStation": "Artur Alvim",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [
+        "2026-11-19"
+      ],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "77e4902ad891",
+      "teamName": "Financeiro",
+      "lineNumber": 1,
+      "boardingStation": "Paraíso",
+      "monthlyOnSiteDays": 12,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "767ec61f716d",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Corinthians-Itaquera",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [
+        "2026-11-16"
+      ],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "2fe1eb73f616",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Tucuruvi",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "9e55e6e40dc8",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Tatuapé",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": "08:00",
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "98448d4b73d1",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Santana",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "5e56dbc39168",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Penha",
+      "monthlyOnSiteDays": 12,
+      "unavailableDates": [
+        "2026-11-20"
+      ],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "e7b6a83468d8",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Jabaquara",
+      "monthlyOnSiteDays": 8,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "b5c2144f8c0c",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Brás",
+      "monthlyOnSiteDays": 9,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "3df53f606550",
+      "teamName": "Tecnologia",
+      "lineNumber": 1,
+      "boardingStation": "Vila Mariana",
+      "monthlyOnSiteDays": 10,
+      "unavailableDates": [],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "08:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "08:00"
+        }
+      ]
+    },
+    {
+      "employeeRef": "191aa4a48806",
+      "teamName": "Tecnologia",
+      "lineNumber": 3,
+      "boardingStation": "Artur Alvim",
+      "monthlyOnSiteDays": 11,
+      "unavailableDates": [
+        "2026-11-19"
+      ],
+      "latestEntryWindow": null,
+      "plannedDays": [
+        {
+          "date": "2026-11-17",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-18",
+          "entryWindow": "07:00"
+        },
+        {
+          "date": "2026-11-19",
+          "entryWindow": "07:00"
+        }
+      ]
+    }
+  ],
+  "quality": {
+    "employeesTotal": 19,
+    "employeesValid": 19,
+    "demandTotal": 10,
+    "demandValid": 10,
+    "rejectedRows": 0,
+    "currentScheduleTotal": 57,
+    "currentScheduleValid": 57
+  }
+}

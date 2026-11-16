@@ -4,7 +4,7 @@ Há duas camadas de testes, e as duas cobrem cenários de **sucesso**, **decisã
 
 | Camada | O que roda | Como executar | Evidência |
 |---|---|---|---|
-| Testes automatizados | 81 testes com pytest, sem rede e sem envio de e-mail, usando adaptadores falsos | `pytest -v` | [evidence/pytestReport.txt](evidence/pytestReport.txt) |
+| Testes automatizados | 87 testes com pytest, sem rede e sem envio de e-mail, usando adaptadores falsos | `pytest -v` | [evidence/pytestReport.txt](evidence/pytestReport.txt) |
 | Execução de ponta a ponta | Os 3 fluxos rodando pela linha de comando contra o mock da API, com planilhas fictícias e falhas provocadas | `bash tools/collectEvidence.sh` | [evidence/scenarioRun.txt](evidence/scenarioRun.txt), [../logs/samples/robotSample.log](../logs/samples/robotSample.log) e prints em [../assets/](../assets/) |
 
 ## Cenários do PDD e onde cada um é verificado
@@ -37,7 +37,7 @@ Há duas camadas de testes, e as duas cobrem cenários de **sucesso**, **decisã
 
 | Arquivo | Cobre |
 |---|---|
-| [testScheduleImportRules.py](testScheduleImportRules.py) | Regras da planilha (RN01 a RN09) |
+| [testScheduleImportRules.py](testScheduleImportRules.py) | Regras da planilha (RN01 a RN09 e RN19) |
 | [testScheduleImportFlow.py](testScheduleImportFlow.py) | Fluxo 1 com disco real em pasta temporária |
 | [testAgendaDispatchFlow.py](testAgendaDispatchFlow.py) | Fluxo 2, `.ics` e codificação dos e-mails |
 | [testLineStatusRules.py](testLineStatusRules.py) | Regras das linhas (RN12 a RN17) |
