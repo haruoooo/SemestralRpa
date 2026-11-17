@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import time
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 
 def _parseTime(value: str) -> time:
@@ -50,7 +50,7 @@ class Settings:
 
     @classmethod
     def fromEnvironment(cls) -> "Settings":
-        load_dotenv()
+        load_dotenv(find_dotenv(usecwd=True))  # The .env of the working folder (BotCity Runner: FORADOPICO_HOME)
         env = os.getenv
         return cls(
             productApiMode=env("PRODUCT_API_MODE", "http"),

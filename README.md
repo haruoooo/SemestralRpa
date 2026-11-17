@@ -123,6 +123,12 @@ python bot.py lineMonitor         # O mesmo bot rodando localmente, em modo offl
 
 No Maestro, crie uma tarefa para cada fluxo com o parâmetro `flow` igual a `scheduleImport`, `agendaDispatch` ou `lineMonitor`, e agende-as a cada 5, 10 e 5 minutos. No cofre de credenciais, crie o rótulo `foraDoPico` com as chaves `productApiKey`, `smtpUser`, `smtpPassword` e `logSalt`.
 
+O Runner descompacta o pacote numa pasta própria. Para o robô achar o `.env` (sem segredos), a pasta `data/` e os logs, defina na máquina do Runner a variável `FORADOPICO_HOME` com a pasta do projeto (ou passe o parâmetro `homeDir` na tarefa):
+
+```bash
+setx FORADOPICO_HOME "C:\caminho\do\SemestralRpa"   # Depois, reinicie o Runner
+```
+
 **Modo produção sem Maestro** (os três fluxos agendados num único processo local, com APScheduler):
 
 ```bash
@@ -132,7 +138,7 @@ python -m src.main scheduler
 **7. Testes:**
 
 ```bash
-pytest -v                         # 101 testes automatizados
+pytest -v                         # 102 testes automatizados
 bash tools/collectEvidence.sh     # Execução de ponta a ponta de todos os cenários + prints (Git Bash)
 ```
 

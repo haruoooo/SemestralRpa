@@ -177,3 +177,23 @@ def testOfflineTemplateModeRunsLocallyWithoutMaestro():
     orchestrator = MaestroOrchestrator(BotMaestroSDK())  # No server, no token: the template's offline mode
     assert not orchestrator.connected and orchestrator.taskParameters() == {}
     assert runBot(orchestrator, ["bot.py", "lineMonitor"], {}, executeFlow=lambda *args, **kwargs: summary()) == 0
+
+
+def testWorkingFolderComesFromTaskParameterOrMachineVariable(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    home = tmp_path / "foraDoPicoHome"
+    home.mkdir()
+    seen = {}
+
+    def fakeExecute(*args, **kwargs):
+        import os
+        seen["cwd"] = os.getcwd()
+        return summary()
+
+    runBot(MaestroOrchestrator(FakeSdk(parameters={"flow": "lineMonitor"})), ["bot.py"], {"FORADOPICO_HOME": str(home)}, executeFlow=fakeExecute)
+    assert seen["cwd"] == str(home)
+
+    sdk = FakeSdk(parameters={"flow": "lineMonitor", "homeDir": str(tmp_path / "naoExiste")})
+    assert runBot(MaestroOrchestrator(sdk), ["bot.py"], {}, executeFlow=fakeExecute) == 1
+    assert sdk.named("finish_task")[0]["status"] == AutomationTaskFinishStatus.FAILED
+    assert sdk.named("alert")[0]["message"][0].isupper()

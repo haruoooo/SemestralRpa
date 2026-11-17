@@ -1,7 +1,7 @@
 """Glue between the BotCity Maestro task and the robot flows (used by bot.py, the BotCity template entry point).
 
 What happens in one Maestro task:
-1. Read the task parameters: flow (scheduleImport, agendaDispatch or lineMonitor) and, for demos, at / ignoreWindow.
+1. Read the task parameters: flow (scheduleImport, agendaDispatch or lineMonitor), homeDir and, for demos, at / ignoreWindow.
 2. Read the secrets from the Maestro credential vault (when connected), instead of the .env file.
 3. Run the flow exactly as the CLI does.
 4. Finish the task with SUCCESS / PARTIALLY_COMPLETED / FAILED and the item counts (Maestro ROI and success rate).
@@ -19,6 +19,7 @@ from src.application.runSummary import RunStatus, RunSummary
 from src.infrastructure.settings import Settings
 from src.infrastructure.timeProvider import nowLocal
 
+HOME_ENV = "FORADOPICO_HOME"
 CREDENTIAL_LABEL_ENV = "MAESTRO_CREDENTIAL_LABEL"
 DEFAULT_CREDENTIAL_LABEL = "foraDoPico"
 # Maestro credential key -> environment variable read by Settings
@@ -38,6 +39,13 @@ def resolveFlow(parameters: dict[str, str], argv: list[str]) -> str | None:
     if len(argv) == 2:
         return argv[1]
     return os.getenv("BOT_FLOW")
+
+
+def resolveHome(parameters: dict[str, str], environment: dict) -> Path | None:
+    """Working folder (.env, data/, logs/). The Runner unpacks the bot in its own folder, so the
+    task parameter `homeDir` or the machine variable FORADOPICO_HOME points to the robot's data folder."""
+    home = parameters.get("homeDir") or environment.get(HOME_ENV)
+    return Path(home) if home else None
 
 
 def loadCredentials(orchestrator: OrchestratorPort, environment: dict) -> list[str]:
@@ -98,6 +106,17 @@ def runBot(
         orchestrator.alert("Tarefa sem fluxo válido", message, "error")
         orchestrator.finishTask(RunSummary(runId="-", flow=str(flow), status=RunStatus.FAILED))
         return 1
+
+    home = resolveHome(parameters, environment)
+    if home is not None:
+        if not home.is_dir():
+            message = f"Pasta de trabalho não encontrada: {home}. Ajuste o parâmetro 'homeDir' ou a variável {HOME_ENV}."
+            print(message)
+            orchestrator.alert("Tarefa sem pasta de trabalho", message, "error")
+            orchestrator.finishTask(RunSummary(runId="-", flow=flow, status=RunStatus.FAILED))
+            return 1
+        os.chdir(home)
+        print(f"Pasta de trabalho: {home}")
 
     loaded = loadCredentials(orchestrator, environment)
     if loaded:

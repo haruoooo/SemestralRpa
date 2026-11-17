@@ -110,7 +110,7 @@
   <tr><td>Orquestração</td><td>BotCity Maestro + Runner (<code>botcity-maestro-sdk</code>)</td><td>Agenda as tarefas, executa o <code>bot.py</code> e recebe status, contagem de itens, alertas e artefatos; guarda as senhas no cofre de credenciais. Pacote gerado por <code>build.bat</code>/<code>build.sh</code>, como no template da aula.</td></tr>
   <tr><td>Agendamento local</td><td>APScheduler</td><td>Alternativa sem Maestro: roda os três fluxos num só processo, sem sobrepor execuções.</td></tr>
   <tr><td>Mock da API</td><td>FastAPI + uvicorn</td><td>Mesmo contrato OpenAPI da API real, com um painel que mostra a integração e simula a aprovação do RH.</td></tr>
-  <tr><td>Testes</td><td>pytest</td><td>101 testes automatizados de sucesso, decisão e falha.</td></tr>
+  <tr><td>Testes</td><td>pytest</td><td>102 testes automatizados de sucesso, decisão e falha.</td></tr>
 </table>
 
 <h3>Aderência ao conteúdo da disciplina</h3>
@@ -185,7 +185,7 @@
 <figure><div class="clip" style="width:160mm;height:98mm"><img src="../../assets/shiftedEntryEmail.png" alt="E-mail de mudança de horário" style="width:163mm"></div><figcaption>Figura 7. Aviso de plano B "mudar horário": o mesmo evento passa de 09:30 para 10:30.</figcaption></figure>
 
 <h2>10. Testes realizados</h2>
-<p><strong>101 testes automatizados</strong> (<code>pytest -v</code>, relatório em <code>tests/evidence/pytestReport.txt</code>) cobrem as regras, os três fluxos, a leitura do HTML real do Metrô e a codificação dos e-mails, com adaptadores falsos e sem rede. A <strong>execução de ponta a ponta</strong> (<code>bash tools/collectEvidence.sh</code>) roda 20 comandos contra o mock, com falhas provocadas, e gera os logs, os prints e o roteiro <code>tests/evidence/scenarioRun.txt</code>. O mapa completo cenário → teste está em <code>tests/README.md</code>.</p>
+<p><strong>102 testes automatizados</strong> (<code>pytest -v</code>, relatório em <code>tests/evidence/pytestReport.txt</code>) cobrem as regras, os três fluxos, a leitura do HTML real do Metrô e a codificação dos e-mails, com adaptadores falsos e sem rede. A <strong>execução de ponta a ponta</strong> (<code>bash tools/collectEvidence.sh</code>) roda 20 comandos contra o mock, com falhas provocadas, e gera os logs, os prints e o roteiro <code>tests/evidence/scenarioRun.txt</code>. O mapa completo cenário → teste está em <code>tests/README.md</code>.</p>
 <table>
   <tr><th style="width:11%">Tipo</th><th style="width:44%">Cenário</th><th>Resultado obtido</th></tr>
   <tr><td>Sucesso</td><td>Planilha válida com 2 times e 20 funcionários</td><td>Enviada à API, lote gravado para Big Data, arquivo em <code>processed/</code>.</td></tr>
