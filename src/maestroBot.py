@@ -101,7 +101,9 @@ def runBot(
     parameters = orchestrator.taskParameters()
     flow = resolveFlow(parameters, argv)
     if flow not in FLOW_TITLES:
-        message = f"Parâmetro 'flow' inválido: {flow!r}. Use scheduleImport, agendaDispatch ou lineMonitor."
+        received = ", ".join(sorted(parameters)) or "nenhum"
+        message = (f"Parâmetro 'flow' inválido: {flow!r}. Use scheduleImport, agendaDispatch ou lineMonitor. "
+                   f"Parâmetros recebidos: {received}.")
         print(message)
         orchestrator.alert("Tarefa sem fluxo válido", message, "error")
         orchestrator.finishTask(RunSummary(runId="-", flow=str(flow), status=RunStatus.FAILED))

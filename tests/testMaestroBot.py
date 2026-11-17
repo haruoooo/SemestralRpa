@@ -197,3 +197,24 @@ def testWorkingFolderComesFromTaskParameterOrMachineVariable(tmp_path, monkeypat
     assert runBot(MaestroOrchestrator(sdk), ["bot.py"], {}, executeFlow=fakeExecute) == 1
     assert sdk.named("finish_task")[0]["status"] == AutomationTaskFinishStatus.FAILED
     assert sdk.named("alert")[0]["message"][0].isupper()
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        {"flow": "lineMonitor"},
+        '{"flow": "lineMonitor"}',
+        [{"name": "flow", "value": "lineMonitor"}],
+        [{"label": "flow", "value": "lineMonitor"}],
+    ],
+)
+def testTaskParametersAcceptEveryMaestroFormat(raw):
+    from src.adapters.outbound.maestroOrchestrator import normalizeParameters
+
+    assert normalizeParameters(raw)["flow"] == "lineMonitor"
+
+
+def testInvalidFlowListsTheParameterNamesReceived(capsys):
+    sdk = FakeSdk(parameters={"Fluxo": "lineMonitor"})
+    runBot(MaestroOrchestrator(sdk), ["bot.py"], {}, executeFlow=lambda *args, **kwargs: summary())
+    assert "Parâmetros recebidos: Fluxo." in capsys.readouterr().out

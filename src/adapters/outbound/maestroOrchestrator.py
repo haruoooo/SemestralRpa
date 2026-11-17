@@ -6,6 +6,7 @@ offline: RAISE_NOT_CONNECTED = False turns every call into a no-op, exactly as i
 A failure talking to Maestro never breaks the robot: it is logged and the run result stays the same.
 """
 
+import json
 import logging
 from pathlib import Path
 
@@ -32,6 +33,28 @@ FINISH_MESSAGES = {  # Shown in the Maestro task list (Portuguese: read by the o
 }
 
 
+def normalizeParameters(raw) -> dict[str, str]:
+    """Task parameters as {name: value}. Accepts a dict, a JSON string or a list of {name|label|key, value} items."""
+    if raw is None or raw == "":
+        return {}
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except ValueError:
+            return {}
+    if isinstance(raw, dict):
+        return {str(key): "" if value is None else str(value) for key, value in raw.items()}
+    parameters: dict[str, str] = {}
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                name = item.get("name") or item.get("key") or item.get("label")
+                if name:
+                    value = item.get("value")
+                    parameters[str(name)] = "" if value is None else str(value)
+    return parameters
+
+
 def finishItems(summary: RunSummary) -> tuple[int, int, int]:
     """Maestro requires processed + failed = total. Skipped items (already done, RN11/RN13) count as processed."""
     failed = summary.itemsFailed
@@ -54,7 +77,7 @@ class MaestroOrchestrator:
         return str(getattr(self._execution, "task_id", "") or "")
 
     def taskParameters(self) -> dict[str, str]:
-        return dict(getattr(self._execution, "parameters", None) or {})
+        return normalizeParameters(getattr(self._execution, "parameters", None))
 
     def credential(self, label: str, key: str) -> str | None:
         if not self.connected:
@@ -90,6 +113,7 @@ class MaestroOrchestrator:
         try:
             return call()
         except Exception as error:  # Orchestration problems must never change the business result
+            print(f"Aviso: a chamada {operation} ao Maestro falhou ({type(error).__name__}); o robô segue sem ela.")
             _log.warning(
                 "Maestro %s failed: %s", operation, type(error).__name__,
                 extra={"runId": "maestro", "flow": "-", "step": "-", "event": "MaestroCallFailed", "itemRef": None, "data": None},
