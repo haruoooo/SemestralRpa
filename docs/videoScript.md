@@ -128,9 +128,9 @@ Os nomes de menus podem variar um pouco conforme a versão do Maestro.
    1. No Maestro, abra o menu lateral e clique em **Download Studio**. Baixe a versão para Windows.
    2. Extraia numa pasta simples, como `C:\BotCity`. Evite `Program Files` e a pasta do projeto.
    3. Rode o `wizard` da pasta extraída. Faça login, conclua a instalação e escolha **Setup Runner** → **Create a New Runner**, com o nome `foraDoPicoRunner`.
-   4. Abra `C:\BotCity\conf\conf.bcf` e confira se `server`, `login`, `key` e `machineId` estão preenchidos. Na linha `pythonBinary`, coloque:
+   4. Abra `C:\BotCity\conf\conf.bcf` e confira se `server`, `login`, `key` e `machineId` estão preenchidos. Na linha `pythonBinary`, coloque o caminho com barras `/`, porque o arquivo trata `\` como caractere especial:
       ```
-      pythonBinary=C:\Users\Matheus\AppData\Local\Programs\Python\Python313\python.exe
+      pythonBinary=C:/Users/Matheus/AppData/Local/Programs/Python/Python313/python.exe
       ```
 3. **Pasta de trabalho:** num PowerShell, rode o comando abaixo e feche o PowerShell. O Runner descompacta o robô numa pasta própria; esta variável faz o robô usar o `.env`, o `data\` e os `logs\` do projeto.
    ```
