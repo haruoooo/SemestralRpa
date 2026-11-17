@@ -1,116 +1,226 @@
 # Roteiro do vídeo (até 3 minutos)
 
-Os fluxos rodam como tarefas no **BotCity Maestro**, executadas pelo **BotCity Runner**. O terminal só é usado para preparar os dados (copiar planilhas e simular a falha da linha).
+O roteiro tem três partes:
 
-## O que o enunciado exige no vídeo
+1. **Preparação:** o que deixar pronto antes de gravar.
+2. **Roteiro de vídeo:** o que fazer e o que mostrar na tela, cena por cena.
+3. **Roteiro de áudio:** a narração, cena por cena.
 
-| Exigência | Onde aparece no roteiro |
+O caminho mais simples é gravar a tela primeiro, sem falar. Depois grave a narração lendo a parte 3 e junte as duas no editor, por exemplo o Clipchamp, que já vem no Windows. No editor, acelere as esperas: o Runner pegando a tarefa e a queda da API.
+
+## O que o enunciado exige e onde aparece
+
+| Exigência | Cena |
 |---|---|
-| Apresentação do problema e do papel da automação | Cena 1 |
-| Execução do processo de ponta a ponta, na prática | Cenas 2 a 6 (planilha → Maestro → API → aprovação → e-mail → falha na linha → plano B → aviso) |
-| Demonstração de **regra de decisão** | Cena 2 (RN09: 10% de linhas inválidas, abaixo do limite de 20%) e cena 5 (RN14: só quem ainda não embarcou) |
-| Demonstração da **integração com o MVP** | Cenas 3 e 5 (painel da API: escala, alertas e plano B) e cena 4 (e-mail com agenda) |
-| Demonstração de **tratamento de falhas** | Cena 7 (API fora do ar → 3 tentativas → tarefa "parcial" e alerta no Maestro → entrega automática) |
+| Apresentação do problema e do papel da automação | 1 |
+| Execução do processo de ponta a ponta, na prática | 2 a 6 |
+| Regra de decisão | 2 (planilha com 10% de erro é aceita) e 5 (só quem ainda não embarcou entra no plano B) |
+| Integração com o MVP | 3 e 5 (painel da API) e 4 e 6 (e-mails) |
+| Tratamento de falhas | 7 (API fora do ar, fila e reenvio automático) |
 
-## Preparação (fora da gravação)
+---
 
-1. Conclua a configuração do Maestro (seção "Configurar o BotCity Maestro", no fim deste arquivo).
-2. No `.env` do projeto, configure:
-   ```
-   LINE_STATUS_SOURCE=simulated
-   NOTIFIER_MODE=smtp
-   MAIL_MIN_INTERVAL_SECONDS=10
-   ```
-3. Limpe o estado de execuções anteriores. Abra o PowerShell na pasta do projeto, com o `.venv` ativado:
+# Parte 1 · Preparação
+
+Faça uma vez antes do ensaio e repita antes da gravação.
+
+### 1.1 Runner ligado
+1. No Wizard da BotCity, clique em **Runner - GUI** e depois em **START**.
+2. No Orquestrador, menu **Runners**: o `foraDoPicoRunner` deve estar **Ativo**.
+
+### 1.2 Dois PowerShell abertos na pasta do projeto
+Abra dois PowerShell. Em cada um, rode:
+```
+cd C:\Users\Matheus\Desktop\SemestralRpa
+.venv\Scripts\activate
+```
+
+- **Terminal 1, a API:** rode `uvicorn mockApi.app:app --port 8000` e deixe aberto. Ele só aparece no vídeo na cena 7.
+- **Terminal 2, os comandos:** aumente a fonte com **Ctrl + roda do mouse**.
+
+### 1.3 Limpar os dados das execuções anteriores
+1. No **terminal 1**, pare a API com **Ctrl+C**.
+2. No **terminal 2**, rode:
    ```
    Remove-Item -Recurse -Force data\runtime, data\input, data\output -ErrorAction SilentlyContinue
    python -m src.main simulate
    ```
-4. No Mailtrap, abra **My Sandbox** e apague os e-mails antigos (ícone de lixeira). A gravação gasta 4 envios.
-5. Deixe abertos e organizados:
-   - **Terminal 1:** `uvicorn mockApi.app:app --port 8000`, o mock da API;
-   - **Terminal 2:** para copiar as planilhas e simular a falha, com a fonte grande;
-   - **BotCity Runner** aberto (janela do `BotRunner-gui`), conectado;
-   - **Navegador, aba 1:** Maestro, na automação `foraDoPicoRpa`;
-   - **Navegador, aba 2:** http://127.0.0.1:8000/, o painel;
-   - **Navegador, aba 3:** Mailtrap → My Sandbox;
-   - **Imagem** `assets/bpmnScheduleImportFlow.png`.
-6. Faça um ensaio completo antes, depois repita os passos 3 e 4 e grave.
+3. No **terminal 1**, suba a API de novo: `uvicorn mockApi.app:app --port 8000`.
 
-**Dicas de edição:**
-- o Runner leva alguns segundos para pegar cada tarefa;
-- o envio dos e-mails espera 10 s entre um e outro;
-- a queda da API leva uns 10 s de tentativas.
+### 1.4 Mailtrap vazio
+1. No Mailtrap, abra **Sandboxes** → **My Sandbox**.
+2. Apague os e-mails antigos com o ícone de lixeira.
 
-Acelere esses trechos na edição para caber em 3 minutos.
+O vídeo usa 4 e-mails da cota gratuita.
 
-**Como criar uma tarefa no Maestro durante a gravação:** na automação `foraDoPicoRpa`, clique em **Nova tarefa**, preencha os parâmetros indicados em cada cena e confirme. Deixe os parâmetros não citados em branco.
+### 1.5 Abas do navegador, nesta ordem
+1. **GitHub:** https://github.com/haruoooo/SemestralRpa (README).
+2. **BPMN:** https://github.com/haruoooo/SemestralRpa/blob/main/assets/bpmnScheduleImportFlow.png
+3. **Maestro:** Orquestrador → **Tarefas**.
+4. **Painel da API:** http://127.0.0.1:8000/
+5. **Mailtrap:** My Sandbox.
 
-## Roteiro
+### 1.6 Gravação
+- Use a **Ferramenta de Captura** do Windows (**Win+Shift+R** → selecione a tela inteira) ou o OBS.
+- Deixe a tela limpa: feche notificações e outras janelas.
+- Faça um **ensaio completo**. Depois repita os passos 1.3 e 1.4 e grave.
 
-### Cena 1 · O problema e o papel do robô (0:00–0:20)
-**Tela:** README do GitHub, depois o BPMN do fluxo 1.
-**Fala:** "O ForaDoPico monta a escala presencial das empresas fugindo do pico do metrô de São Paulo. Por trás dele, o RH fazia tudo à mão: conferia a planilha, mandava a agenda pessoa por pessoa, e ninguém acompanhava as falhas das linhas. O nosso robô automatiza esses três processos, seguindo o PDD e o BPMN, e roda no BotCity Maestro."
+### Como criar uma tarefa no Maestro
+É o mesmo caminho do teste:
+1. Clique em **Nova tarefa** na automação `foraDoPicoRpa`.
+2. Deixe **Tarefa de Teste** desmarcada e preencha só os parâmetros indicados na cena; os outros ficam vazios.
+3. Clique em **Criar**.
+4. Na lista de **Tarefas**, clique em **Atualizar** até o status ficar verde (**Concluída**). Isso leva de 5 a 30 segundos.
 
-### Cena 2 · Importação pelo Maestro e regra de decisão (0:20–0:55)
-**Terminal 2:**
-```
-copy data\fixtures\scheduleDemoSmall.xlsx data\input\
-copy data\fixtures\scheduleTenPercentInvalid.xlsx data\input\
-```
-**Maestro:** nova tarefa com `flow` = `scheduleImport`. Mostre o Runner pegando a tarefa e a tarefa terminando como concluída.
-**Fala:** "O RH salva as planilhas na pasta de entrada, e o Maestro dispara o robô. Ele valida cada linha: estação da linha certa, e-mail, horários. Esta segunda planilha tem 10% de linhas com erro. Como está abaixo do limite de 20%, as linhas válidas seguem e o RH recebe um relatório com a linha e o motivo de cada recusa."
-**Mostre por 3 s:** na tarefa, os arquivos anexados. Baixe o `importReport….xlsx` da segunda planilha e abra a aba **Linhas recusadas**.
+---
 
-### Cena 3 · Integração com o MVP e pessoa no circuito (0:55–1:05)
-**Tela:** painel, aba 2 (atualize a página).
-**Fala:** "As escalas chegaram à API do produto e aguardam o RH. O robô nunca publica nada sem aprovação."
-**Ação:** clique em **Aprovar** na escala com **3 funcionários**.
+# Parte 2 · Roteiro de vídeo
+
+### Cena 1 · Abertura (0:00–0:15)
+**Faça:**
+1. Mostre a aba **GitHub** no topo do README e role devagar até a tabela dos três fluxos.
+2. Troque para a aba **BPMN**.
+
+**Precisa aparecer:** o título "ForaDoPico · RPA", os integrantes, a tabela dos 3 fluxos e o diagrama BPMN.
+
+### Cena 2 · Importação da planilha pelo Maestro (0:15–0:50)
+**Faça:**
+1. No **terminal 2**, digite:
+   ```
+   copy data\fixtures\scheduleDemoSmall.xlsx data\input\
+   copy data\fixtures\scheduleTenPercentInvalid.xlsx data\input\
+   ```
+2. Na aba **Maestro**, crie uma tarefa com `flow` = `scheduleImport`.
+3. Clique em **Atualizar** até a tarefa ficar **Concluída**.
+4. No Explorador de Arquivos, abra `C:\Users\Matheus\Desktop\SemestralRpa\data\output\reports` e dê dois cliques em **`importReport683c568b.xlsx`**, o relatório da planilha com erros.
+5. No Excel, clique na aba **Linhas recusadas**.
+
+**Precisa aparecer:**
+- os dois comandos de cópia;
+- a tarefa criada e depois **Concluída** no Maestro;
+- no Excel, as 2 linhas recusadas com o motivo: e-mail inválido na linha 11 e estação inválida na linha 21.
+
+### Cena 3 · A escala chega ao MVP e o RH aprova (0:50–1:05)
+**Faça:**
+1. Vá para a aba **Painel da API** e aperte **F5**.
+2. Passe o mouse sobre a tabela **Escalas importadas**. Há duas linhas, com 18 e com 3 funcionários, as duas "Aguardando aprovação".
+3. Clique em **Aprovar** na linha com **3** funcionários.
+
+**Precisa aparecer:**
+- a linha de 18 funcionários com **2** em "Linhas recusadas";
+- a linha de 3 funcionários mudando para **Aprovada**.
 
 ### Cena 4 · Envio das agendas (1:05–1:30)
-**Maestro:** nova tarefa com `flow` = `agendaDispatch`.
-**Tela:** Mailtrap, aba 3. Abra o e-mail da Ana e mostre o anexo `agenda.ics`.
-**Fala:** "Com a escala aprovada, o robô envia a cada funcionário os dias presenciais, o horário de entrada fora do pico e a hora de sair de casa, com o convite para o calendário. Cada pessoa recebe cada versão uma única vez."
+**Faça:**
+1. Na aba **Maestro**, crie uma tarefa com `flow` = `agendaDispatch` e espere ficar **Concluída**.
+2. Na aba **Mailtrap**, atualize a página. Chegam 3 e-mails, para Ana, Bruno e Carla.
+3. Abra o e-mail da **Ana**: "Sua agenda presencial: Terça, 24/11 a Quinta, 26/11 · ForaDoPico".
+4. Mostre o texto e o anexo **agenda.ics**.
 
-### Cena 5 · Linha paralisada e plano B (1:30–2:05)
-**Terminal 2:**
-```
-python -m src.main simulate --line 3 --text "Paralisada"
-```
-**Maestro:** nova tarefa com `flow` = `lineMonitor`, `at` = `2026-11-24T07:30` e `ignoreWindow` = `true`. Quando terminar, abra **Alertas**: "Monitor das linhas: mudança nas linhas".
-**Tela:** painel (atualize): Linha 3 paralisada, alerta e plano B pendente.
-**Fala:** "Terça-feira, 07:30: a Linha 3 para. O robô lê a situação, cria o alerta e propõe o plano B por time. A operação é avisada no Maestro. Só entra quem ainda não embarcou: a Carla entraria às 07:00 e já está a caminho, então fica de fora. O plano fica pendente para o RH."
-**Ação:** clique em **Aprovar** no plano B.
+**Precisa aparecer:**
+- os 3 e-mails na caixa;
+- no e-mail da Ana, "entrada às 10:30 · saia de casa às 09:35 · embarque em Corinthians-Itaquera (Linha 3-Vermelha)";
+- o anexo `agenda.ics`.
+
+### Cena 5 · A Linha 3 para e o robô propõe o plano B (1:30–2:05)
+**Faça:**
+1. No **terminal 2**, digite:
+   ```
+   python -m src.main simulate --line 3 --text "Paralisada"
+   ```
+2. Na aba **Maestro**, crie uma tarefa com:
+   - `flow` = `lineMonitor`;
+   - `at` = `2026-11-24T07:30`;
+   - `ignoreWindow` = `true`.
+
+   Espere ficar **Concluída**.
+3. Vá para a aba **Painel da API**, aperte **F5** e role até as três tabelas de baixo.
+4. Clique em **Aprovar** no plano B.
+
+**Precisa aparecer:**
+- em **Situação das linhas**: "Linha 3-Vermelha · Paralisada";
+- em **Alertas**: "07:30 · Linha 3-Vermelha paralisada desde 07:30.";
+- em **Planos B**: "Financeiro · Trabalho remoto · **1** pessoa · Aguardando aprovação". Depois do clique, o status passa a **Aprovada**.
 
 ### Cena 6 · Aviso ao funcionário (2:05–2:20)
-**Maestro:** nova tarefa com `flow` = `agendaDispatch` e `at` = `2026-11-24T07:32`.
-**Tela:** Mailtrap, com o e-mail "Hoje: seu dia presencial virou remoto".
-**Fala:** "A Ana recebe o aviso antes de sair de casa. O anexo cancela o compromisso no calendário dela, em vez de criar outro."
+**Faça:**
+1. Na aba **Maestro**, crie uma tarefa com:
+   - `flow` = `agendaDispatch`;
+   - `at` = `2026-11-24T07:32`.
 
-### Cena 7 · Tratamento de falha (2:20–2:45)
-**Ação:** feche o mock com **Ctrl+C** no terminal 1.
-**Terminal 2:**
-```
-copy data\fixtures\scheduleValid.xlsx data\input\
-```
-**Maestro:** nova tarefa com `flow` = `scheduleImport`. Mostre a tarefa como **parcialmente concluída** e o alerta "API fora do ar".
-**Fala:** "E se a API do produto cair? O robô tenta 3 vezes, guarda o envio numa fila e avisa a operação no Maestro. Nada se perde."
-**Ação:** suba o mock de novo no terminal 1 (`uvicorn mockApi.app:app --port 8000`) e crie outra tarefa com `flow` = `scheduleImport`.
-**Fala:** "Assim que a API volta, o envio sai sozinho." Mostre a tarefa concluída. Se der tempo, abra o log anexado e destaque **OutboxDelivered**.
+   Espere ficar **Concluída**.
+2. Na aba **Mailtrap**, atualize a página e abra o e-mail novo da **Ana**: "Hoje: seu dia presencial virou remoto · ForaDoPico".
+
+**Precisa aparecer:**
+- o assunto;
+- o texto "Seu dia presencial hoje virou trabalho remoto";
+- o anexo `agenda.ics`.
+
+### Cena 7 · Falha: a API do produto cai (2:20–2:45)
+**Faça:**
+1. Mostre o **terminal 1** e aperte **Ctrl+C**. A API para.
+2. No **terminal 2**, digite:
+   ```
+   copy data\fixtures\scheduleValid.xlsx data\input\
+   ```
+3. Na aba **Maestro**, crie uma tarefa com `flow` = `scheduleImport`. Ela leva uns 15 segundos e termina como **parcialmente concluída**, em amarelo ou laranja.
+4. No **terminal 1**, suba a API de novo: `uvicorn mockApi.app:app --port 8000`.
+5. Na aba **Maestro**, crie outra tarefa com `flow` = `scheduleImport` e espere ficar **Concluída**.
+6. Na aba **Painel da API**, aperte **F5**.
+
+**Precisa aparecer:**
+- o **Ctrl+C** derrubando a API;
+- a tarefa **parcial**;
+- a API voltando;
+- a tarefa seguinte **Concluída**;
+- no painel, uma escala nova com **20** funcionários, que é a planilha guardada na fila e entregue sozinha.
 
 ### Cena 8 · Encerramento (2:45–3:00)
-**Tela:** a lista de tarefas do Maestro com os status, depois o `tests\README.md`.
-**Fala:** "Cada execução fica registrada no Maestro e no log, sem dados pessoais. O projeto tem 108 testes automatizados de sucesso, decisão e falha, e o código está no GitHub."
+**Faça:**
+1. Na aba **Maestro**, mostre a lista de **Tarefas** com todos os status da gravação.
+2. Na aba **GitHub**, abra a pasta `tests` para mostrar o `README.md` com o mapa de testes.
+
+**Precisa aparecer:** a lista de tarefas e o repositório.
+
+---
+
+# Parte 3 · Roteiro de áudio
+
+Leia num ritmo calmo. Cada trecho tem mais ou menos o tamanho da cena.
+
+**Cena 1 (0:00–0:15)**
+> "O ForaDoPico monta a escala presencial das empresas fugindo do pico do metrô de São Paulo. Por trás do produto, o RH fazia tudo à mão. O nosso robô automatiza três processos: importa a escala, envia as agendas e monitora as linhas do metrô. Cada fluxo segue o PDD e o BPMN."
+
+**Cena 2 (0:15–0:50)**
+> "O RH salva as planilhas na pasta de entrada e o BotCity Maestro dispara o robô. Ele valida cada linha: e-mail, estação da linha certa e horários. A segunda planilha tem 10% de linhas com erro. Como está abaixo do limite de 20%, as linhas válidas seguem, e o RH recebe este relatório com a linha e o motivo de cada recusa. Acima de 20%, o arquivo inteiro seria rejeitado."
+
+**Cena 3 (0:50–1:05)**
+> "As escalas chegaram à API do produto e aguardam o RH. O robô nunca publica nada sozinho: quem aprova é uma pessoa."
+
+**Cena 4 (1:05–1:30)**
+> "Com a escala aprovada, o robô envia a cada funcionário os dias presenciais, o horário de entrada fora do pico e a hora de sair de casa, com o convite para o calendário. Cada pessoa recebe cada versão da escala uma única vez."
+
+**Cena 5 (1:30–2:05)**
+> "Terça-feira, 7 e meia da manhã: a Linha 3 para. O robô lê a situação no site do Metrô, registra o alerta e propõe um plano B por time. Repare que só entra uma pessoa: a Ana, que entraria às 10:30. A Carla entraria às 7 e já está a caminho, então fica de fora. O plano B também espera a aprovação do RH."
+
+**Cena 6 (2:05–2:20)**
+> "Aprovado o plano, a Ana recebe o aviso antes de sair de casa. O anexo cancela o compromisso no calendário dela, em vez de criar outro."
+
+**Cena 7 (2:20–2:45)**
+> "E se a API do produto cair? O robô tenta três vezes, guarda o envio numa fila e encerra a tarefa como parcial no Maestro. Nada se perde. Quando a API volta, a próxima execução entrega a escala sozinha."
+
+**Cena 8 (2:45–3:00)**
+> "Cada execução fica registrada no Maestro e em log de auditoria, sem dados pessoais. O projeto tem 108 testes automatizados de sucesso, decisão e falha, e está todo no GitHub. Obrigado."
+
+---
 
 ## Depois de gravar
-
-1. Publique o vídeo no YouTube como **Não listado**, ou no Google Drive com **qualquer pessoa com o link pode ver**.
+1. Publique no YouTube como **Não listado**, ou no Google Drive com **qualquer pessoa com o link pode ver**.
 2. Teste o link numa janela anônima.
-3. Me passe o link para eu colocá-lo no README e no PDF e gerar o PDF de novo.
+3. Me passe o link para eu colocá-lo no README e no relatório.
 
 ## Se o Maestro der problema na hora
-
-Cada tarefa tem o mesmo efeito de um comando no terminal 2, então dá para gravar sem o Maestro:
+Cada tarefa tem o mesmo efeito de um comando no **terminal 2**:
 
 | Tarefa no Maestro | Comando equivalente |
 |---|---|
@@ -119,37 +229,4 @@ Cada tarefa tem o mesmo efeito de um comando no terminal 2, então dá para grav
 | `flow` = `lineMonitor`, `at` = `2026-11-24T07:30`, `ignoreWindow` = `true` | `python -m src.main lineMonitor --ignoreWindow --at 2026-11-24T07:30` |
 | `flow` = `agendaDispatch`, `at` = `2026-11-24T07:32` | `python -m src.main agendaDispatch --at 2026-11-24T07:32` |
 
-## Configurar o BotCity Maestro (uma vez)
-
-Os nomes de menus podem variar um pouco conforme a versão do Maestro.
-
-1. **Conta:** em https://developers.botcity.dev, crie a conta gratuita (**Sign up for Free**, plano Community).
-2. **Runner:**
-   1. No Maestro, abra o menu lateral e clique em **Download Studio**. Baixe a versão para Windows.
-   2. Extraia numa pasta simples, como `C:\BotCity`. Evite `Program Files` e a pasta do projeto.
-   3. Rode o `wizard` da pasta extraída. Faça login, conclua a instalação e escolha **Setup Runner** → **Create a New Runner**, com o nome `foraDoPicoRunner`.
-   4. Abra `C:\BotCity\conf\conf.bcf` e confira se `server`, `login`, `key` e `machineId` estão preenchidos. Na linha `pythonBinary`, coloque o caminho com barras `/`, porque o arquivo trata `\` como caractere especial:
-      ```
-      pythonBinary=C:/Users/Matheus/AppData/Local/Programs/Python/Python313/python.exe
-      ```
-3. **Pasta de trabalho:** num PowerShell, rode o comando abaixo e feche o PowerShell. O Runner descompacta o robô numa pasta própria; esta variável faz o robô usar o `.env`, o `data\` e os `logs\` do projeto.
-   ```
-   setx FORADOPICO_HOME "C:\Users\Matheus\Desktop\SemestralRpa"
-   ```
-4. **Senhas:** no plano gratuito, o cofre de credenciais do Maestro não está disponível. O robô lê as senhas do `.env` da pasta de trabalho, que fica fora do pacote. Em plano pago, basta criar no cofre o rótulo `foraDoPico` com as chaves `smtpUser`, `smtpPassword` e `logSalt`, que passam a ter prioridade sobre o `.env`.
-5. **Pacote:** na pasta do projeto, rode `.\build.ps1`. Ele gera o `foraDoPicoRpa.zip` sem o `.env`.
-6. **Easy Deploy:**
-   1. No Maestro, abra **Easy Deploy** e crie a automação.
-   2. Preencha:
-      - nome `foraDoPicoRpa`;
-      - Bot ID `foraDoPicoRpa`;
-      - versão `1.0`;
-      - tecnologia **Python**;
-      - o arquivo `foraDoPicoRpa.zip`;
-      - o Runner `foraDoPicoRunner`.
-7. **Parâmetros:** na automação, aba **Desenvolvimento**, adicione três parâmetros do tipo texto: `flow` (obrigatório), `at` e `ignoreWindow` (opcionais). O **Label** de cada um deve ser igual ao nome, porque é pelo Label que o Maestro entrega o valor ao robô. Role até o fim da página e salve.
-8. **Ligar o Runner:** rode `C:\BotCity\BotRunner-gui.bat` e clique em **START**.
-9. **Aquecimento:** com o mock da API no ar, crie uma tarefa com `flow` = `lineMonitor`. A primeira execução demora alguns minutos, porque o Runner cria o ambiente Python e instala as dependências. As próximas são rápidas.
-
-   Confira se a tarefa terminou sem erro e se o log dela mostra "Pasta de trabalho".
-10. **Agendamento (opcional, não usado no vídeo):** em **Agendamentos**, crie um para cada fluxo: `scheduleImport` a cada 5 min, `agendaDispatch` a cada 10 min e `lineMonitor` a cada 5 min.
+A configuração do Maestro está em [maestroSetup.md](maestroSetup.md).
