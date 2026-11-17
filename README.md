@@ -110,7 +110,7 @@ python -m src.main lineMonitor --ignoreWindow --at 07:30
 python -m src.main simulate --unavailable                 # Simula a fonte fora do ar
 ```
 
-**6. Modo produção com o BotCity Maestro** (orquestrador visto em aula). O robô segue o template Python da BotCity, do tipo Custom:
+**6. Modo produção com o BotCity Maestro.** O robô segue o template Python da BotCity, do tipo Custom:
 - o Maestro agenda as tarefas;
 - o BotCity Runner executa o `bot.py`;
 - o robô devolve status e contagem de itens, alertas e artefatos (relatório do RH e log);
@@ -142,7 +142,7 @@ pytest -v                         # 102 testes automatizados
 bash tools/collectEvidence.sh     # Execução de ponta a ponta de todos os cenários + prints (Git Bash)
 ```
 
-O mapa de cenários (sucesso, decisão e falha) e onde cada um é verificado está em [tests/README.md](tests/README.md). Para gerar o PDF de novo depois de mudar o relatório, imprima `docs/report/technicalReport.html` com o Edge ou o Chrome (`--headless --print-to-pdf`).
+O mapa de cenários (sucesso, decisão e falha) e onde cada um é verificado está em [tests/README.md](tests/README.md). O relatório técnico é editado no Word ([docs/report/technicalReport.docx](docs/report/technicalReport.docx)); o PDF é exportado a partir dele.
 
 ## Segurança e LGPD
 

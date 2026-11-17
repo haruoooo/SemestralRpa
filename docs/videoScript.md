@@ -1,6 +1,6 @@
 # Roteiro do vídeo (até 3 minutos)
 
-Os fluxos rodam como tarefas no **BotCity Maestro**, executadas pelo **BotCity Runner**, como visto em aula. O terminal só é usado para preparar os dados (copiar planilhas e simular a falha da linha).
+Os fluxos rodam como tarefas no **BotCity Maestro**, executadas pelo **BotCity Runner**. O terminal só é usado para preparar os dados (copiar planilhas e simular a falha da linha).
 
 ## O que o enunciado exige no vídeo
 
