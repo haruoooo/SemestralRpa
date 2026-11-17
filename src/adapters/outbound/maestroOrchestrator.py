@@ -65,6 +65,7 @@ def finishItems(summary: RunSummary) -> tuple[int, int, int]:
 class MaestroOrchestrator:
     def __init__(self, sdk: BotMaestroSDK | None = None):
         self._sdk = sdk if sdk is not None else BotMaestroSDK.from_sys_args()
+        self._vaultUnavailable = False
         # Offline (local run): no task to fetch; avoids the SDK "offline mode" warnings on every run
         self._execution = self._safe("get_execution", self._sdk.get_execution) if self.connected else None
 
@@ -80,9 +81,14 @@ class MaestroOrchestrator:
         return normalizeParameters(getattr(self._execution, "parameters", None))
 
     def credential(self, label: str, key: str) -> str | None:
-        if not self.connected:
+        if not self.connected or self._vaultUnavailable:
             return None
-        return self._safe("get_credential", lambda: self._sdk.get_credential(label=label, key=key))
+        try:
+            return self._sdk.get_credential(label=label, key=key)
+        except Exception as error:  # Vault missing from the plan or label not created: secrets come from .env
+            self._vaultUnavailable = True
+            print(f"Cofre de credenciais do Maestro indisponível ({type(error).__name__}); senhas lidas do .env.")
+            return None
 
     def finishTask(self, summary: RunSummary) -> None:
         if not self.connected:
@@ -113,7 +119,6 @@ class MaestroOrchestrator:
         try:
             return call()
         except Exception as error:  # Orchestration problems must never change the business result
-            print(f"Aviso: a chamada {operation} ao Maestro falhou ({type(error).__name__}); o robô segue sem ela.")
             _log.warning(
                 "Maestro %s failed: %s", operation, type(error).__name__,
                 extra={"runId": "maestro", "flow": "-", "step": "-", "event": "MaestroCallFailed", "itemRef": None, "data": None},

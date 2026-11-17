@@ -100,7 +100,7 @@ copy data\fixtures\scheduleValid.xlsx data\input\
 
 ### Cena 8 · Encerramento (2:45–3:00)
 **Tela:** a lista de tarefas do Maestro com os status, depois o `tests\README.md`.
-**Fala:** "Cada execução fica registrada no Maestro e no log, sem dados pessoais. O projeto tem 107 testes automatizados de sucesso, decisão e falha, e o código está no GitHub."
+**Fala:** "Cada execução fica registrada no Maestro e no log, sem dados pessoais. O projeto tem 108 testes automatizados de sucesso, decisão e falha, e o código está no GitHub."
 
 ## Depois de gravar
 
