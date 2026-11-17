@@ -35,6 +35,8 @@ Documentação:
 ## Estrutura
 
 ```
+bot.py          Entrada do robô no BotCity Maestro (template Python da BotCity, tipo Custom)
+build.*         Geram o pacote foraDoPicoRpa.zip para implantar no Maestro
 src/            Código do robô (domain, application, adapters, infrastructure)
 mockApi/        Mock da API do produto (mesmo contrato) com painel para demonstração
 docs/           PDD, BPMN, arquitetura, integrações e relatório técnico (PDF)
@@ -108,7 +110,20 @@ python -m src.main lineMonitor --ignoreWindow --at 07:30
 python -m src.main simulate --unavailable                 # Simula a fonte fora do ar
 ```
 
-**6. Modo produção** (os três fluxos agendados num único processo: importação a cada 5 min, envio a cada 10 min e monitor a cada 5 min em dias úteis):
+**6. Modo produção com o BotCity Maestro** (orquestrador visto em aula). O robô segue o template Python da BotCity, do tipo Custom:
+- o Maestro agenda as tarefas;
+- o BotCity Runner executa o `bot.py`;
+- o robô devolve status e contagem de itens, alertas e artefatos (relatório do RH e log);
+- as senhas ficam no cofre de credenciais do Maestro.
+
+```bash
+build.bat                         # Windows (ou ./build.sh): gera foraDoPicoRpa.zip, sem .env, logs ou dados
+python bot.py lineMonitor         # O mesmo bot rodando localmente, em modo offline
+```
+
+No Maestro, crie uma tarefa para cada fluxo com o parâmetro `flow` igual a `scheduleImport`, `agendaDispatch` ou `lineMonitor`, e agende-as a cada 5, 10 e 5 minutos. No cofre de credenciais, crie o rótulo `foraDoPico` com as chaves `productApiKey`, `smtpUser`, `smtpPassword` e `logSalt`.
+
+**Modo produção sem Maestro** (os três fluxos agendados num único processo local, com APScheduler):
 
 ```bash
 python -m src.main scheduler
@@ -117,7 +132,7 @@ python -m src.main scheduler
 **7. Testes:**
 
 ```bash
-pytest -v                         # 87 testes automatizados
+pytest -v                         # 101 testes automatizados
 bash tools/collectEvidence.sh     # Execução de ponta a ponta de todos os cenários + prints (Git Bash)
 ```
 

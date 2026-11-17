@@ -43,7 +43,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 
 | Item | Descrição |
 |---|---|
-| Gatilho | Agendado a cada 5 minutos, ou manual pela CLI |
+| Gatilho | Tarefa agendada no BotCity Maestro a cada 5 minutos (parâmetro `flow=scheduleImport`), ou manual pela CLI |
 | Entrada | Arquivos `.xlsx` na pasta `data/input/` |
 | Saídas | Escala enviada à API (`POST /scheduleImports`), arquivo na pasta de pouso do Big Data, relatório de erros para o RH, arquivo movido para `processed/` ou `rejected/` |
 | Intervenção humana | Nenhuma no fluxo; o RH só corrige a planilha quando ela é rejeitada |
@@ -100,7 +100,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 
 | Item | Descrição |
 |---|---|
-| Gatilho | Agendado a cada 10 minutos |
+| Gatilho | Tarefa agendada no BotCity Maestro a cada 10 minutos (`flow=agendaDispatch`) |
 | Entrada | Escalas e planos B com status `approved` e ainda não enviados (`GET /schedules`, `GET /contingencyPlans`) |
 | Saídas | E-mail em português com o arquivo `.ics` anexo para cada funcionário; confirmação de envio na API (`POST /dispatches`) |
 | Intervenção humana | A aprovação do RH no app, que acontece **antes** deste fluxo |
@@ -135,7 +135,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 
 | Item | Descrição |
 |---|---|
-| Gatilho | Agendado a cada 5 minutos, em dias úteis, das 05:00 às 22:00 (configurável). Para demonstração: `--ignoreWindow` e `--at 07:30` |
+| Gatilho | Tarefa agendada no BotCity Maestro a cada 5 minutos (`flow=lineMonitor`), em dias úteis, das 05:00 às 22:00 (configurável). Para demonstração: `--ignoreWindow` e `--at 07:30` (na tarefa do Maestro, parâmetros `ignoreWindow` e `at`) |
 | Entrada | Página "Direto do Metrô" (`metro.sp.gov.br`) ou fixture simulada |
 | Saídas | Situação das linhas na API (`POST /lineStatus`), alertas (`POST /alerts`), propostas de plano B pendentes de aprovação (`POST /contingencyPlans`) |
 | Intervenção humana | O RH aprova ou recusa o plano B no app |
@@ -193,6 +193,7 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 - O formato é JSON Lines, em `logs/robotYYYYMMDD.log`, mais uma saída legível no console.
 - Campos de cada registro: `timestamp`, `level`, `runId`, `flow`, `step`, `event`, `itemRef`, `message`.
 - Ao final de cada execução há um registro `RunSummary` com o total de itens, sucessos, falhas, itens pulados e a duração.
+- No BotCity Maestro, a mesma execução fecha a tarefa com `SUCCESS`, `PARTIALLY_COMPLETED` ou `FAILED` e com a contagem de itens. Também gera alertas para o time de operação (falha, planilha rejeitada, API ou e-mail fora do ar, plano B aguardando o RH) e anexa como artefatos o relatório do RH e o log do dia.
 - **LGPD:** o log nunca tem nome, e-mail nem estação. O funcionário aparece como `employeeRef` (hash da matrícula com salt). Nas linhas recusadas, o log registra só aba, linha e coluna; o valor errado fica apenas no relatório do RH.
 - Exemplo:
 

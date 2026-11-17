@@ -15,7 +15,7 @@ import pytest
 from openpyxl import load_workbook
 
 from src.adapters.inbound.localInputFolder import LocalInputFolder
-from src.adapters.inbound.openpyxlSpreadsheetReader import OpenpyxlSpreadsheetReader
+from src.adapters.inbound.botcityExcelReader import BotcityExcelReader
 from src.adapters.outbound.localLandingZone import LocalLandingZone
 from src.adapters.outbound.sqliteRobotState import SqliteRobotState
 from src.adapters.outbound.xlsxImportReport import XlsxImportReport
@@ -74,7 +74,7 @@ class Environment:
         baseLogger.propagate = False
         logger = RunLogger("scheduleImportFlow", "si-test", baseLogger=baseLogger)
         return ScheduleImportFlow(
-            OpenpyxlSpreadsheetReader(), LocalInputFolder(self.input), self.api, LocalLandingZone(self.settings.landingZonePath),
+            BotcityExcelReader(), LocalInputFolder(self.input), self.api, LocalLandingZone(self.settings.landingZonePath),
             XlsxImportReport(self.settings.reportDir), self.state, self.settings, logger, clock=lambda: NOW,
         ).run()
 

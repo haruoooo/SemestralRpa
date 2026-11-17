@@ -4,7 +4,7 @@ Há duas camadas de testes, e as duas cobrem cenários de **sucesso**, **decisã
 
 | Camada | O que roda | Como executar | Evidência |
 |---|---|---|---|
-| Testes automatizados | 87 testes com pytest, sem rede e sem envio de e-mail, usando adaptadores falsos | `pytest -v` | [evidence/pytestReport.txt](evidence/pytestReport.txt) |
+| Testes automatizados | 101 testes com pytest, sem rede e sem envio de e-mail, usando adaptadores falsos | `pytest -v` | [evidence/pytestReport.txt](evidence/pytestReport.txt) |
 | Execução de ponta a ponta | Os 3 fluxos rodando pela linha de comando contra o mock da API, com planilhas fictícias e falhas provocadas | `bash tools/collectEvidence.sh` | [evidence/scenarioRun.txt](evidence/scenarioRun.txt), [../logs/samples/robotSample.log](../logs/samples/robotSample.log) e prints em [../assets/](../assets/) |
 
 ## Cenários do PDD e onde cada um é verificado
@@ -43,5 +43,6 @@ Há duas camadas de testes, e as duas cobrem cenários de **sucesso**, **decisã
 | [testLineStatusRules.py](testLineStatusRules.py) | Regras das linhas (RN12 a RN17) |
 | [testLineMonitorFlow.py](testLineMonitorFlow.py) | Fluxo 3 |
 | [testMetroWebsiteSource.py](testMetroWebsiteSource.py) | Leitura do HTML real do Metrô (amostra salva), bloqueio e timeout |
+| [testMaestroBot.py](testMaestroBot.py) | Integração com o BotCity Maestro: parâmetro `flow`, cofre de credenciais, status de finalização e contagem de itens, alertas, artefatos, Maestro fora do ar e modo offline do template |
 
 A execução de ponta a ponta usa datas fixas da semana fictícia de 23 a 27/11/2026 (`--at`), para dar sempre o mesmo resultado, e não envia e-mail de verdade: usa o modo console e, no cenário de falha, uma porta SMTP inexistente.

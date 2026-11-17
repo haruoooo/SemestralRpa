@@ -19,3 +19,6 @@ __pycache__/
 
 # Zips made locally to send the handoff folders
 docs/integrations/*.zip
+
+# BotCity Maestro package (build.bat / build.sh)
+foraDoPicoRpa.zip

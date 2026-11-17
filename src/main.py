@@ -18,7 +18,7 @@ from pathlib import Path
 
 from src.adapters.inbound.localInputFolder import LocalInputFolder
 from src.adapters.inbound.metroWebsiteSource import MetroWebsiteSource
-from src.adapters.inbound.openpyxlSpreadsheetReader import OpenpyxlSpreadsheetReader
+from src.adapters.inbound.botcityExcelReader import BotcityExcelReader
 from src.adapters.inbound.simulatedSource import SimulatedSource, writeScenario
 from src.adapters.outbound.emailNotifiers import ConsoleNotifier, SmtpNotifier
 from src.adapters.outbound.fileProductApi import FileProductApi
@@ -30,6 +30,7 @@ from src.adapters.outbound.xlsxImportReport import XlsxImportReport
 from src.application.flows.agendaDispatchFlow import FLOW_NAME as AGENDA_DISPATCH_FLOW, AgendaDispatchFlow
 from src.application.flows.lineMonitorFlow import FLOW_NAME as LINE_MONITOR_FLOW, LineMonitorFlow
 from src.application.flows.scheduleImportFlow import FLOW_NAME as SCHEDULE_IMPORT_FLOW, ScheduleImportFlow
+from src.application.runSummary import RunSummary
 from src.infrastructure.robotLogger import RunLogger, buildRunId
 from src.infrastructure.robotScheduler import buildScheduler
 from src.infrastructure.settings import Settings
@@ -60,7 +61,7 @@ def buildClock(at: str | None):
     return lambda: fixed
 
 
-def runLineMonitor(settings: Settings, ignoreWindow: bool, at: str | None = None) -> int:
+def lineMonitorSummary(settings: Settings, ignoreWindow: bool, at: str | None = None) -> RunSummary:
     clock = buildClock(at)
     logger = RunLogger(LINE_MONITOR_FLOW, buildRunId("lm", nowLocal()), settings.logDir)
     if at:
@@ -74,12 +75,16 @@ def runLineMonitor(settings: Settings, ignoreWindow: bool, at: str | None = None
         clock=clock,
         respectOperatingWindow=not ignoreWindow,
     )
-    return flow.run().exitCode
+    return flow.run()
 
 
-def runScheduleImport(settings: Settings) -> int:
+def runLineMonitor(settings: Settings, ignoreWindow: bool, at: str | None = None) -> int:
+    return lineMonitorSummary(settings, ignoreWindow, at).exitCode
+
+
+def scheduleImportSummary(settings: Settings) -> RunSummary:
     flow = ScheduleImportFlow(
-        reader=OpenpyxlSpreadsheetReader(),
+        reader=BotcityExcelReader(),
         inputFolder=LocalInputFolder(settings.inputDir),
         api=buildProductApi(settings),
         landingZone=LocalLandingZone(settings.landingZonePath),
@@ -88,7 +93,11 @@ def runScheduleImport(settings: Settings) -> int:
         settings=settings,
         logger=RunLogger(SCHEDULE_IMPORT_FLOW, buildRunId("si", nowLocal()), settings.logDir),
     )
-    return flow.run().exitCode
+    return flow.run()
+
+
+def runScheduleImport(settings: Settings) -> int:
+    return scheduleImportSummary(settings).exitCode
 
 
 def buildNotifier(settings: Settings):
@@ -100,7 +109,7 @@ def buildNotifier(settings: Settings):
     return ConsoleNotifier(settings.mailOutputDir, settings.mailFrom)
 
 
-def runAgendaDispatch(settings: Settings, at: str | None = None) -> int:
+def agendaDispatchSummary(settings: Settings, at: str | None = None) -> RunSummary:
     clock = buildClock(at)
     logger = RunLogger(AGENDA_DISPATCH_FLOW, buildRunId("ad", nowLocal()), settings.logDir)
     if at:
@@ -114,7 +123,25 @@ def runAgendaDispatch(settings: Settings, at: str | None = None) -> int:
         logger=logger,
         clock=clock,
     )
-    return flow.run().exitCode
+    return flow.run()
+
+
+def runAgendaDispatch(settings: Settings, at: str | None = None) -> int:
+    return agendaDispatchSummary(settings, at).exitCode
+
+
+FLOW_NAMES = ("scheduleImport", "agendaDispatch", "lineMonitor")
+
+
+def executeFlow(name: str, settings: Settings, at: str | None = None, ignoreWindow: bool = False) -> RunSummary:
+    """Runs one flow and returns its summary (used by the BotCity Maestro entry point, bot.py)."""
+    if name == "scheduleImport":
+        return scheduleImportSummary(settings)
+    if name == "agendaDispatch":
+        return agendaDispatchSummary(settings, at)
+    if name == "lineMonitor":
+        return lineMonitorSummary(settings, ignoreWindow, at)
+    raise ValueError(f"Unknown flow {name!r}; expected one of {FLOW_NAMES}")
 
 
 def runScheduler(settings: Settings) -> int:

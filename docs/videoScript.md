@@ -97,7 +97,7 @@ python -m src.main scheduleImport
 
 ### Cena 8 · Logs, testes e encerramento (2:50–3:00)
 **Tela:** o arquivo `logs\robot<data>.log` ou o `tests\README.md`.
-**Fala:** "Tudo fica registrado em log, sem dados pessoais. O projeto tem 87 testes automatizados de sucesso, decisão e falha, e o código está no GitHub."
+**Fala:** "Tudo fica registrado em log, sem dados pessoais. O projeto tem 101 testes automatizados de sucesso, decisão e falha, e o código está no GitHub."
 
 ## Depois de gravar
 

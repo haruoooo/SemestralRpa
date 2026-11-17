@@ -61,7 +61,8 @@ Podem usar como ponto de partida. A previsão de lotação real vem da camada Ou
 | Item | Valor |
 |---|---|
 | Runtime | Python 3.13, `pip install -r requirements.txt` |
-| Comando | `python -m src.main scheduler`: um único processo de longa duração que agenda os três fluxos (importação a cada 5 min, envio a cada 10 min, monitor a cada 5 min em dias úteis). Cada fluxo também roda sozinho (`scheduleImport`, `agendaDispatch`, `lineMonitor`), se preferirem cron |
+| Orquestração recomendada | **BotCity Maestro**: o pacote `foraDoPicoRpa.zip` (gerado por `build.bat` ou `build.sh`) é implantado no Maestro, e o BotCity Runner executa o `bot.py` em cada tarefa (parâmetro `flow`). As senhas vêm do cofre de credenciais do Maestro (rótulo `foraDoPico`). O Runner precisa de um `.env` só com as configurações sem segredo (URL da API, modos) |
+| Alternativa sem Maestro | `python -m src.main scheduler`: um único processo de longa duração que agenda os três fluxos (importação a cada 5 min, envio a cada 10 min, monitor a cada 5 min em dias úteis). Cada fluxo também roda sozinho (`scheduleImport`, `agendaDispatch`, `lineMonitor`), se preferirem cron |
 | Código de saída | 0 = sucesso, 2 = parcial (algum item falhou e será refeito), 1 = falha. Dá para alertar no Grafana quando aparecer 1 |
 | Logs | JSON Lines em `logs/robotYYYYMMDD.log`, um registro por evento, e um `RunSummary` por execução com contagens e duração (bom para as métricas de ouro). Sem dados pessoais |
 | Estado | SQLite em `data/runtime/robotState.db` (precisa de volume persistente) |
