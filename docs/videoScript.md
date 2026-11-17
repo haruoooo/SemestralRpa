@@ -147,7 +147,7 @@ Os nomes de menus podem variar um pouco conforme a versão do Maestro.
       - tecnologia **Python**;
       - o arquivo `foraDoPicoRpa.zip`;
       - o Runner `foraDoPicoRunner`.
-7. **Parâmetros:** na automação, adicione três parâmetros do tipo texto: `flow` (obrigatório), `at` e `ignoreWindow` (opcionais).
+7. **Parâmetros:** na automação, aba **Desenvolvimento**, adicione três parâmetros do tipo texto: `flow` (obrigatório), `at` e `ignoreWindow` (opcionais). O **Label** de cada um deve ser igual ao nome, porque é pelo Label que o Maestro entrega o valor ao robô. Role até o fim da página e salve.
 8. **Ligar o Runner:** rode `C:\BotCity\BotRunner-gui.bat` e clique em **START**.
 9. **Aquecimento:** com o mock da API no ar, crie uma tarefa com `flow` = `lineMonitor`. A primeira execução demora alguns minutos, porque o Runner cria o ambiente Python e instala as dependências. As próximas são rápidas.
 
