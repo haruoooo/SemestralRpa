@@ -136,13 +136,7 @@ Os nomes de menus podem variar um pouco conforme a versão do Maestro.
    ```
    setx FORADOPICO_HOME "C:\Users\Matheus\Desktop\SemestralRpa"
    ```
-4. **Cofre de credenciais:**
-   1. No Maestro, abra **Credenciais** → **Nova credencial**, com o rótulo `foraDoPico`.
-   2. Crie as chaves e os valores:
-      - `smtpUser` e `smtpPassword`: os mesmos do Mailtrap que estão no `.env`;
-      - `logSalt`: qualquer texto longo.
-
-   O robô lê essas chaves do cofre, e o cofre tem prioridade sobre o `.env`.
+4. **Senhas:** no plano gratuito, o cofre de credenciais do Maestro não está disponível. O robô lê as senhas do `.env` da pasta de trabalho, que fica fora do pacote. Em plano pago, basta criar no cofre o rótulo `foraDoPico` com as chaves `smtpUser`, `smtpPassword` e `logSalt`, que passam a ter prioridade sobre o `.env`.
 5. **Pacote:** na pasta do projeto, rode `.\build.ps1`. Ele gera o `foraDoPicoRpa.zip` sem o `.env`.
 6. **Easy Deploy:**
    1. No Maestro, abra **Easy Deploy** e crie a automação.
@@ -157,5 +151,5 @@ Os nomes de menus podem variar um pouco conforme a versão do Maestro.
 8. **Ligar o Runner:** rode `C:\BotCity\BotRunner-gui.bat` e clique em **START**.
 9. **Aquecimento:** com o mock da API no ar, crie uma tarefa com `flow` = `lineMonitor`. A primeira execução demora alguns minutos, porque o Runner cria o ambiente Python e instala as dependências. As próximas são rápidas.
 
-   Confira se a tarefa terminou sem erro e se o log dela mostra "Pasta de trabalho" e "Credenciais lidas do cofre do Maestro".
+   Confira se a tarefa terminou sem erro e se o log dela mostra "Pasta de trabalho".
 10. **Agendamento (opcional, não usado no vídeo):** em **Agendamentos**, crie um para cada fluxo: `scheduleImport` a cada 5 min, `agendaDispatch` a cada 10 min e `lineMonitor` a cada 5 min.

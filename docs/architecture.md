@@ -69,7 +69,7 @@ Detalhes no [processDesign.md](processDesign.md).
 | Retry | tenacity | Backoff exponencial declarativo |
 | Raspagem | beautifulsoup4 | HTML do Metrô |
 | Agenda | icalendar | Gera .ics compatível com Google, Outlook e celular |
-| Orquestração | BotCity Maestro (`botcity-maestro-sdk`) + template Custom da BotCity (`bot.py`, `build.*`, `.botproj`) | Em produção, o Maestro agenda as tarefas, o Runner executa o `bot.py`, e o robô devolve status, contagem de itens, alertas, artefatos e lê as senhas do cofre de credenciais |
+| Orquestração | BotCity Maestro (`botcity-maestro-sdk`) + template Custom da BotCity (`bot.py`, `build.*`, `.botproj`) | Em produção, o Maestro agenda as tarefas, o Runner executa o `bot.py`, e o robô devolve status, contagem de itens, alertas e artefatos. As senhas vêm do cofre de credenciais do Maestro, quando o plano tem esse recurso, ou do `.env` |
 | Agendamento local | APScheduler | Alternativa sem Maestro: roda os 3 fluxos num único processo (`python -m src.main scheduler`) |
 | Estado | sqlite3 (stdlib) | Sem servidor; arquivo único |
 | Mock da API | FastAPI + uvicorn | Mesmo framework da API real (decisão do grupo) |

@@ -114,14 +114,14 @@ python -m src.main simulate --unavailable                 # Simula a fonte fora 
 - o Maestro agenda as tarefas;
 - o BotCity Runner executa o `bot.py`;
 - o robô devolve status e contagem de itens, alertas e artefatos (relatório do RH e log);
-- as senhas ficam no cofre de credenciais do Maestro.
+- as senhas vêm do cofre de credenciais do Maestro, quando o plano tem esse recurso, ou do `.env` da pasta de trabalho.
 
 ```bash
 build.bat                         # Windows (ou ./build.sh): gera foraDoPicoRpa.zip, sem .env, logs ou dados
 python bot.py lineMonitor         # O mesmo bot rodando localmente, em modo offline
 ```
 
-No Maestro, crie uma tarefa para cada fluxo com o parâmetro `flow` igual a `scheduleImport`, `agendaDispatch` ou `lineMonitor`, e agende-as a cada 5, 10 e 5 minutos. No cofre de credenciais, crie o rótulo `foraDoPico` com as chaves `productApiKey`, `smtpUser`, `smtpPassword` e `logSalt`.
+No Maestro, crie uma tarefa para cada fluxo com o parâmetro `flow` igual a `scheduleImport`, `agendaDispatch` ou `lineMonitor`, e agende-as a cada 5, 10 e 5 minutos. Se o plano do Maestro tiver o cofre de credenciais, crie nele o rótulo `foraDoPico` com as chaves `productApiKey`, `smtpUser`, `smtpPassword` e `logSalt`.
 
 O Runner descompacta o pacote numa pasta própria. Para o robô achar o `.env` (sem segredos), a pasta `data/` e os logs, defina na máquina do Runner a variável `FORADOPICO_HOME` com a pasta do projeto (ou passe o parâmetro `homeDir` na tarefa):
 
