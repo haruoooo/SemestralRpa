@@ -106,7 +106,8 @@ O vídeo usa 4 e-mails da cota gratuita.
 **Faça:**
 1. Vá para a aba **Painel da API** e aperte **F5**.
 2. Passe o mouse sobre a tabela **Escalas importadas**. Há duas linhas, com 18 e com 3 funcionários, as duas "Aguardando aprovação".
-3. Clique em **Aprovar** na linha com **3** funcionários.
+3. Clique em **Aprovar** na linha com **3** funcionários. Aperte o botão logo depois do **F5**: o painel não se atualiza sozinho, e um botão de uma página antiga não aprova nada.
+4. Confira se a linha virou **Aprovada** e se o botão mudou para "Simular edição do RH". Sem isso, a cena 4 não envia nenhum e-mail.
 
 **Precisa aparecer:**
 - a linha de 18 funcionários com **2** em "Linhas recusadas";
