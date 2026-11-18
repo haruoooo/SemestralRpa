@@ -93,3 +93,4 @@ class ConsoleNotifier:
         target = self._outputDir / f"mail{nowLocal().strftime('%Y%m%d%H%M%S')}{self._count:03d}.eml"
         target.write_bytes(bytes(buildMimeMessage(email, self._sender)))
         print(f"[E-mail não enviado: modo console] Para {maskEmail(email.to)} · {email.subject} · salvo em {target}")
+

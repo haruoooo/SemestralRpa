@@ -72,3 +72,4 @@ if __name__ == "__main__":
         print(found or "")
     else:
         (emlToHtml if kind == "eml" else xlsxToHtml)(source, Path(target))
+

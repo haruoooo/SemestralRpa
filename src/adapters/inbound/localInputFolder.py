@@ -29,3 +29,4 @@ class LocalInputFolder:
         if target.exists():
             target = folder / f"{path.stem}{nowLocal().strftime('%Y%m%d%H%M%S')}{path.suffix}"
         return Path(shutil.move(str(path), str(target)))
+

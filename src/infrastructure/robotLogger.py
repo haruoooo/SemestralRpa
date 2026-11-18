@@ -98,3 +98,4 @@ class RunLogger:
 
     def error(self, step: str, event: str, message: str, itemRef: str | None = None, data: dict | None = None, excInfo: bool = False):
         self._emit(logging.ERROR, step, event, message, itemRef, data, excInfo)
+

@@ -163,3 +163,4 @@ def buildPlanEmail(item: Assignment, plan: ContingencyPlan, today: date) -> tupl
         f"<p style='color:#666;font-size:12px'>{escape(_FOOTER)}</p>"
     )
     return subject, "\n".join(lines), html
+

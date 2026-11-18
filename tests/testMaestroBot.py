@@ -224,3 +224,5 @@ def testUnavailableVaultIsReportedOnceAndSecretsComeFromEnv(capsys):
     sdk = FakeSdk(parameters={"flow": "lineMonitor"}, failOn="get_credential")
     assert runBot(MaestroOrchestrator(sdk), ["bot.py"], {}, executeFlow=lambda *args, **kwargs: summary()) == 0
     assert capsys.readouterr().out.count("Cofre de credenciais do Maestro indisponível") == 1
+
+

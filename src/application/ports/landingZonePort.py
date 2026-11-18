@@ -7,3 +7,4 @@ class LandingZonePort(Protocol):
     def write(self, dataset: str, fileName: str, payload: dict) -> str:
         """Writes the batch and returns its location."""
         ...
+

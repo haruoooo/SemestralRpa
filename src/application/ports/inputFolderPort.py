@@ -14,3 +14,4 @@ class InputFolderPort(Protocol):
     def moveTo(self, path: Path, destination: str) -> Path:
         """destination: "processed", "rejected" or "rejected/duplicates". Never overwrites an existing file."""
         ...
+

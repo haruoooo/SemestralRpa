@@ -156,3 +156,4 @@ O mapa de cenários (sucesso, decisão e falha) e onde cada um é verificado est
 
 - Vídeo de demonstração: _a publicar_
 - Relatório técnico (PDF): [docs/technicalReport.pdf](docs/technicalReport.pdf)
+

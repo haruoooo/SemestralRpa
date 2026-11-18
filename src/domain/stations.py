@@ -33,3 +33,4 @@ def findStation(name: str, lineNumber: int) -> str | None:
 
 def linesOfStation(name: str) -> list[int]:
     return [line for line, index in _INDEX.items() if _key(name) in index]
+

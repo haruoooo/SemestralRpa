@@ -239,3 +239,4 @@ Em produção, cada comando do terminal 2 é uma tarefa do Maestro:
 | `python -m src.main agendaDispatch --at 2026-11-24T07:32` | `flow` = `agendaDispatch`, `at` = `2026-11-24T07:32` |
 
 A configuração do Maestro está em [maestroSetup.md](maestroSetup.md).
+

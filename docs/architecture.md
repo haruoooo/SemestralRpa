@@ -87,3 +87,4 @@ Detalhes no [processDesign.md](processDesign.md).
 - Os logs nunca contêm nome, e-mail ou estação. O funcionário aparece como `employeeRef`, um hash SHA-256 da matrícula com salt, truncado em 12 caracteres.
 - Todas as planilhas de exemplo do repositório são fictícias (geradas com Faker pt_BR).
 - Os arquivos gravados na pasta de pouso do Big Data contêm dados pessoais e por isso ficam fora do Git (`.gitignore`). O mascaramento acontece na camada Ouro, sob responsabilidade do Big Data.
+

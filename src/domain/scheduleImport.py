@@ -482,3 +482,4 @@ def _weekday(value: Any, monday: date) -> date:  # RN08
     if day.weekday() > 4:
         raise _RowValidationError(f"Data {day:%d/%m/%Y} cai num {_WEEKDAYS_PT[day.weekday()]}, não é dia útil")
     return day
+

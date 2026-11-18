@@ -73,3 +73,4 @@ Podem usar como ponto de partida. A previsão de lotação real vem da camada Ou
 
 1. **A URL da API e uma chave para o robô**, quando a API estiver no ar.
 2. **Confirmar o contrato** desta pasta. Se algum nome de campo ou caminho mudar, me avisem para eu ajustar o robô e o mock.
+

@@ -296,3 +296,4 @@ class ScheduleImportFlow:
                 "currentScheduleValid": result.currentValid,
             },
         }
+

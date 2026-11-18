@@ -9,3 +9,4 @@ class ImportReportPort(Protocol):
     def write(self, fileName: str, fileHash: str, outcome: str, summary: dict[str, object], issues: list[RowIssue]) -> str:
         """Returns the report location."""
         ...
+

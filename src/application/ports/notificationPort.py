@@ -9,3 +9,4 @@ class NotificationPort(Protocol):
     def send(self, email: OutgoingEmail) -> None:
         """Raises NotificationUnavailableError (retryable) or NotificationRejectedError (bad recipient)."""
         ...
+

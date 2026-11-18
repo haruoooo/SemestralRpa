@@ -40,3 +40,4 @@ Os nomes de menus podem variar um pouco conforme a versão do Maestro.
    1. Com o mock da API no ar, crie uma tarefa com `flow` = `lineMonitor`. A primeira execução demora alguns minutos, porque o Runner cria o ambiente Python e instala as dependências.
    2. O log do Runner (`Documents\BotCity\logs\log.txt`) deve mostrar "Pasta de trabalho".
 10. **Agendamento (opcional):** em **Agendamentos**, crie um para cada fluxo: `scheduleImport` a cada 5 min, `agendaDispatch` a cada 10 min e `lineMonitor` a cada 5 min.
+

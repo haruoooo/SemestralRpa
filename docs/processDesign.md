@@ -229,3 +229,4 @@ A aprovação do RH é a **pessoa no circuito** exigida pelo briefing ("IA respo
 - As credenciais ficam no `.env`, que não é versionado.
 - O repositório só tem dados fictícios.
 - Na raspagem, o robô se identifica com um User-Agent próprio, faz uma requisição a cada 5 minutos (carga desprezível) e lê apenas uma página pública.
+

@@ -85,3 +85,4 @@ class Settings:
             lineMonitorEveryMinutes=int(env("LINE_MONITOR_EVERY_MINUTES", "5")),
             logSalt=env("LOG_SALT", ""),
         )
+

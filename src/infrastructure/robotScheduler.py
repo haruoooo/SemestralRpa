@@ -32,3 +32,4 @@ def buildScheduler(jobs: dict[str, tuple[Callable[[], int], int]]) -> BlockingSc
         # max_instances=1: a slow run is never overlapped by the next one; coalesce: missed runs collapse into one
         scheduler.add_job(_safe(name, job), "interval", minutes=minutes, id=name, max_instances=1, coalesce=True, next_run_time=None)
     return scheduler
+

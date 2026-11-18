@@ -30,3 +30,4 @@ class RunSummary:
     def exitCode(self) -> int:
         """0 = success/skipped, 2 = partial (some items failed), 1 = failed."""
         return {RunStatus.SUCCESS: 0, RunStatus.SKIPPED: 0, RunStatus.PARTIAL: 2, RunStatus.FAILED: 1}[self.status]
+

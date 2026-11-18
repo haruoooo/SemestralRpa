@@ -122,3 +122,4 @@ O lote aparece em `landingZone/chegada/schedule/`. Para apontar para outra pasta
 
 - Confirmar se o nome da pasta (`chegada/schedule/`) e o formato JSON atendem ao pipeline de Big Data, ou se preferem outro formato (CSV ou Parquet) ou outra convenção de nomes.
 - Dizer se precisam de mais algum campo. Qualquer dado pessoal novo precisa de justificativa de LGPD.
+

@@ -150,3 +150,4 @@ if __name__ == "__main__":
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("data/fixtures")
     for item in buildAllSamples(target):
         print(f"Planilha gerada: {item}")
+

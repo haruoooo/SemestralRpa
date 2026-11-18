@@ -311,3 +311,4 @@ def testSubjectWithAccentsSurvivesEncoding(subject):
     raw = bytes(buildMimeMessage(OutgoingEmail("ana@x.example", subject, "Texto", "<p>Texto</p>"), "ForaDoPico <agenda@foradopico.example>"))
     assert b"?q??=" not in raw  # Broken empty encoded-word seen in Mailtrap
     assert message_from_bytes(raw, policy=policy.default)["Subject"] == subject
+

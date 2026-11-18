@@ -209,3 +209,4 @@ def testCurrentScheduleWithMissingColumnIsIgnored():
     result = validateWorkbook(withCurrentSchedule([["F1001", date(2026, 11, 24)]], headers=["Matrícula", "Data"]))
     assert result.accepted and result.plannedDays == {}
     assert any("a aba Escala atual foi ignorada" in issue.message for issue in result.issues)
+

@@ -419,3 +419,4 @@ components:
               delivered: { type: boolean }
               channel: { type: string, enum: [email] }
               errorMessage: { type: string }
+

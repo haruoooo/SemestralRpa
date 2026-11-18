@@ -150,3 +150,4 @@ class SqliteRobotState:
                 "INSERT OR REPLACE INTO dispatchLedger VALUES (?, ?, ?, ?, ?, ?)",
                 (kind, referenceId, version, employeeId, outcome, at.isoformat()),
             )
+

@@ -301,3 +301,4 @@ def _decisionButtons(resource: str, itemId: str) -> str:
         f"<form method='post' action='/admin/{resource}/{itemId}/approve'><button>Aprovar</button></form>"
         f"<form method='post' action='/admin/{resource}/{itemId}/reject'><button>Recusar</button></form>"
     )
+

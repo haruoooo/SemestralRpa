@@ -40,3 +40,4 @@ def testTimeoutRaisesUnavailable():
 
     with pytest.raises(SourceUnavailableError):
         _sourceWith(raiseTimeout).fetchReadings()
+

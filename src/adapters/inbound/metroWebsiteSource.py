@@ -71,3 +71,4 @@ class MetroWebsiteSource:
         if response.status_code != 200:
             raise SourceUnavailableError(f"Metro page answered HTTP {response.status_code}")
         return parseMetroPage(response.content.decode("utf-8", errors="replace"))
+

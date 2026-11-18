@@ -146,3 +146,4 @@ def _artifactsOf(settings: Settings, startedAt: float) -> list[Path]:
     reports = [path for path in settings.reportDir.glob("importReport*.xlsx") if path.stat().st_mtime >= startedAt - 1] if settings.reportDir.exists() else []
     log = settings.logDir / f"robot{nowLocal():%Y%m%d}.log"
     return sorted(reports) + ([log] if log.exists() else [])
+

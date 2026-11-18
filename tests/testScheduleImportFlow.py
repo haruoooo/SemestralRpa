@@ -269,3 +269,4 @@ def testLandingBatchCarriesPlannedDaysForBigData(env):  # RN19, schemaVersion 2
     ]
     assert landed["quality"]["currentScheduleValid"] == landed["quality"]["currentScheduleTotal"] == 60
     assert ("Linhas da escala atual aceitas", "60 de 60") in env.reportRows("Resumo")
+

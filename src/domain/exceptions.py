@@ -36,3 +36,4 @@ class NotificationUnavailableError(RobotError):
 
 class NotificationRejectedError(RobotError):
     """The mail server refused the recipient (invalid address). Not retried."""
+

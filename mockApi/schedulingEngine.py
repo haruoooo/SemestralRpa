@@ -102,3 +102,4 @@ def buildAssignments(payload: dict, scheduleId: str) -> list[dict]:
                     }
                 )
     return assignments
+

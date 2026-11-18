@@ -135,3 +135,4 @@ def buildContingencyReason(lineNumber: int, action: ContingencyAction, newWindow
     if action == ContingencyAction.SHIFT_ENTRY_WINDOW:
         return f"{lineName} com problemas. Sugestão: entrada às {newWindow} hoje."
     return f"{lineName} com problemas. Sugestão: trabalho remoto hoje."
+

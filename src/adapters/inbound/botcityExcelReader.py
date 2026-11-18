@@ -51,3 +51,4 @@ class BotcityExcelReader:
             data = [(index, cells) for index, cells in enumerate(rows[1:], start=2)]
             sheets[str(name)] = SheetData(headers=headers, rows=data)
         return sheets
+

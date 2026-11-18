@@ -97,3 +97,4 @@ def _description(item: Assignment, entryWindow: str) -> str:
         lines.append(f"Lotação prevista no seu trajeto: {_CROWDING[item.predictedCrowding]}.")
     lines.append("Agenda gerada pelo ForaDoPico.")
     return " ".join(lines)
+

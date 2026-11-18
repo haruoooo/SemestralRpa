@@ -52,3 +52,4 @@ class SimulatedSource:
             )
             for line in scenario["lines"]
         ]
+

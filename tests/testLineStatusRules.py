@@ -70,3 +70,4 @@ def testOperatingWindowOnlyOnWeekdays():
     assert isWithinOperatingWindow(tuesday, time(5), time(22))
     assert not isWithinOperatingWindow(saturday, time(5), time(22))
     assert not isWithinOperatingWindow(tuesday.replace(hour=23), time(5), time(22))
+

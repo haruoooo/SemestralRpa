@@ -223,3 +223,4 @@ def testLogsNeverContainEmployeeIds(settings, state):
     assert "EMP12345" not in dump
     assert buildEmployeeRef("EMP12345", "test") in dump
     assert all(record.getMessage()[0].isupper() for record in captured)
+

@@ -72,3 +72,4 @@ class FileProductApi:
         if not path.exists():
             return []
         return [item for item in json.loads(path.read_text(encoding="utf-8")) if item.get("status") == status]
+

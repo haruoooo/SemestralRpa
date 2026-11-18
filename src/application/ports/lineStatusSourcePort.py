@@ -15,3 +15,4 @@ class LineStatusSourcePort(Protocol):
         SourceLayoutChangedError when the content cannot be interpreted.
         """
         ...
+

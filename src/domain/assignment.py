@@ -22,3 +22,4 @@ class Assignment:
     def fromApi(cls, payload: dict) -> "Assignment":
         known = {name for name in cls.__dataclass_fields__}
         return cls(**{key: value for key, value in payload.items() if key in known})
+

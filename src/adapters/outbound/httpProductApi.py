@@ -61,3 +61,4 @@ def _statusParams(status: str, dispatched: bool | None) -> dict:
     if dispatched is not None:
         params["dispatched"] = "true" if dispatched else "false"
     return params
+

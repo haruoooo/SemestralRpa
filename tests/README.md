@@ -46,3 +46,4 @@ Há duas camadas de testes, e as duas cobrem cenários de **sucesso**, **decisã
 | [testMaestroBot.py](testMaestroBot.py) | Integração com o BotCity Maestro: parâmetro `flow`, cofre de credenciais, status de finalização e contagem de itens, alertas, artefatos, pasta de trabalho do Runner, Maestro fora do ar e modo offline do template |
 
 A execução de ponta a ponta usa datas fixas da semana fictícia de 23 a 27/11/2026 (`--at`), para dar sempre o mesmo resultado, e não envia e-mail de verdade: usa o modo console e, no cenário de falha, uma porta SMTP inexistente.
+

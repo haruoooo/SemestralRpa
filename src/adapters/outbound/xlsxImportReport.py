@@ -48,3 +48,4 @@ def _styleHeader(sheet, widths: tuple[int, ...]) -> None:
     for index, width in enumerate(widths):
         sheet.column_dimensions[chr(ord("A") + index)].width = width
     sheet.freeze_panes = "A2"
+

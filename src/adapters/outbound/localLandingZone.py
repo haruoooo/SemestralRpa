@@ -16,3 +16,4 @@ class LocalLandingZone:
         temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         temporary.replace(target)  # Atomic: the Big Data pipeline never reads a half-written file
         return str(target)
+
