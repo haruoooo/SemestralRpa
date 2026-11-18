@@ -28,7 +28,6 @@ Documentação:
 - [docs/processDesign.md](docs/processDesign.md): PDD com o passo a passo, regras de negócio, exceções, logs e testes.
 - [docs/bpmn/](docs/bpmn/): diagramas BPMN 2.0 dos três fluxos (`.bpmn` e `.svg`).
 - [docs/architecture.md](docs/architecture.md): arquitetura Ports & Adapters.
-- [docs/videoScript.md](docs/videoScript.md): roteiro do vídeo de demonstração.
 - [docs/maestroSetup.md](docs/maestroSetup.md): configuração do BotCity Maestro e do Runner.
 - [docs/integrations/secureDevOpsCloud/](docs/integrations/secureDevOpsCloud/): contrato da API do produto e guia de deploy do robô.
 - [docs/integrations/bigDataDataIntegration/](docs/integrations/bigDataDataIntegration/): formato do lote entregue à pasta de pouso do Big Data.
@@ -143,7 +142,7 @@ pytest -v                         # 108 testes automatizados
 bash tools/collectEvidence.sh     # Execução de ponta a ponta de todos os cenários + prints (Git Bash)
 ```
 
-O mapa de cenários (sucesso, decisão e falha) e onde cada um é verificado está em [tests/README.md](tests/README.md). O relatório técnico é editado no Word ([docs/report/technicalReport.docx](docs/report/technicalReport.docx)); o PDF é exportado a partir dele.
+O mapa de cenários (sucesso, decisão e falha) e onde cada um é verificado está em [tests/README.md](tests/README.md).
 
 ## Segurança e LGPD
 

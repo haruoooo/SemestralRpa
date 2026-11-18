@@ -22,3 +22,7 @@ docs/integrations/*.zip
 
 # BotCity Maestro package (build.bat / build.sh)
 foraDoPicoRpa.zip
+
+# Local working files (not part of the delivery)
+docs/report/
+docs/videoScript.md
