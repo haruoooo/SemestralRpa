@@ -47,6 +47,8 @@ cd C:\Users\Matheus\Desktop\SemestralRpa
    O `New-Item` recria a pasta de entrada vazia; sem ela, o `copy` da cena 2 falha com "O nome do diretório é inválido".
 3. No **terminal 1**, suba a API de novo: `uvicorn mockApi.app:app --port 8000`.
 
+**Importante:** a API de demonstração guarda os dados só na memória, mas o robô lembra os arquivos que já importou (`data\runtime`). Depois deste passo, só derrube a API na cena 7. Se precisar reiniciar a API em qualquer outro momento, refaça este passo 1.2 inteiro. Senão, a API fica vazia e o robô recusa as planilhas como repetidas (`rejected\duplicates`).
+
 ### 1.3 Mailtrap vazio
 1. No Mailtrap, abra **Sandboxes** → **My Sandbox**.
 2. Apague os e-mails antigos com o ícone de lixeira.
