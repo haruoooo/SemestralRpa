@@ -43,8 +43,10 @@ cd C:\Users\Matheus\Desktop\SemestralRpa
 2. No **terminal 2**, rode:
    ```
    Remove-Item -Recurse -Force data\runtime, data\input, data\output -ErrorAction SilentlyContinue
+   New-Item -ItemType Directory -Force data\input | Out-Null
    python -m src.main simulate
    ```
+   O `New-Item` recria a pasta de entrada vazia; sem ela, o `copy` da cena 2 falha com "O nome do diretório é inválido".
 3. No **terminal 1**, suba a API de novo: `uvicorn mockApi.app:app --port 8000`.
 
 ### 1.4 Mailtrap vazio
